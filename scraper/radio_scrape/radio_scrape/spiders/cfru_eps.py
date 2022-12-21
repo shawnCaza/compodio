@@ -34,7 +34,7 @@ class CfruSpider(scrapy.Spider):
             yield current_episode
 
 
-        next_page = response.xpath("//a[contains(text(),'Older Entries')]/@href").get()
-        if next_page is not None:
-            next_page = response.urljoin(next_page)
+        next_relative_path = response.xpath("//a[contains(text(),'Older Entries')]/@href").get()
+        if next_relative_path is not None:
+            next_page = response.urljoin(next_relative_path)
             yield scrapy.Request(next_page, callback=self.parse)

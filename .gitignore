@@ -4,7 +4,6 @@ python/radio_scrape/radio_scrape/DBConfig.py
 python/test.py
 **/__pycache__/*
 **/__pycache__
-__pycache__/
 **/.venv/*
 **/DBConfig.py
 **/db_credentials.php
