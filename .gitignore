@@ -7,4 +7,3 @@ python/test.py
 **/.venv/*
 **/DBConfig.py
 **/db_credentials.php
-/ui/*
