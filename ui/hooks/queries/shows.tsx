@@ -1,3 +1,4 @@
+import { type } from 'os';
 import { dehydrate, QueryClient, useQuery } from 'react-query';
 
 //shows query has defaults set at app level defining stale time and queryFn based on functions here.
@@ -18,14 +19,14 @@ interface Show {
   img: string | null,
   internal_link: string,
   mp3: string,
-  newsetEpDate: string,
+  newestEpDate: string,
   showName: string,
   slug: string | null,
   source: string,
   tags: string[] | null,
 
 }
-
+export type {Show};
 
 export const getShows = async () => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/get_all_shows.php`);

@@ -25,6 +25,8 @@ function get_all_shows(){
             )
         ) eps 
         ON `shows`.`id` = `eps`.`show_id`
+
+        ORDER BY newestEpDate DESC
         ;
     ";
     $result = mysqli_query($db, $sql);

@@ -2,6 +2,8 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { useShowsQuery, getShows } from '../hooks/queries/shows';
 import { dehydrate, QueryClient} from 'react-query';
+import ContentSection from '../components/layout/contentSection';
+import ShowCardsContainer from '../components/show/showCards/showCardsContainer';
 
 export async function getServerSideProps() {
   const queryClient = new QueryClient()
@@ -20,14 +22,7 @@ export default function Home() {
 
   if (!shows){
     return;
-  } else{
-    const content = shows.map((show) =>
-    <div key={show.id}>
-      <h3>{show.showName}</h3>
-      <p>{show.desc}</p>
-    </div>
-  );
-  }
+  } 
 
   return (
     <>
@@ -39,13 +34,12 @@ export default function Home() {
       </Head>
       <main>
         <h1>Community Podcast</h1>
-        {shows.map((show) =>
-        <>
-          <h2>{show.showName}</h2>
-          <p>{show.desc}</p>
-        </>
-      )}
-      
+
+        <ContentSection heading={'Recently Updated'}>
+          
+            <ShowCardsContainer />         
+          
+        </ContentSection>    
       </main>
     </>
   )
