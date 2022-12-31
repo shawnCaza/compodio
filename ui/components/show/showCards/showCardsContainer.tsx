@@ -14,16 +14,17 @@ function ShowCardsContainer() {
     return (
         <>
         {shows.map((show) =>
-        
+
           <div className='showCard' key={show.id }>
+
             <EpDate dtStr={show.newestEpDate} />
-            <h2>{show.showName}</h2>
+            <h3>{show.showName}</h3>
             <div>Play button</div>
             <div>subscription: {process.env.NEXT_PUBLIC_feed_URI}{show.id}/{show.source}-{show.slug}</div>
             <CardDesc desc={show.desc} />
             
           </div>
-        
+
         )}
       </>
     )
