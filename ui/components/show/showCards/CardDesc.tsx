@@ -2,15 +2,15 @@ interface descType{
     desc: string | null
 }
 
-function useShortDesc(desc:string){
+function useSnippet(desc:string, lengthApprox:number){
+        
+    
+    if (desc.indexOf(" ", lengthApprox) > 0){ //If after the split point, there is a space 
 
-    const splitPoint = 160;
+        // Spit at first space after n(lengthApprox) characters
+        var descShort = desc.substring(0, desc.indexOf(" ", lengthApprox));
 
-    if (splitPoint-1 < desc.length){
-        // Spit at first space after n characters
-        var descShort = desc.substring(0, desc.indexOf(" ", splitPoint));
-
-        //If ends in period, we want to remove period before adding ellipse
+        //If snippet ends in period, we want to remove period before adding ellipse
         descShort.replace(/\.$/,"");
         descShort += "…";
         
@@ -27,7 +27,7 @@ function CardDesc({desc}:descType) {
     
     if(!desc) {return null}
 
-    const descShort = useShortDesc(desc)
+    const descShort = useSnippet(desc, 170)
 
     return (
         <>
