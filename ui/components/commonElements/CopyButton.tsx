@@ -1,19 +1,19 @@
 interface copyButton{
     toCopy: string,
+    setDisplayCopiedMessage: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 import { IoIosCopy } from "react-icons/io";
 
-function CopyButton({toCopy}:copyButton) {
+function CopyButton({toCopy, setDisplayCopiedMessage}:copyButton) {
+    
     
     const copyToClipboard = async() =>  {
         
-            if ("clipboard" in navigator) {
               await navigator.clipboard.writeText(toCopy);
-            } else {
-              document.execCommand("copy", true, toCopy);
-            }
-          }
+              
+              setDisplayCopiedMessage(true)
+    }
 
 
     return (
