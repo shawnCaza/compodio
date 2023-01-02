@@ -1,6 +1,7 @@
 import { useShowsQuery, getShows } from '../../../hooks/queries/shows';
 import EpDate from '../epDate';
 import CardDesc from './CardDesc';
+import FeedUrl from '../showFeed';
 
 function ShowCardsContainer() {
 
@@ -20,7 +21,7 @@ function ShowCardsContainer() {
             <EpDate dtStr={show.newestEpDate} />
             <h3>{show.showName}</h3>
             <div>Play button</div>
-            <div>subscription: {process.env.NEXT_PUBLIC_feed_URI}{show.id}/{show.source}-{show.slug}</div>
+            <FeedUrl showId={show.id} source={show.source} slug={show.slug} />
             <CardDesc desc={show.desc} />
             
           </div>

@@ -7,9 +7,13 @@ interface descType{
 
 function CardDesc({desc}:descType) {
     
-    if(!desc) {return null}
+    var descShort;
 
-    const descShort = useSnippet(desc, 170)
+    if(!desc) {
+        descShort = "No description available."
+    } else {
+        descShort = useSnippet(desc, 170);
+    }
 
     return (
         <>
