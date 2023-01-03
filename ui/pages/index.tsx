@@ -3,7 +3,7 @@ import styles from '../styles/Home.module.css'
 import { useShowsQuery, getShows } from '../hooks/queries/shows';
 import { dehydrate, QueryClient} from 'react-query';
 import ContentSection from '../components/layout/contentSection';
-import ShowCardsContainer from '../components/show/showCards/showCardsContainer';
+import Container from '../components/show/showCards/Container';
 
 export async function getServerSideProps() {
   const queryClient = new QueryClient()
@@ -37,7 +37,7 @@ export default function Home() {
 
         <ContentSection heading={'Recently Updated'}>
           
-            <ShowCardsContainer />         
+            <Container />         
           
         </ContentSection>    
       </main>

@@ -1,0 +1,16 @@
+.card{
+    min-width: 14em; 
+    max-width: 14em; 
+    // @include mq('wide'){
+    //     max-width: px2em(240);
+    // }
+    // @include mq('large'){
+    //     max-width: px2em(250);
+    // }
+    
+    border: 1px solid lightgray;
+    border-radius: .5em;
+    display: flex;
+    flex-direction: column; 
+    justify-content: space-between;
+}

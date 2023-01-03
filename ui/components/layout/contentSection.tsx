@@ -10,10 +10,10 @@ function ContentSection({heading=null, children}:contentSectionProps ) {
     return (
         <>
             <div className="content-section">
-            <h2>{heading}</h2>
-                <div>
+                <h2>{heading}</h2>
+                    
                 {children}
-                </div>
+                    
 
             </div>
         </>
