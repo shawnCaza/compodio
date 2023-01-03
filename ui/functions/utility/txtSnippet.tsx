@@ -1,4 +1,4 @@
-export function useSnippet(txt:string, lengthApprox:number){
+export function makeSnippet(txt:string, lengthApprox:number){
     // lengthApprox is the approximate max-length of our snippet.
     // If txt is longer than max, will return string up to lengthApprox + remainder of any word that might be cut.
     

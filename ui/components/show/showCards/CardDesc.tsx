@@ -1,4 +1,4 @@
-import { useSnippet } from "../../../hooks/utility/txtSnippet"
+import { makeSnippet } from "../../../functions/utility/txtSnippet"
 
 interface descType{
     desc: string | null
@@ -12,7 +12,7 @@ function CardDesc({desc}:descType) {
     if(!desc) {
         descShort = "No description available."
     } else {
-        descShort = useSnippet(desc, 170);
+        descShort = makeSnippet(desc, 170);
     }
 
     return (
