@@ -4,6 +4,7 @@ interface copyButton{
 }
 
 import { IoIosCopy } from "react-icons/io";
+import styles from "./copyButton.module.scss"
 
 function CopyButton({toCopy, setDisplayCopiedMessage}:copyButton) {
     
@@ -19,7 +20,8 @@ function CopyButton({toCopy, setDisplayCopiedMessage}:copyButton) {
     return (
         <>
          <span >
-            <IoIosCopy onClick={copyToClipboard}/>
+            {/* <IoIosCopy onClick={copyToClipboard}/> */}
+            <button className={styles.button} onClick={copyToClipboard}>Copy</button>
         </span>
 
 

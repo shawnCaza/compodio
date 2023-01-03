@@ -11,8 +11,10 @@ function makeSnippet(txt:string, lengthApprox:number){
         // Spit at first space after 'lengthApprox' characters
         var txtShort = txt.substring(0, txt.trim().indexOf(" ", lengthApprox));
 
-        //In case snippet ends in period, we want to remove end-period before adding ellipse
+        // In case snippet ends in period, we want to remove end-period before adding ellipse 
+        // TODO other punctuation
         txtShort.replace(/\.$/,"");
+        txtShort.replace(/,$/,"");
         txtShort += "…";
         
         return txtShort
