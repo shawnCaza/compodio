@@ -1,3 +1,5 @@
+import styles from './Desc.module.scss'
+
 interface descType{
     desc: string | null
 }
@@ -38,7 +40,7 @@ function CardDesc({desc}:descType) {
 
     return (
         <>
-            <div>{descShort}</div>
+            <div className={styles.desc}>{descShort}</div>
         </>
     )
 } 

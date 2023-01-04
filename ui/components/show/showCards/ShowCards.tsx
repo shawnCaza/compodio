@@ -3,9 +3,8 @@ import Container from '../../layout/cardElements/container/Container';
 import Card from '../../layout/cardElements/card/Card';
 import Heading from '../../layout/cardElements/heading/Heading';
 import EpDate from '../epDate';
-import CardDesc from '../../layout/cardElements/desc/CardDesc';
-import FeedUrl from '../showFeed/showFeed';
-
+import Desc from '../../layout/cardElements/desc/Desc';
+import FeedUrl from '../showFeed/ShowFeed';
 
 function ShowCards() {
 
@@ -29,7 +28,7 @@ function ShowCards() {
 
               <div>Play button</div>
               <FeedUrl showId={show.id} slug={show.slug} />
-              <CardDesc desc={show.desc} />
+              <Desc desc={show.desc} />
               
             </Card>
           )}

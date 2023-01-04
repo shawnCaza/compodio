@@ -10,6 +10,7 @@
 
 .feedAndCopyButtonContainer{
     display: flex;
+    gap: 0.5em;
     justify-content: space-between;
     background-color: lightgray;
     color: #000;
@@ -28,6 +29,7 @@
     border: none;
     background: transparent;
     color: inherit;
+    min-width: 33%;
 }
 
 .copiedMessage{
