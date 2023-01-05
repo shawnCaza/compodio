@@ -28,7 +28,7 @@ function ShowCards() {
 
               <div>Play button</div>
               <FeedUrl showId={show.id} slug={show.slug} />
-              <Desc desc={show.desc} />
+              <Desc desc={show.desc} approxLength={125} />
               
             </Card>
           )}

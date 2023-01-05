@@ -1,46 +1,49 @@
 import styles from './Desc.module.scss'
 
 interface descType{
-    desc: string | null
+    desc: string | null,
+    approxLength: number
 }
 
-function makeSnippet(txt:string, lengthApprox:number){
-    // lengthApprox is the approximate max-length of our snippet.
-    // If txt is longer than max, will return string up to lengthApprox + remainder of any word that might be cut.
+function makeSnippet(txt:string, approxLength:number){
+    // approxLength is the approximate max-length of our snippet.
+    // If txt is longer than max, will return string up to approxLength + remainder of any word that might be cut.
     
-    if (txt.trim().indexOf(" ", lengthApprox) > 0){ 
+    if (txt.trim().indexOf(" ", approxLength) > 0){ 
         //Need to shorten txt
         // Spit at first space after 'lengthApprox' characters
-        var txtShort = txt.substring(0, txt.trim().indexOf(" ", lengthApprox));
+        var txtShort = txt.substring(0, txt.trim().indexOf(" ", approxLength));
 
-        // In case snippet ends in period, we want to remove end-period before adding ellipse 
-        // TODO other punctuation
-        txtShort.replace(/\.$/,"");
-        txtShort.replace(/,$/,"");
+        // In case snippet ends in period or comma, we want to remove them before adding ellipse 
+        // TODO relevant to remove other punctuation?
+        txtShort = txtShort.replace(/[\.,]$/,"");
         txtShort += "…";
         
         return txtShort
 
     } else {
-        //Description is already short
+        //Description does not need to be shortened.  
         return txt
 
     }
 }
 
-function CardDesc({desc}:descType) {
-    
-    var descShort;
+function CardDesc({desc, approxLength=0}:descType) {
+    // Adds show despription. If approxLength is greater than 0, will shorten description rounding up to the nearest space after approxLength.
+
+    var displayDesc:string;
 
     if(!desc) {
-        descShort = "No description available."
+        displayDesc = "No description available."
+    } else if(approxLength > 0) {
+        displayDesc = makeSnippet(desc, approxLength);
     } else {
-        descShort = makeSnippet(desc, 125);
+        displayDesc = desc;
     }
 
     return (
         <>
-            <div className={styles.desc}>{descShort}</div>
+            <div className={styles.desc}>{displayDesc}</div>
         </>
     )
 } 
