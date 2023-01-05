@@ -1,3 +1,4 @@
+
 interface epDate{
     dtStr:string
 }
@@ -8,7 +9,9 @@ function EpDate({dtStr}:epDate) {
     const dtFormated = dt.toLocaleDateString('en-US', opts);
     
     return (
-       <div>{dtFormated}</div>
+        <>
+            {dtFormated}
+        </>
     )
 } 
 
