@@ -4,6 +4,7 @@ import { useShowsQuery, getShows } from '../hooks/queries/shows';
 import { dehydrate, QueryClient} from 'react-query';
 import ContentSection from '../components/layout/contentSection';
 import ShowCards from '../components/show/showCards/ShowCards';
+
 export async function getServerSideProps() {
   const queryClient = new QueryClient()
 
@@ -36,7 +37,7 @@ export default function Home() {
 
         <ContentSection heading={'Recently Updated'}>
           
-            <ShowCards />         
+            <ShowCards shows={shows.slice(0,20)} />         
           
         </ContentSection>    
       </main>

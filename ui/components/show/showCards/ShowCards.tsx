@@ -1,17 +1,19 @@
-import { useShowsQuery, getShows } from '../../../hooks/queries/shows';
+import { useShowsQuery, getShows, Show } from '../../../hooks/queries/shows';
 import Container from '../../layout/cardElements/container/Container';
 import Card from '../../layout/cardElements/card/Card';
 import Heading from '../../layout/cardElements/heading/Heading';
-import EpDate from '../epDate/epDate';
+import EpDate from '../epDate/EpDate';
 import Desc from '../../layout/cardElements/desc/Desc';
 import FeedUrl from '../showFeed/ShowFeed';
 import styles from "./showCards.module.scss";
 
+interface ShowCardsProps{
+    shows: Show[]
+  }
 
 
-function ShowCards() {
+function ShowCards({shows}:ShowCardsProps) {
 
-    const shows = useShowsQuery();
 
     if (!shows){
       return null;

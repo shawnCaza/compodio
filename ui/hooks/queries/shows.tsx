@@ -38,9 +38,11 @@ export const getShows = async () => {
     return response;
   };
   
-
-  
   export function useShowsQuery() {
     const { data } = useQuery<Show[]>( "shows");
     return data;
   }
+
+  
+
+  
