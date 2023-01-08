@@ -37,8 +37,8 @@ function FeedUrl({showId, slug}:showFeedUrl) {
 
                 <div className={styles.feedAndCopyButtonContainer}>
 
-                    <span className={styles.rssIcon}><IoLogoRss/></span>
-
+                    <span className={styles.rssIcon} role="presentation"><IoLogoRss/></span>
+                    <span className="screen-reader-text">RSS podcast subscription link:</span>
                     <input className={styles.url} value={feedLink} readOnly />
                     
                     <CopyButton toCopy={feedLink} setDisplayCopiedMessage={setDisplayCopiedMessage} />

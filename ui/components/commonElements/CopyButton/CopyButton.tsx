@@ -21,7 +21,7 @@ function CopyButton({toCopy, setDisplayCopiedMessage}:copyButton) {
         <>
          <span >
             {/* <IoIosCopy onClick={copyToClipboard}/> */}
-            <button className={styles.button} onClick={copyToClipboard}>Copy</button>
+            <button className={styles.button} onClick={copyToClipboard} title="Copy RSS Podcast Subscription link">Copy</button>
         </span>
 
 

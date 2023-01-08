@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import type { AppProps } from "next/app";
-import "../styles/globals.css";
+import "../styles/globals.scss";
 import { getShows, showsStaleTime } from "../hooks/queries/shows";
 
 function App({ Component, pageProps }: AppProps) {
