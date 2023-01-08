@@ -5,6 +5,7 @@ import "../styles/globals.scss";
 import { getShows, showsStaleTime } from "../hooks/queries/shows";
 
 function App({ Component, pageProps }: AppProps) {
+  
   const [queryClient] = useState(() => new QueryClient());
   queryClient.setQueryDefaults('shows', { queryFn: getShows, staleTime: showsStaleTime()})
 
