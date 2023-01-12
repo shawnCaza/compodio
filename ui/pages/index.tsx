@@ -6,9 +6,9 @@ import ContentSection from '../components/layout/contentSection';
 import ShowCards from '../components/show/showCards/ShowCards';
 
 export async function getServerSideProps() {
-  const queryClient = new QueryClient()
+  const queryClient = new QueryClient();
 
-  await queryClient.prefetchQuery('shows', getShows)
+  await queryClient.prefetchQuery('shows', getShows);
 
   return {
     props: {
@@ -33,8 +33,6 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <h1>Community Podcast</h1>
-
         <ContentSection heading={'Recently Updated'}>
           
             <ShowCards shows={shows.slice(0,20)} />         

@@ -1,0 +1,106 @@
+.site-header,a .site-branding, .main-navigation,
+.main-navigation.toggled {
+    background: $main-colour;
+    color: $mid-gray;
+}
+html{
+    margin-top: 3em;
+} 
+.site-header{
+    
+    position: fixed;
+    top:0;
+    left:0;
+    width: 100%;
+    z-index: 99;
+    min-height: 3em;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 .5em;
+    @include mq('tablet'){ 
+        padding: 0 1em; 
+    }
+    box-shadow: 0px 3px 5px rgba(0,0,0,0.25);
+
+
+    @include mq('wide') {
+        padding: 0 2em; 
+    }
+
+   a .site-branding{
+        display: flex;
+        align-items: center;
+        z-index: 102;
+        position: relative;
+
+        .logo{
+
+            width: 2.5em;
+            @include mq('tablet'){
+                width: 3em;
+             }
+
+            margin-right: 0.5em;
+            display: flex;
+        }
+        
+        .title-container{
+            display: none;
+            font-weight: 700;
+            @include mq('wide'){
+                display: inline-block;
+            }
+        }
+ 
+        .site-title, .site-title h1{
+            font-weight: 400;
+            text-align: center;
+            margin-top: 1rem;
+            margin-bottom: 0;
+            line-height: 2.25rem;
+            font-size: 1.5rem;
+           
+            a{
+                color: $sec-colour;
+                font-size: 1.75rem;
+                
+                @include mq('smallest'){
+                    font-size: 2rem;
+                }
+                
+            }
+            
+        } 
+    }
+
+    .mobile-search-toggled{
+        z-index: 103;
+    }
+
+    .site-description{
+        margin: 0;
+        text-align: center;
+        font-size: .75em;
+    }
+
+.utility-buttons{
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+
+}
+
+.tag-line{
+    //margin-top: 100%;
+    background-color: $mid-gray;
+    text-align: center;
+    
+    color: $main-colour;
+    padding: .25em .25em .25em;
+    @include mq('tablet'){
+    padding: .75em .25em .25em;
+    }
+}

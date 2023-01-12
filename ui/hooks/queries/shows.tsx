@@ -42,7 +42,3 @@ export const getShows = async () => {
     const { data } = useQuery<Show[]>( "shows");
     return data;
   }
-
-  
-
-  

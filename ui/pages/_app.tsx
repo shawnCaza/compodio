@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import type { AppProps } from "next/app";
 import "../styles/globals.scss";
+import Layout from "../components/layout/Layout";
 import { getShows, showsStaleTime } from "../hooks/queries/shows";
 
 function App({ Component, pageProps }: AppProps) {
@@ -12,7 +13,9 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
-        <Component {...pageProps} />
+        <Layout>
+          <Component {...pageProps} />
+        </Layout>
       </Hydrate>
     </QueryClientProvider>
   );
