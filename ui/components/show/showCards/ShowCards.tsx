@@ -1,3 +1,4 @@
+
 import { useShowsQuery, getShows, Show } from '../../../hooks/queries/shows';
 import Container from '../../layout/cardElements/container/Container';
 import Card from '../../layout/cardElements/card/Card';
@@ -5,6 +6,8 @@ import Heading from '../../layout/cardElements/heading/Heading';
 import EpDate from '../epDate/EpDate';
 import Desc from '../../layout/cardElements/desc/Desc';
 import FeedUrl from '../showFeed/ShowFeed';
+import ShowLink from '../ShowLink';
+
 import styles from "./showCards.module.scss";
 
 interface ShowCardsProps{
@@ -30,7 +33,9 @@ function ShowCards({shows}:ShowCardsProps) {
                 <div className={styles.epDate}>
                   <EpDate dtStr={show.newestEpDate} />
                 </div>
-                <h3>{show.showName}</h3>
+                <ShowLink slug={show.slug} >
+                  <h3>{show.showName}</h3>
+                </ShowLink>
               </Heading>
 
               {/* <div>Play button</div> */}

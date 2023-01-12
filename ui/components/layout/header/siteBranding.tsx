@@ -1,14 +1,13 @@
+import Link from 'next/link';
 
 function SiteBranding() {
     return(
         <>
-            <a href={process.env.PUBLIC_URL} title='home'>
+            <Link href="/" title="home">
                 <div className="site-branding">
                     <span className='logo'>
-                        
 
                             {/* <img src={logo} className="App-logo" alt="CoPod logo" width="473px" height="182px" /> */}
-                        
                     </span>
                     <span className="title-container">
 
@@ -16,7 +15,7 @@ function SiteBranding() {
                         
                     </span>
                 </div>
-            </a>
+            </Link>
         </>
     )
 }
