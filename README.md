@@ -1,4 +1,4 @@
-# community-podcast
+# compodio
 
 Work in progress.
 
