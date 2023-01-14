@@ -11,7 +11,7 @@ function SiteBranding() {
                     </span>
                     <span className="title-container">
 
-                            CoPod
+                            compodio
                         
                     </span>
                 </div>

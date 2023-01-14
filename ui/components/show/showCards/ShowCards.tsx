@@ -37,8 +37,13 @@ function ShowCards({shows}:ShowCardsProps) {
                   <h3>{show.showName}</h3>
                 </ShowLink>
               </Heading>
-
+              {/* <a href={show.mp3} download>download</a> */}
               {/* <div>Play button</div> */}
+              {/* <audio controls>
+              
+              <source src={show.mp3} type="audio/mpeg"/>
+              Your browser does not support the audio element.
+              </audio>  */}
               <FeedUrl showId={show.id} slug={show.slug} />
               <Desc desc={show.desc} approxLength={125} />
               
