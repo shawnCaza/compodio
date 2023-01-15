@@ -218,7 +218,10 @@ class MySQL():    #------------------------------------------------------
         conn, cursor = self.connect()
         
         self.use_compodio_DB(cursor)
-        query = """INSERT INTO show_images (show_id, last_updt, sizes, dom_colours) VALUES (%s, %s, %s, %s)"""
+        query = """INSERT INTO show_images (show_id, last_updt, sizes, dom_colours)
+                 VALUES (%s, %s, %s, %s)  as new
+                 ON DUPLICATE KEY UPDATE
+                `last_updt` = new.`last_updt`, `sizes` = new.`sizes`, `dom_colours` = new.`dom_colours`"""
         cursor.execute(query,(show_id, last_updt, sizes, dom_colours))
         conn.commit()
         # print(cursor.statement,)

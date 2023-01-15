@@ -36,13 +36,15 @@ class CiutShowsSpider(scrapy.spiders.SitemapSpider):
                 # Different pages use different methods to include images. bg img or img tag
                 # check for bg image first, then img tag if bg image doesn't exist
                 img_bg = response.xpath("//div[contains(@style,'image') and contains(@style,'padding')]").get()
+                img_wrapper = response.xpath("//div[contains(@class,'image_wrapper')]/img/@data-src").get()
                 img_tag = response.xpath("//div[@id='Content']//img[not (contains(@alt, 'parallax'))]/@data-src").get()
 
                 if img_bg:
                     # extract image link out of style definition
                     current_show['img'] = img_bg.split('background-image:url(')[1].split(')')[0]
+                elif img_wrapper:
+                    current_show['img'] = img_wrapper
                 elif img_tag:
-
                     current_show['img'] = img_tag
                 else:
                     current_show['img'] = None

@@ -106,6 +106,8 @@ def scrape_images():
                 
                 mySQL.insert_image(show['id'], src_last_updt, json.dumps(sizes), json.dumps(dom_colours))
                 time.sleep(15)
+            else:
+                time.sleep(1.5)
     
     
     # TODO synch new files to remote server
