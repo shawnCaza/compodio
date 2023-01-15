@@ -27,9 +27,10 @@ def convert_to_hex(colours):
 
 def find_dominant_colours(image_path, quantity = 3):
     """
-        returns dominant colours in an Image.
-        image_path specifies the path to a local image.
-        quantity specifies the number of colours to return.
+        Returns array of dominant colours in an Image sorted from lightest to darkest.
+        `image_path` specifies the path to a local image.
+        `quantity` specifies the number of colours to return.
+        Within the `get_colour_frequencies` function, the frequency of each colour is calulated, but this is not returned by `find_dominant_colours` at present.
     """
 
     # Load image and convert to a list of pixels

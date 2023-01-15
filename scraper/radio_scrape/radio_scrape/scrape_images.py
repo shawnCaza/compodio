@@ -13,11 +13,18 @@ import shutil
 import util
 import image_colour
 
+
+def setup_save_folder(save_folder_base, slug):
+    image_folder_path = pathlib.Path(save_folder_base + slug)
+    image_folder_path.mkdir(parents=True, exist_ok=True)
+    save_base = f"{save_folder_base}{slug}/{slug}"
+
+    return save_base
+
 def download_img(save_base, img, ext):
     """
         Downloads img from url as jpg, creates .webp version, and set of responsive image sizes.
         Returns array of {w: x, h: y} dicts for responsive image sizes, 
-        and comma seperated string of dominant colours ordered from lightest to darkest.
     """
 
     with open(f"{save_base}.{ext}", 'wb') as f:
@@ -29,10 +36,8 @@ def download_img(save_base, img, ext):
     
     sizes_used = generate_sizes(image, save_base)
 
-    dom_colours = image_colour.find_dominant_colours(f"{save_base}.{ext}")
-    dom_colours_str = ','.join(dom_colours)
 
-    return sizes_used, dom_colours_str
+    return sizes_used
 
 def generate_sizes(image, save_base, sizes=[250,350,500,750,1000,1250,1500,1750,2000,2400], formats=['webp','jpeg']):
     
@@ -68,7 +73,7 @@ def scrape_images():
         LEFT JOIN show_images ON show_id = id
     """)
 
-    folders_to_sync_list = []
+    folders_to_sync_list = [] # scraped images will be synched to remote server after being processed locally
     
     for show in shows:
 
@@ -84,15 +89,20 @@ def scrape_images():
             if needs_updt:
 
                 folders_to_sync_list.append(show['slug'])
-                image_folder_path = pathlib.Path(save_folder_base + show['slug'])
-                image_folder_path.mkdir(parents=True, exist_ok=True)
-                save_base = save_folder_base + show['slug'] + "/" + show['slug']
-                sizes_str, dom_colours_str = download_img(save_base, show['img'], "jpg")
+
+                save_file_base = setup_save_folder(save_folder_base, show['slug'])
+
+                sizes = download_img(save_file_base, show['img'], "jpg")
+
+                dom_colours = image_colour.find_dominant_colours(f"{save_file_base}.jpg")
                 
-                print(show['id'], src_last_updt, sizes_str, dom_colours_str)
-                # mySQL.insert_image(sizes_string, src_last_updt, show['id'])
+                print(show['id'], src_last_updt, sizes, json.dumps(dom_colours))
+                
+                mySQL.insert_image(show['id'], src_last_updt, json.dumps(sizes), json.dumps(dom_colours))
                 time.sleep(15)
-                # time.sleep(120)
+    
+    
+    # TODO synch new files to remote server
 
     
 # TODO 

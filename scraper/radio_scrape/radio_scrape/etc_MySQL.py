@@ -21,7 +21,7 @@ class MySQL():    #------------------------------------------------------
         conn.close()  
 
     #------------------------------------------------------        
-    def use_community_radio_DB(self, cursor):
+    def use_compodio_DB(self, cursor):
         '''Expects open connection.'''
         # select DB
         cursor.execute("USE community_radio")
@@ -34,7 +34,7 @@ class MySQL():    #------------------------------------------------------
         # connect to MySQL
         conn, cursor = self.connect()
         
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
 
         cursor.executemany(mySql_insert_query, data_for_db)
         conn.commit()
@@ -45,7 +45,7 @@ class MySQL():    #------------------------------------------------------
         # connect to MySQL
         conn, cursor = self.connect()
         
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
         
         query = """INSERT INTO episodes (show_id, ep_date, mp3, file_size) VALUES (%s, %s, %s, %s)"""
         cursor.execute(query,(episode['show_id'], episode['ep_date'], episode['mp3'], episode['file_size']))
@@ -63,7 +63,7 @@ class MySQL():    #------------------------------------------------------
     def insert_show(self, show):
         # connect to MySQL
         conn, cursor = self.connect()
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
         
         query = """INSERT INTO shows (`showName`, `source`, `img`, `desc`, `host`, `internal_link`, `ext_link`, `email`, `duration`, `slug`)
                  VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) as new
@@ -95,7 +95,7 @@ class MySQL():    #------------------------------------------------------
         # connect to MySQL
         conn, cursor = self.connect()
         
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
 
         cursor.executemany(query, data_for_db)
         conn.commit()
@@ -115,7 +115,7 @@ class MySQL():    #------------------------------------------------------
         # connect to MySQL
         conn, cursor = self.connect()
         
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
 
         cursor.executemany(query, data_for_db)
         conn.commit()
@@ -126,7 +126,7 @@ class MySQL():    #------------------------------------------------------
     def get_all_tags(self):
         # connect to MySQL
         conn, cursor = self.connect()
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
         # select data
         cursor.execute(f"""select * from all_tags""")
 
@@ -136,7 +136,7 @@ class MySQL():    #------------------------------------------------------
     def get_shows_by_source(self, source):
         # connect to MySQL
         conn, cursor = self.connect()
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
         # select data
         cursor.execute(f"""select * from shows where source='{source}'""")
 
@@ -147,7 +147,7 @@ class MySQL():    #------------------------------------------------------
     def get_show_descriptions(self):
         # connect to MySQL
         conn, cursor = self.connect()
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
         # select data
         cursor.execute("""select `id`, `showName`, `desc` from shows""")
 
@@ -156,7 +156,7 @@ class MySQL():    #------------------------------------------------------
     def get_newest_ep_by_source(self, source):
         # connect to MySQL
         conn, cursor = self.connect()
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
         # select data
         cursor.execute(f"""with date_ranked_eps AS (
                                 select episodes.id, show_id, ep_date,
@@ -177,7 +177,7 @@ class MySQL():    #------------------------------------------------------
     def remove_old_eps_by_show(self, show_id):
         # connect to MySQL
         conn, cursor = self.connect()
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
         
         query = f"""delete from episodes where show_id = {show_id}"""
         print('query', query)
@@ -195,7 +195,7 @@ class MySQL():    #------------------------------------------------------
     def remove_outdated_show_tags(self, show_id, tag_ids):
         # connect to MySQL
         conn, cursor = self.connect()
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
 
         
         query = f"""delete from show_tags where show_id = {show_id} and `tag_id` not in ({','.join(str(id) for id in tag_ids)})"""
@@ -211,12 +211,26 @@ class MySQL():    #------------------------------------------------------
         time.sleep(.2)
         self.close(cursor, conn)
 
+    #------------------------------------------------------  
+    def insert_image(self, show_id, last_updt, sizes, dom_colours):
+        
+        # connect to MySQL
+        conn, cursor = self.connect()
+        
+        self.use_compodio_DB(cursor)
+        query = """INSERT INTO show_images (show_id, last_updt, sizes, dom_colours) VALUES (%s, %s, %s, %s)"""
+        cursor.execute(query,(show_id, last_updt, sizes, dom_colours))
+        conn.commit()
+        # print(cursor.statement,)
+
+
+
     #------------------------------------------------------        
     def get_query(self,query):
 
         # connect to MySQL
         conn, cursor = self.connect()
-        self.use_community_radio_DB(cursor)
+        self.use_compodio_DB(cursor)
         # select data
         cursor.execute(query)
 
