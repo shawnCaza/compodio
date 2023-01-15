@@ -41,7 +41,7 @@ def find_dominant_colours(image_path, quantity = 3):
     cluster = KMeans(n_clusters=quantity).fit(reshape)
     colours = get_colour_frequencies(cluster, cluster.cluster_centers_)
 
-    # Sort from lightest to darkest - probably better to convert to HSL and sort by lightness
+    # Sort from lightest to darkest 
     colours.sort(reverse=True, key=lambda colour: colorsys.rgb_to_hls(*colour[1])[1])
 
     dominant_hex_colours = list(convert_to_hex(colours))

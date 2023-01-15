@@ -210,3 +210,15 @@ class MySQL():    #------------------------------------------------------
 
         time.sleep(.2)
         self.close(cursor, conn)
+
+    #------------------------------------------------------        
+    def get_query(self,query):
+
+        # connect to MySQL
+        conn, cursor = self.connect()
+        self.use_community_radio_DB(cursor)
+        # select data
+        cursor.execute(query)
+
+        return cursor.fetchall()
+
