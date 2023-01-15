@@ -40,7 +40,13 @@ def download_img(save_base, img, ext):
     return sizes_used
 
 def generate_sizes(image, save_base, sizes=[250,350,500,750,1000,1250,1500,1750,2000,2400], formats=['webp','jpeg']):
-    
+    """
+        Creates multiple sizes versions of an image.
+        `image` = Pillow Image object
+        'save_base` = Local folder path and base for the file name. Width and format extention will be added to this base when saving individual files.
+        `sizes` = A list containing the file widths to be created.
+        `formats` = The file types to be created for each image width. Values must be compatible with the Pillow Image format parameters.
+    """
     sizes_used = []
     
     for format in formats:    
