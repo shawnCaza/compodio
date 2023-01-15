@@ -22,7 +22,7 @@ def convert_to_hex(colours):
     """Converts RGB to hex"""
     for colour in colours:
         rounded_rgb = [int(x) for x in colour[1]]
-        hex = "#{:02x}{:02x}{:02x}".format(*rounded_rgb)
+        hex = "{:02x}{:02x}{:02x}".format(*rounded_rgb)
         yield hex
 
 def find_dominant_colours(image_path, quantity = 3):

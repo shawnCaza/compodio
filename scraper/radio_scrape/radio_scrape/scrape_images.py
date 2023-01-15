@@ -90,12 +90,12 @@ def scrape_images():
                 sizes_str, dom_colours_str = download_img(save_base, show['img'], "jpg")
                 
                 print(show['id'], src_last_updt, sizes_str, dom_colours_str)
-                # mySQL.insert_image_sizes(sizes_string, src_last_updt, show['id'])
+                # mySQL.insert_image(sizes_string, src_last_updt, show['id'])
                 time.sleep(15)
                 # time.sleep(120)
 
     
-# TODO save data
+# TODO 
 # def remove_unused_images():
 #     # Should also delete records from image table and server if a certain age?
 #     mySQL = etc_MySQL.MySQL()                           
