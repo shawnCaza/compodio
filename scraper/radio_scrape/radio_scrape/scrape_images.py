@@ -1,17 +1,12 @@
-from posixpath import split
-import random
 import time
-import etc_MySQL
 import json, requests
 import pathlib
-import PIL
+
 from PIL import Image
-import os
-import glob
-import shutil
 
 import util
 import image_colour
+import etc_MySQL
 
 
 def setup_save_folder(save_folder_base, slug):
@@ -49,22 +44,29 @@ def generate_sizes(image, save_base, sizes=[250,350,500,750,1000,1250,1500,1750,
     """
     sizes_used = []
     
-    for format in formats:    
-        for size in sizes:
-            im = image.copy()
-            
-            if im.size[0] > size:
-                
-                im.thumbnail(size=((size, size)))
+        
+    for new_w in sizes:
+        
+        orig_w = image.size[0]
+        orig_h = image.size[1]
 
+        if orig_w > new_w:
+            
+            decreace_percent = new_w / orig_w
+            new_h = int(orig_h * decreace_percent)
+
+            resized_image = image.resize(size=((new_w, new_h)))
+
+            for format in formats:
+                
                 if(format == 'jpeg'):
                     ext = 'jpg'
-                    im.save(f"{save_base}_{str(size)}.{ext}", format, optimize=1)
+                    resized_image.save(f"{save_base}_{str(new_w)}.{ext}", format, optimize=1)
                 else:
                     ext = format
-                    im.save(f"{save_base}_{str(size)}.{ext}", format, lossless=0, quality=50)
-                
-                sizes_used.append({'w': im.size[0], 'h': im.size[1] })
+                    resized_image.save(f"{save_base}_{str(new_w)}.{ext}", format, lossless=0, quality=50)
+            
+            sizes_used.append({'w': resized_image.size[0], 'h': resized_image.size[1] })
                     
     return sizes_used
 
