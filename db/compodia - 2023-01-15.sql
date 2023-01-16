@@ -7,7 +7,7 @@
 #
 # Host: localhost (MySQL 8.0.23)
 # Database: community_radio
-# Generation Time: 2023-01-15 04:48:44 +0000
+# Generation Time: 2023-01-16 03:37:28 +0000
 # ************************************************************
 
 
@@ -55,7 +55,7 @@ CREATE TABLE `show_images` (
   `show_id` varchar(48) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
   `sizes` json NOT NULL,
   `last_updt` datetime DEFAULT NULL,
-  `dom_colours` varchar(20) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
+  `dom_colours` json DEFAULT NULL,
   PRIMARY KEY (`show_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=latin1;
 
