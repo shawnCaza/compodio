@@ -7,6 +7,7 @@ import EpDate from '../epDate/EpDate';
 import Desc from '../../layout/cardElements/desc/Desc';
 import FeedUrl from '../showFeed/ShowFeed';
 import ShowLink from '../ShowLink';
+import GradientBg from '../../commonElements/gradientBG';
 
 import styles from "./showCards.module.scss";
 
@@ -22,7 +23,7 @@ function ShowCards({shows}:ShowCardsProps) {
       return null;
     } 
     // console.log(shows[0]);
-
+ 
     return (
       <>
         <Container>
@@ -37,15 +38,21 @@ function ShowCards({shows}:ShowCardsProps) {
                   <h3>{show.showName}</h3>
                 </ShowLink>
               </Heading>
+
+              <GradientBg colours={show.dom_colours}>
+                <img src={process.env.NEXT_PUBLIC_image_server_URI+"shows/"+show.slug+"/"+show.slug+"_250.jpg"} style={{maxHeight:"166px", maxWidth:"222px", width:"fit-content", display:
+                "block", margin:"auto", padding:"10px"}}/>
+              </GradientBg>
               {/* <a href={show.mp3} download>download</a> */}
               {/* <div>Play button</div> */}
               {/* <audio controls>
               
+               
               <source src={show.mp3} type="audio/mpeg"/>
               Your browser does not support the audio element.
               </audio>  */}
               <FeedUrl showId={show.id} slug={show.slug} />
-              <Desc desc={show.desc} approxLength={125} />
+              <Desc desc={show.desc} approxLength={65} />
               
             </Card>
           )}
