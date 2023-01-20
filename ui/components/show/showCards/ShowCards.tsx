@@ -40,9 +40,12 @@ function ShowCards({shows}:ShowCardsProps) {
               </Heading>
 
               <GradientBg colours={show.dom_colours}>
-                <img src={process.env.NEXT_PUBLIC_image_server_URI+"shows/"+show.slug+"/"+show.slug+"_250.jpg"} style={{maxHeight:"166px", maxWidth:"222px", width:"fit-content", display:
-                "block", margin:"auto", padding:"10px"}}/>
+
+                <div style={{height:"124px", maxWidth:"222px", width:"fit-content", display: "block", margin:"auto", padding:"12px"}}>
+                  <img src={process.env.NEXT_PUBLIC_image_server_URI+"shows/"+show.slug+"/"+show.slug+"_250.jpg"} style={{height:"100%", width:"100%"}}/>
+                </div>
               </GradientBg>
+
               {/* <a href={show.mp3} download>download</a> */}
               {/* <div>Play button</div> */}
               {/* <audio controls>
