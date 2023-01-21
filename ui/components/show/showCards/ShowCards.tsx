@@ -7,7 +7,8 @@ import EpDate from '../epDate/EpDate';
 import Desc from '../../layout/cardElements/desc/Desc';
 import FeedUrl from '../showFeed/ShowFeed';
 import ShowLink from '../ShowLink';
-import GradientBg from '../../commonElements/gradientBG';
+import GradientBg from '../../commonElements/GradientBg';
+import ImgContainer from './ImgContainer/CardImgContainer';
 
 import styles from "./showCards.module.scss";
 
@@ -41,9 +42,8 @@ function ShowCards({shows}:ShowCardsProps) {
 
               <GradientBg colours={show.dom_colours}>
 
-                <div style={{height:"124px", maxWidth:"222px", width:"fit-content", display: "block", margin:"auto", padding:"12px"}}>
-                  <img src={process.env.NEXT_PUBLIC_image_server_URI+"shows/"+show.slug+"/"+show.slug+"_250.jpg"} style={{height:"100%", width:"100%"}}/>
-                </div>
+                <ImgContainer show={show} />
+
               </GradientBg>
 
               {/* <a href={show.mp3} download>download</a> */}

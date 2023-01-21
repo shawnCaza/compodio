@@ -50,7 +50,6 @@ function define_bg_colours(colours: string | null){
 function GradientBg({colours, children}:gradientBgProps) {
 
     const bg_colour:string = define_bg_colours(colours);
-    console.log(bg_colour);
     if(!bg_colour){return null}
     return (
         <>  

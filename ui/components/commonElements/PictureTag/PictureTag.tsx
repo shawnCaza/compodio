@@ -1,7 +1,9 @@
-interface ShowCardsProps{
+import styles from './PictureTag.module.scss'
+
+interface PictureTagProps{
     loading: 'eager' | 'lazy' | undefined,
     alt: string,
-    imageWidths: Array<number>,
+    imageSizes: Array<{'w':number,'h':number}>,
     baseUrl: string,
     displaySizes: string,
     defaultImage: string,
@@ -10,22 +12,22 @@ interface ShowCardsProps{
   }
 
 
-function PictureTag({loading, alt, imageWidths, baseUrl, displaySizes, defaultImage, defaultWidth, defaultHeight}:ShowCardsProps) {
+function PictureTag({loading, alt, imageSizes, baseUrl, displaySizes, defaultImage, defaultWidth, defaultHeight}:PictureTagProps) {
 
 
         let webpSrcSetArray = [];
         let jpgSrcSetArray = [];
-        for (const size of imageWidths) {
-            webpSrcSetArray.push(baseUrl + '_' + size + ".webp " + size + "w");
-            jpgSrcSetArray.push(baseUrl + '_' + size + ".jpg " + size + "w");
+        for (const size of imageSizes) {
+            webpSrcSetArray.push(`${baseUrl}_${size}.webp ${size['w']}w`);
+            jpgSrcSetArray.push(`${baseUrl}_${size}.jpg ${size['w']}w`);
         }
 
         return (
             <>
-                <picture>
+                <picture >
                     <source srcSet={webpSrcSetArray.toString()} sizes={displaySizes} type="image/webp"/>
                     <source srcSet={jpgSrcSetArray.toString()} sizes={displaySizes} type="image/jpeg"/>
-                    <img src={defaultImage} alt={alt} loading={loading}  width="defaultWidth" height="defaultHeight" />
+                    <img className={styles.cardImg} src={defaultImage} alt={alt} loading={loading}  width={`${defaultWidth}px`} height={`${defaultHeight}px`} />
                 </picture>
             </>
         )
