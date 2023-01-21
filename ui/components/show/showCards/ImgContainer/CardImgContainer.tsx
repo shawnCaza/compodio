@@ -17,14 +17,28 @@ function CardImgContainer ({show}:imgContainerProps) {
 
     //For the sizes attribute in img tag with srcset
     //https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-sizes
-    const displaySizes = "222px"  
+      
 
     const defaultImage = `${process.env.NEXT_PUBLIC_image_server_URI}shows/${show.slug}/${show.slug}.jpg`
     const imageSizes:Array<{'w':number,'h':number}> = JSON.parse(show.sizes)
     
     //Pad if height is greater than width in a 16:9 ratio
-    const needsPadding = imageSizes[0]['w']/imageSizes[0]['h'] < 16/9 ? true : false;
+    const w2HRatio = imageSizes[0]['w']/imageSizes[0]['h'];
 
+    const needsPadding = w2HRatio < 16/9 ? true : false;
+
+    let displaySizes = "222px"; //based on css value for full width of container
+    // Margin images will be of different widths and have a different `displaySizes` value. 
+    // Let's calculate the display width for the `sizes` attribute in the picture tag.
+    //numbers used in calculation rely in css width/height values.
+    if (needsPadding){
+        const totalVerticalPadding = 24; //Based on css margin
+        const containerHeight = 124 // Based on css
+        const imgDisplayHeight = containerHeight - totalVerticalPadding;
+        displaySizes = imgDisplayHeight * w2HRatio + 'px';
+        
+    } 
+    // console.log(displaySizes);
     return (
         <div className={`${styles.cardImgContainer} ${needsPadding ? styles.cardImgPadded : ''}`} >
             <PictureTag

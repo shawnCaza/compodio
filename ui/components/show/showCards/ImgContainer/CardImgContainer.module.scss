@@ -1,7 +1,7 @@
 
 .cardImgContainer {
-    height:124px;
-    max-width:222px;
+    height:124px; // This value needs to match up to the calculation for `displaySizes` in the component.
+    max-width:222px; // this is based on the 16:9 image ratio used to determin when an image fills the width of the card vs needs padding.
     width:fit-content;
     display:block;
     margin:auto;
@@ -9,6 +9,9 @@
 }
 
 .cardImgPadded{
-    margin:12px auto;
-    box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75); 
+    // margin:12px auto; // This value needs to match up to the calculation for `displaySizes` in the component.
+    padding:12px 0; // This value needs to match up to the calculation for `displaySizes` in the component.
+    img{
+        box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75); 
+    }       
 }

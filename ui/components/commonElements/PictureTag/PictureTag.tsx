@@ -18,8 +18,8 @@ function PictureTag({loading, alt, imageSizes, baseUrl, displaySizes, defaultIma
         let webpSrcSetArray = [];
         let jpgSrcSetArray = [];
         for (const size of imageSizes) {
-            webpSrcSetArray.push(`${baseUrl}_${size}.webp ${size['w']}w`);
-            jpgSrcSetArray.push(`${baseUrl}_${size}.jpg ${size['w']}w`);
+            webpSrcSetArray.push(`${baseUrl}_${size['w']}.webp ${size['w']}w`);
+            jpgSrcSetArray.push(`${baseUrl}_${size['w']}.jpg ${size['w']}w`);
         }
 
         return (
