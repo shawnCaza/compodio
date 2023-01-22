@@ -24,7 +24,7 @@ interface Show {
   showName: string,
   slug: string | null,
   source: string,
-  tags: string[] | null,
+  tagIds: string | null,
 
 }
 export type {Show};

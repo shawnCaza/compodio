@@ -9,6 +9,7 @@ import FeedUrl from '../showFeed/ShowFeed';
 import ShowLink from '../ShowLink';
 import GradientBg from '../../commonElements/GradientBg';
 import ImgContainer from './ImgContainer/CardImgContainer';
+import TagsContainer from './TagsContainer/TagsContainer';
 
 import styles from "./showCards.module.scss";
 
@@ -56,7 +57,9 @@ function ShowCards({shows}:ShowCardsProps) {
               </audio>  */}
               <FeedUrl showId={show.id} slug={show.slug} />
               <Desc desc={show.desc} approxLength={65} />
-              
+              {show.tagIds &&
+              <TagsContainer currentTagIds={JSON.parse(show.tagIds)} />
+              }
             </Card>
           )}
         </Container>

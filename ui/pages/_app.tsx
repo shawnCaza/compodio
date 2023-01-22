@@ -4,11 +4,13 @@ import type { AppProps } from "next/app";
 import "../styles/globals.scss";
 import Layout from "../components/layout/Layout";
 import { getShows, showsStaleTime } from "../hooks/queries/shows";
+import { getTags, tagsStaleTime } from "../hooks/queries/tags";
 
 function App({ Component, pageProps }: AppProps) {
   
   const [queryClient] = useState(() => new QueryClient());
   queryClient.setQueryDefaults('shows', { queryFn: getShows, staleTime: showsStaleTime()})
+  queryClient.setQueryDefaults('tags', { queryFn: getTags, staleTime: tagsStaleTime()})
 
   return (
     <QueryClientProvider client={queryClient}>

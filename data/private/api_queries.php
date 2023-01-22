@@ -19,7 +19,7 @@ function get_all_shows(){
             `show_images`.`sizes`,
             `eps`.`mp3`, 
             `eps`.`newestEpDate`, 
-            `show_tags`.`tags` 
+            `show_tags`.`tagIds` 
 
             FROM `shows`
 
@@ -27,7 +27,7 @@ function get_all_shows(){
 
             /* Collect all the show tags into an array */
             LEFT JOIN (
-            SELECT show_id, JSON_ARRAYAGG(tag_id) AS tags
+            SELECT show_id, JSON_ARRAYAGG(tag_id) AS tagIds
             FROM show_tags GROUP BY show_id
             ) show_tags
             ON `show_tags`.`show_id` = `shows`.`id`
@@ -50,5 +50,27 @@ function get_all_shows(){
     confirm_result_set($result);
     
     return $result;
+
+}
+
+
+function get_all_tags(){
+
+    global $db;
+    $sql = "SELECT JSON_OBJECTAGG(
+                id, 
+                JSON_OBJECT(
+                    'id', id,
+                    'tag', tag,
+                    'freq', freq)
+                ) as allTags
+            from all_tags
+            ;";
+    $result = mysqli_query($db, $sql);
+    confirm_result_set($result);
+    $all_tags = mysqli_fetch_assoc($result); // find first
+
+    mysqli_free_result($result);
+    return $all_tags['allTags'];
 
 }
