@@ -1,7 +1,7 @@
 import { Tags, TagMap } from "./queries/tags"
 
 
-export function useShowTags(allTags:TagMap, showTagIds: Array<number>, maxTags:number|null=null) {
+export function useMappedShowTags(allTags:TagMap, showTagIds: Array<number>, maxTags:number|null=null) {
    
     const showTags= showTagIds.reduce((tags:Tags[], tagId, idx) => {
         

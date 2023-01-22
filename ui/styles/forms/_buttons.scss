@@ -1,0 +1,22 @@
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"] {
+    border: none;
+    background: none;
+    color: inherit;
+    
+    &:hover{
+        cursor: pointer;
+    }
+    // padding: 7px 10px;
+   
+    // &:active,
+    // &:focus {
+    //     border-color: $color__border-button-focus;
+    // }
+}
+
+
+
+

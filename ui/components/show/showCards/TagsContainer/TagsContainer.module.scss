@@ -1,17 +1,18 @@
 
-.cardImgContainer {
-    height:124px; // This value needs to match up to the calculation for `displaySizes` in the component.
-    max-width:222px; // this is based on the 16:9 image ratio used to determin when an image fills the width of the card vs needs padding.
-    width:fit-content;
-    display:block;
-    margin:auto;
-    
+.tagContainer {
+    padding: 5px var(--card-padding) 0;
+    display: flex;
+    flex-wrap: wrap;
+    font-size: .8em;
+    background-color: var(--background-contrast-colour);
+    // justify-content: space-evenly;
 }
 
-.cardImgPadded{
-    // margin:12px auto; // This value needs to match up to the calculation for `displaySizes` in the component.
-    padding:12px 0; // This value needs to match up to the calculation for `displaySizes` in the component.
-    img{
-        box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75); 
-    }       
+.tag{
+    
+    // border-radius: var(--border-radius-pill); 
+    // color: var(--background-contrast-colour);
+    // background-color: var(--foreground-contrast-colour);   
+    // margin-right: 5px;
+    margin-bottom: 5px;
 }

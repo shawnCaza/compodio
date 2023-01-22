@@ -35,7 +35,7 @@ export default function Home() {
       <main>
         <ContentSection heading={'Recently Updated'}>
           
-            <ShowCards shows={shows.slice(0,20)} />         
+            <ShowCards shows={shows.slice(0,200)} />         
           
         </ContentSection>    
       </main>

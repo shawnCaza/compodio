@@ -3,12 +3,12 @@ import { useTagsQuery, getTags, Tags } from '../../../../hooks/queries/tags';
 import { dehydrate, QueryClient} from 'react-query';
 
 import styles from './TagsContainer.module.scss'
-import { useShowTags } from '../../../../hooks/useShowTags';
+import { useMappedShowTags } from '../../../../hooks/useMappedShowTags';
 
 interface TagsContainerProps {
     currentTagIds: Array<number>,
+    maxTags: number
 }
-
 
 
 export async function getServerSideProps() {
@@ -24,22 +24,22 @@ export async function getServerSideProps() {
   }
 
 
-function TagsContainer ({currentTagIds}:TagsContainerProps) {
+function TagsContainer ({currentTagIds, maxTags}:TagsContainerProps) {
 
     const allTags =  useTagsQuery();
     
     if(!allTags){return null}
 
-    const showTags = useShowTags(allTags, currentTagIds, 3)
+    const currentTags = useMappedShowTags(allTags, currentTagIds, maxTags)
 
     return (
         <>
-          <div>
-                {showTags.map((showTag) =>
+          <div className={styles.tagContainer}>
+                {currentTags.map((currentTag) =>
 
-                    <span key={showTag.id}>
-                        {showTag.tag}
-                    </span>
+                    <button className={styles.tag} key={currentTag.id}>
+                        #{currentTag.tag}
+                    </button>
 
                 )}
             </div>

@@ -1,0 +1,35 @@
+:root {
+
+    //colours
+    --foreground-colour: #111;
+    --foreground-contrast-colour: #2e2e2e;
+    --background-colour:#eee;
+    --background-contrast-colour:#cacaca;
+
+    //layout
+    --border-radius: 4px;
+    --border-radius-pill: 20px;
+
+    //typography
+    --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
+      'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
+      'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+
+    // card styles
+    --card-padding: 10px;
+  
+    //button styles
+    --button-padding:5px;
+   
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    :root {
+         //colours
+         --foreground-colour: #eee;
+         --foreground-contrast-colour:#cacaca;
+         --background-colour:#111;
+         --background-contrast-colour: #2e2e2e;
+
+  }
+}

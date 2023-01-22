@@ -31,21 +31,22 @@ function ShowCards({shows}:ShowCardsProps) {
         <Container>
           {shows.map((show) =>
             <Card key={show.id }>
+              <div>
+                <Heading>
+                  <div className={styles.epDate}>
+                    <EpDate dtStr={show.newestEpDate} />
+                  </div>
+                  <ShowLink slug={show.slug} >
+                    <h3 className={styles.title}>{show.showName}</h3>
+                  </ShowLink>
+                </Heading>
 
-              <Heading>
-                <div className={styles.epDate}>
-                  <EpDate dtStr={show.newestEpDate} />
-                </div>
-                <ShowLink slug={show.slug} >
-                  <h3>{show.showName}</h3>
-                </ShowLink>
-              </Heading>
+                <GradientBg colours={show.dom_colours}>
 
-              <GradientBg colours={show.dom_colours}>
+                  <ImgContainer show={show} />
 
-                <ImgContainer show={show} />
-
-              </GradientBg>
+                </GradientBg>
+              </div>
 
               {/* <a href={show.mp3} download>download</a> */}
               {/* <div>Play button</div> */}
@@ -58,7 +59,7 @@ function ShowCards({shows}:ShowCardsProps) {
               <FeedUrl showId={show.id} slug={show.slug} />
               <Desc desc={show.desc} approxLength={65} />
               {show.tagIds &&
-              <TagsContainer currentTagIds={JSON.parse(show.tagIds)} />
+              <TagsContainer currentTagIds={JSON.parse(show.tagIds)} maxTags={3} />
               }
             </Card>
           )}
