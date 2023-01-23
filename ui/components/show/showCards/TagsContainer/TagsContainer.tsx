@@ -1,3 +1,4 @@
+import Link from 'next/link'
 
 import { useTagsQuery, getTags, Tags } from '../../../../hooks/queries/tags';
 import { dehydrate, QueryClient} from 'react-query';
@@ -36,10 +37,11 @@ function TagsContainer ({currentTagIds, maxTags}:TagsContainerProps) {
         <>
           <div className={styles.tagContainer}>
                 {currentTags.map((currentTag) =>
-
-                    <button className={styles.tag} key={currentTag.id}>
-                        #{currentTag.tag}
-                    </button>
+                    <Link href={`/tags/${currentTag.tag}`}>
+                      <button className={styles.tag} key={currentTag.id}>
+                          #{currentTag.tag}
+                      </button>
+                    </Link>
 
                 )}
             </div>

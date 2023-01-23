@@ -33,7 +33,7 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <ContentSection heading={'Recently Updated'}>
+        <ContentSection heading={'Recently Updated'} tag='h2'>
           
             <ShowCards shows={shows.slice(0,200)} />         
           
