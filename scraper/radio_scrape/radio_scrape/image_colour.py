@@ -27,7 +27,7 @@ def is_there_a_border(image_path):
 
 
 def get_colour_frequencies(cluster, centroids):
-    """Returns tuple containing (frequency, [r,g,b])"""
+    """Returns tuple containing (frequency, hex colour)"""
 
     # Get the number of different clusters, create histogram, and normalize
     labels = np.arange(0, len(np.unique(cluster.labels_)) + 1)
@@ -35,7 +35,7 @@ def get_colour_frequencies(cluster, centroids):
     hist = hist.astype("float")
     hist /= hist.sum()
 
-    # Group cluster's percentage, rgb. hex
+    # Group cluster's (percentage, hex)
     colours = [(percent, color, convert_to_hex(color)) for (percent, color) in zip(hist, centroids)]
     return colours
 
@@ -50,10 +50,10 @@ def convert_to_hex(rgb_colour_value):
 
 def find_avg_dominant_colours(image_path, quantity = 3):
     """
-        Returns array of dominant colours in an Image sorted from lightest to darkest.
+        Returns object with list of objects: {'freq': decimal reqpresenting frequency at which colour is present in image, 'hex': hex code of colour}.
         `image_path` specifies the path to a local image.
         `quantity` specifies the number of colours to return.
-        Within the `get_colour_frequencies` function, the frequency of each colour is calulated, but this is not returned by `find_dominant_colours` at present.
+        The colour are an average of the dominant clusters of colours. For example, an image with equal amount of red and yellow might return orange.
     """
 
     # Doesn't always seem to work. When it does, corner image might not be most representative pixel. I some cases images need to be trimmed.
