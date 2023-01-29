@@ -37,8 +37,8 @@ function TagsContainer ({currentTagIds, maxTags}:TagsContainerProps) {
         <>
           <div className={styles.tagContainer}>
                 {currentTags.map((currentTag) =>
-                    <Link href={`/tags/${currentTag.tag}`}>
-                      <button className={styles.tag} key={currentTag.id}>
+                    <Link href={`/tags/${currentTag.tag}`} key={currentTag.id}>
+                      <button className={styles.tag} >
                           #{currentTag.tag}
                       </button>
                     </Link>

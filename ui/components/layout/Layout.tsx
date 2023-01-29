@@ -14,10 +14,12 @@ function Layout({ children}:layoutProps) {
         <>
             <Header>
                 <SiteBranding/>
-                {/* <SearchBar/>
-                <MainMenu/> */}
+                 {/* <SearchBar/> */}
+                {/*<MainMenu/> */}
             </Header>
-            {children}
+            <div id='content'>
+                {children}
+            </div>
         </>
     )
 } 

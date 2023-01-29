@@ -11,7 +11,7 @@ function ResultItem(props) {
         <>
             <li id={props.searchItemType+props.index} onClick={props.clickFunc} role="option"  aria-selected={selected}>
                 <ConditionalLink to={props.itemLink}>
-                {props.itemText}
+                    {props.itemText}
                 </ConditionalLink>
         </li>
           
