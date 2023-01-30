@@ -1,18 +1,29 @@
 
 import React, {useState,  ReactNode } from "react";
+import { Show } from '../hooks/queries/shows';
+
 import { useCombobox } from 'downshift'
 import ShowLink from "../show/ShowLink";
 
 
 interface comboBoxProps {
     handleSearch: Function,
-    itemToString: Function,
-    children: ReactNode
+
 }
 
-function ComboBoxSearch ({handleSearch, itemToString, children}:comboBoxProps) {
+interface fuseResult{
+  item: Show;
+  score: number;
+  refIndex: number;
+}
+
+const itemToString = (result:fuseResult | null) => (result ? result.item.showName : '')
+
+
+function ComboBoxSearch ({handleSearch}:comboBoxProps) {
     
-    const [inputItems, setInputItems] = useState([])
+    const [inputItems, setInputItems] = useState<fuseResult[]>([])
+    
     if(!inputItems){return null}
     
 
@@ -30,7 +41,6 @@ function ComboBoxSearch ({handleSearch, itemToString, children}:comboBoxProps) {
     items: inputItems,
     itemToString,
     onInputValueChange: ({ inputValue }) => {
-      console.log('User typed: ', inputValue);
       setInputItems(
         handleSearch(inputValue)
       )
@@ -97,7 +107,7 @@ function ComboBoxSearch ({handleSearch, itemToString, children}:comboBoxProps) {
             <li
               style={{
                 padding: '4px',
-                backgroundColor: highlightedIndex === index ? '#bde4ff' : null,
+                backgroundColor: highlightedIndex === index ? '#bde4ff' : "inherit",
               }}
               key={result.item.id}
             >

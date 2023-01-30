@@ -20,7 +20,7 @@ function define_bg_colours(colours: string | null){
     if (coloursArr.length > 1){
         
         // Transform array into string of colours for css
-        const gradient_colour_def = coloursArr.reduce(
+        const gradient_colour_def = coloursArr.reverse().reduce(
             (gradient_string:string, colour:string, idx:number) =>{ 
                 
                 let current_colour_def = `${gradient_string} #${colour}`;
@@ -32,7 +32,7 @@ function define_bg_colours(colours: string | null){
                 return current_colour_def
 
 
-            }, ""
+            }, "#111, "
         )
         
         const gradient_css = `linear-gradient(to bottom, ${gradient_colour_def})`
