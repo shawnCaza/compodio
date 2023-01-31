@@ -7,7 +7,11 @@ interface headingProps {
 function Header({children}:headingProps) {
     return(
         <>
-            <header className="site-header">
+            <header className="site-header" 
+                style={{
+                    display:"flex",
+                    justifyContent:"space-between"
+                }}>
                 {children}
             </header>
 

@@ -90,13 +90,7 @@ const SearchBar = (props) => {
 
                 </SearchForm>
 
-                <SearchBarRes
-                    searchingFor = {searchingFor}
-                    resetSearch = {resetSearch}
-                    listBoxId = {listBoxId}
-                    comboItemSelected = {comboItemSelected}
-                    setComboItemSelected = {setComboItemSelected}
-                />
+
             </div>
             </>
     )

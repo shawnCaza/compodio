@@ -1,8 +1,8 @@
 import {  ReactNode } from "react";
 import Header from "./header/header";
 import SiteBranding from "./header/siteBranding";
+import SearchContainer from "../search/SearchContainer";
 import MainMenu from "./header/MainMenu";
-import SearchBar from "./header/search/SearchBar"
 
 interface layoutProps {
     children: ReactNode
@@ -14,7 +14,7 @@ function Layout({ children}:layoutProps) {
         <>
             <Header>
                 <SiteBranding/>
-                 {/* <SearchBar/> */}
+                 <SearchContainer/>
                 {/*<MainMenu/> */}
             </Header>
             <div id='content'>
