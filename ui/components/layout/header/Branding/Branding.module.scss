@@ -1,0 +1,18 @@
+.container{
+    display: flex;
+    align-items: center;
+}
+
+.logoContainer{
+    // padding: 5px;
+    width: 48px;
+    height: 48px;
+
+}
+  
+.logo{
+    fill: var(--background-contrast-colour);
+    padding: 7px;
+    width: 100%;
+    height: 100%;
+} 

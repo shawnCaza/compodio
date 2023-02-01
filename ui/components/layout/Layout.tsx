@@ -1,6 +1,6 @@
 import {  ReactNode } from "react";
-import Header from "./header/header";
-import SiteBranding from "./header/siteBranding";
+import Header from "./header/Container/Container";
+import Branding from "./header/Branding/Branding";
 import SearchContainer from "../search/SearchContainer";
 import MainMenu from "./header/MainMenu";
 
@@ -13,7 +13,7 @@ function Layout({ children}:layoutProps) {
     return (
         <>
             <Header>
-                <SiteBranding/>
+                <Branding/>
                  <SearchContainer/>
                 {/*<MainMenu/> */}
             </Header>
