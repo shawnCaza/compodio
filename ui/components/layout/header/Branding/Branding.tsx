@@ -11,7 +11,7 @@ function Branding() {
                             <use href="/compodio_logo.svg#logo" />
                         </svg> 
                     </span>
-                    <span className="title-container">
+                    <span className={styles.siteName}>
                             compodio
                     </span> 
                 </div>
