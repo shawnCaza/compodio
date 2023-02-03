@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router'
 import Fuse from 'fuse.js'
 import { Show, useShowsQuery } from '../../hooks/queries/shows';
-import ComboBoxSearch from './ComboBox';
+import ComboBoxSearch from './ComboBox/ComboBox';
 import { useFuseOptions } from './fuse/hooks/useFuseOptions';
 
 interface fuseResult{

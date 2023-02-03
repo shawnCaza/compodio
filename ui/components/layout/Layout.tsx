@@ -14,8 +14,8 @@ function Layout({ children}:layoutProps) {
         <>
             <Header>
                 <Branding/>
-                 <SearchContainer/>
-                {/*<MainMenu/> */}
+                <SearchContainer/>
+                <MainMenu/>
             </Header>
             <div id='content'>
                 {children}

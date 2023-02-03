@@ -1,9 +1,11 @@
 
 import React, {useState,  ReactNode } from "react";
-import { Show } from "../../hooks/queries/shows"; 
+import { Show } from "../../../hooks/queries/shows"; 
+import { IoSearchSharp } from "react-icons/io5";
 
 import { useCombobox } from 'downshift'
-import ShowLink from "../show/ShowLink";
+import ShowLink from "../../show/ShowLink";
+import styles from './ComboBox.module.scss'
 
 
 interface comboBoxProps {
@@ -51,75 +53,58 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
     },
   })
     return (
-      <div
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        width: 'fit-content',
-        justifyContent: 'center',
-        position:"relative",
-        zIndex:"90009",
-        alignSelf: 'center',
-      }}
-      >
+      <div className={styles.container}>
         <label
           className="screen-reader-text"
-          style={{
-            fontWeight: 'bolder',
-            color: selectedItem ? selectedItem : 'black',
-          }}
           {...getLabelProps()}
         >
-          Choose an element:
+          Search Shows:
         </label>
-        <div>
-          <input
-            style={{padding: '4px'}}
-            {...getInputProps()}
-            data-testid="combobox-input"
-          />
+        <div className={styles.searchBar}>
+          {/* Search button */}
           <button
-            style={{padding: '4px 8px'}}
+            className={styles.searchButton}
             aria-label="Search"
             data-testid="combobox-toggle-button"
             {...getToggleButtonProps()}
           >
-            {isOpen ? <>&#8593;</> : <>&#8595;</>}
+            <IoSearchSharp/>
           </button>
+
+          <input
+            className={styles.input}
+            {...getInputProps()}
+            data-testid="combobox-input"
+            placeholder="Search..."
+          />
+
+
+          
           <button
-            style={{padding: '4px 8px'}}
+            style={{padding: '4px 8px', color:"#000"}}
             aria-label="Clear Search"
             data-testid="clear-button"
+            
             onClick={() => selectItem(null)}
           >
-            &#10007;
+            x
           </button>
+
         </div>
-        <ul
+        {/* Result list */}
+        <ul className={styles.dropdown}
           {...getMenuProps()}
-          style={{
-            listStyle: 'none',
-            width: '100%',
-            padding: '0',
-            margin: '4px 0 0 0',
-            position:"absolute",
-            backgroundColor:'#eee',
-            top:'100%',
-            zIndex:"9999"
-          }}
         >
           {isOpen &&
             inputItems.map((result, index) => (
-              <li
-                style={{
-                  padding: '4px',
-                  backgroundColor: highlightedIndex === index ? '#bde4ff' : "inherit",
-                }}
+              <li className={
+                styles.dropdownItem 
+                + (highlightedIndex === index ? ' ' + styles.highlightedItem : '')}
                 {...getItemProps({result, index, key: result.item.id})}
               >
-                {/* <ShowLink slug={result.item.slug}> */}
+
                   {result.item.showName}
-                {/* </ShowLink> */}
+
               </li>
             ))}
         </ul>
