@@ -92,6 +92,8 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
 
         </div>
         {/* Result list */}
+        {isOpen && inputItems.length > 0 && 
+
         <ul className={styles.dropdown}
           {...getMenuProps()}
         >
@@ -108,6 +110,7 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
               </li>
             ))}
         </ul>
+        }
       </div>
     )
 }

@@ -35,7 +35,7 @@ function define_bg_colours(colours: string | null){
             }, "#111, "
         )
         
-        const gradient_css = `linear-gradient(to bottom, ${gradient_colour_def})`
+        const gradient_css = `linear-gradient(to bottom, ${gradient_colour_def}, transparent)`
 
         return gradient_css
         // return "#000";
@@ -53,7 +53,7 @@ function GradientBg({colours, children}:gradientBgProps) {
     if(!bg_colour){return null}
     return (
         <>  
-            <div style={{background:bg_colour}}>
+            <div className="gradientBG" style={{background:bg_colour}}>
 
                 {children}
             </div>
