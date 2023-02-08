@@ -7,24 +7,33 @@ interface imgContainerProps {
     show:Show,
 }
 
+function defineSizes(containerHeights:{height:number, breakpoint:number}[], totalVerticalPadding:number, w2HRatio:number){
+    
+    let sizes = '';
+    containerHeights.forEach(containerHeight => {
+        const imgDisplayHeight = containerHeight.height - totalVerticalPadding;
+        let displayWidthEM = (imgDisplayHeight * w2HRatio) / 16;
+        //add comma + space to sizes string if not first iteration
+        if(sizes.length > 0){sizes += ', '};
+        //add media query to sizes string
+        if(containerHeight.breakpoint > 0){sizes += `(min-width: ${(containerHeight.breakpoint/16)}em) `};
+        sizes += displayWidthEM.toPrecision(3) + 'em';
+    });
+    
+    return sizes;
+}
+
 function ShowImgContainer ({show}:imgContainerProps) {
     if(!show.sizes || show.sizes.length < 3 ){return null}
 
     const {baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding} = useShowImgParams(show);
 
 
-    let displaySizes = "500px"; //based on css value for full width of container
-    // Margin images will be of different widths and have a different `displaySizes` value. 
-    // Let's calculate the display width for the `sizes` attribute in the picture tag.
-    //numbers used in calculation rely in css width/height values.
-    if (needsPadding){
         const totalVerticalPadding = 40; //Based on css margin
-        const containerHeight = 281 // Based on css
-        const imgDisplayHeight = containerHeight - totalVerticalPadding;
-        displaySizes = imgDisplayHeight * w2HRatio + 'px';
+        const containerHeights = [{'height':281, "breakpoint":768}, {'height':180, "breakpoint":0}] // Based on css
         
-    } 
-    // console.log(displaySizes);
+        const displaySizes = defineSizes(containerHeights, totalVerticalPadding, w2HRatio);
+         
     return (
         <div className={`${styles.showImgContainer} ${needsPadding ? styles.showImgPadded : ''}`} >
             <PictureTag

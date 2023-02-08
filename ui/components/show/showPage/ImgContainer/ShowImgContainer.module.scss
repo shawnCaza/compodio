@@ -1,12 +1,29 @@
 @import "../../../../styles/abstracts/abstracts";
 
+// pixel size expressed in em
+@function FindImgBoxWidth($height) {
+	// this is based on the 16:9 image ratio
+	@return $height*1.777;
+}
+
 .showImgContainer {
-    max-height:281px; // This value needs to match up to the calculation for `displaySizes` in the component.
-    max-width:500px; // this is based on the 16:9 image ratio used to determin when an image fills the width of the card vs needs padding.
-    width:fit-content;
-    display:block;
-    margin:auto;
-    padding:2em 2em;
+
+    $mobile-height: 180;
+    max-height: px2em($mobile-height); // This value needs to match up to the calculation for `displaySizes` in the component.
+    max-width: px2em(FindImgBoxWidth($mobile-height)); // this is based on the 16:9 image ratio used to determin when an image fills the width of the card vs needs padding.
+
+    
+    @include mq('md'){
+        $height: 281;
+        max-height: px2em($height); // This value needs to match up to the calculation for `displaySizes` in the component.
+        max-width: px2em(FindImgBoxWidth($height)); // this is based on the 16:9 image ratio used to determin when an image fills the width of the card vs needs padding.
+    }
+
+
+    width: fit-content;
+    display: block;
+    margin: auto;
+    padding: 2em 2em;
     img{
         box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75); 
     }
