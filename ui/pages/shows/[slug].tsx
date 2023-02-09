@@ -1,6 +1,12 @@
 import { useRouter } from 'next/router'
 import Link from 'next/link';
 import { dehydrate, QueryClient} from 'react-query';
+
+import {GoGlobe} from 'react-icons/go';
+import {CiClock2} from 'react-icons/ci';
+import {IoPeopleSharp} from 'react-icons/io5';
+import {IoTimeSharp} from 'react-icons/io5';
+
 import GradientBg from '../../components/commonElements/GradientBg';
 import ShowImgContainer from '../../components/show/showPage/ImgContainer/ShowImgContainer';
 import ShowFeed from '../../components/show/showFeed/ShowFeed';
@@ -24,6 +30,26 @@ export async function getServerSideProps() {
     }
   }
 
+interface LinkIconProps {
+  icon: React.ReactNode;
+  label: string;
+  txt: string;
+  link?: string;
+}
+
+function LinkIcon({icon, label, txt, link=undefined }:LinkIconProps){
+  return (
+    <div className={styles.iconAndTextContainer}>
+      
+          <span className={styles.linkIcon} role='presentation'>{icon}</span>
+          <span className='screen-reader-text'>{label}:</span> 
+          {link && <a className={styles.iconTxt} href={link} target='_blank' rel="noreferrer">{txt}</a> }
+          {!link && <span className={styles.iconTxt}>{txt}</span>}
+         
+    </div>
+  )
+}
+
 export default function ShowPage() {
   const router = useRouter()
   const querySlug = router.query.slug as string
@@ -44,17 +70,28 @@ export default function ShowPage() {
       </div> 
 
       <div className={styles.showDetails}>
+        
         <h1>{show.showName}</h1>
+        
         <ShowFeed showId={show.id} slug={show.slug} />
-        <div>{show.desc}</div>
-        <div>Hosted by: {show?.host}</div>
-        <div>Latest Episode: <EpDate dtStr={show.newestEpDate}/></div>
-        <div>
-          <a href={show.internal_link} target={'_blank'} rel={"noreferrer"}>
-            Official {show.source.toUpperCase()} page
-          </a>
+        
+
+
+        <div className={styles.desc}>{show.desc}</div>
+
+        <div className={styles.iconDetailsList}>
+          {/* <LinkIcon icon={<IoCalendarClearSharp/>} label='Latest Episode' txt={<EpDate dtStr={show.newestEpDate}/>} /> */}
+          
+          
+          {show.host && <LinkIcon icon={<IoPeopleSharp/>} label='Host' txt={show.host} />}
+          
+          <LinkIcon icon={<GoGlobe/>} label='Website' txt={`${show.source.toUpperCase()}`} link={show.internal_link} />
+      
+          
+          {showLength && 
+          <LinkIcon icon={<IoTimeSharp/>} label={'Episode Length'} txt={showLength} />
+          }
         </div>
-        {showLength && <div>Episode Length: {showLength}</div>}
       </div>
 
 

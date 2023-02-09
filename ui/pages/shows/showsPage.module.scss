@@ -30,6 +30,7 @@
     max-width: 650px;
 
     margin: 0 auto;
+    
     h1{
         text-align: center;
     }
@@ -43,5 +44,50 @@
         margin: 0 0 0 2em;
     }
 
+    .iconDetailsList{
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        padding: 0 0.5em;
+        
+        .iconAndTextContainer{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: auto;
+            .iconTxt{
+               max-width: px2em(220);
+            }
+        }
+
+    }
+        .linkIcon{
+            flex: 0 0 32px;
+            height: 32px;
+            padding: 5px 5px 5px 0;
+            display: inline-block;
+            svg{
+                width: 100%;
+                height: 100%;
+            }
+        }
+   
+    div{
+        margin: .25em 0;
+    }
+
+    .desc{
+        font-size: 1.25em;
+        font-weight: 500;
+    }
+
+    .hostedWrapper{
+        display: flex;
+
+        // .hostLabel{
+        //     flex: 1 1 10em;
+        // }
+    }
 }
+
 
