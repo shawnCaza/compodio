@@ -1,7 +1,8 @@
 
 import React, {useState,  ReactNode } from "react";
 import { Show } from "../../../hooks/queries/shows"; 
-import { IoSearchSharp } from "react-icons/io5";
+import { IoSearchSharp, IoCloseSharp } from "react-icons/io5";
+
 
 import { useCombobox } from 'downshift'
 import ShowLink from "../../show/ShowLink";
@@ -79,7 +80,7 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
           />
 
 
-          
+          {inputItems.length > 0 && 
           <button
             style={{padding: '4px 8px', color:"#000"}}
             aria-label="Clear Search"
@@ -87,9 +88,9 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
             
             onClick={() => selectItem(null)}
           >
-            x
+            <IoCloseSharp/>
           </button>
-
+          }   
         </div>
         {/* Result list */}
         {isOpen && inputItems.length > 0 && 

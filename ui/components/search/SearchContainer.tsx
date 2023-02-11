@@ -12,7 +12,6 @@ interface fuseResult{
 
 export default function SearchContainer() {
 
-
   const shows = useShowsQuery();
   if(!shows){return null}
   const router = useRouter()
