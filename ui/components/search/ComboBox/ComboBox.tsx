@@ -82,7 +82,8 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
 
           {inputItems.length > 0 && 
           <button
-            style={{padding: '4px 8px', color:"#000"}}
+            className={styles.searchButton}
+            style={{ color:"#000"}}
             aria-label="Clear Search"
             data-testid="clear-button"
             
@@ -93,14 +94,13 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
           }   
         </div>
         {/* Result list */}
-        {isOpen && inputItems.length > 0 && 
 
         <ul className={styles.dropdown}
           {...getMenuProps()}
         >
-          {isOpen &&
+          {isOpen && inputItems.length > 0 &&
             inputItems.map((result, index) => (
-              <li className={
+              <li ref={result.item.id} className={
                 styles.dropdownItem 
                 + (highlightedIndex === index ? ' ' + styles.highlightedItem : '')}
                 {...getItemProps({result, index, key: result.item.id})}
@@ -111,7 +111,7 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
               </li>
             ))}
         </ul>
-        }
+        
       </div>
     )
 }

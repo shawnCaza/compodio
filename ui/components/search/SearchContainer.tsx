@@ -27,7 +27,6 @@ export default function SearchContainer() {
   }
 
   function handleSelection(selectedItem:fuseResult){
-    console.log('User selected: ', selectedItem.item.slug);
     const href = `/shows/${selectedItem.item.slug}`;
     router.push(href)
   }
