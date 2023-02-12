@@ -2,7 +2,7 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { useShowsQuery, getShows } from '../hooks/queries/shows';
 import { dehydrate, QueryClient} from 'react-query';
-import ContentSection from '../components/layout/contentSection';
+import ContentSection from '../components/layout/ContentSection/contentSection';
 import ShowCards from '../components/show/showCards/ShowCards';
 
 export async function getServerSideProps() {

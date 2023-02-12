@@ -1,4 +1,5 @@
 import {  ReactNode } from "react";
+import styles from './ContentSection.module.scss'
 
 interface contentSectionProps {
     heading: string | null,
@@ -10,7 +11,7 @@ function ContentSection({heading=null, tag:Tag, children}:contentSectionProps ) 
 
     return (
         <>
-            <div className="content-section">
+            <div className={styles.paddedContentSection}>
                 <Tag>{heading}</Tag>
                     
                 {children}
