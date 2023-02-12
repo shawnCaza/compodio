@@ -11,7 +11,7 @@ class CfruShowsSpider(scrapy.Spider):
     start_urls = ['https://www.cfru.ca/shows/']
 
     def parse(self, response):
-        shows_to_skip = ['Rainbow Country', 'A Fill-In Broadcast', 'Your Show Here', 'CFRU Rebroadcast', 'BBC News', 'Democracy Now', 'Canadaland']
+        shows_to_skip = ['Rainbow Country', 'A Fill-In Broadcast', 'Your Show Here', 'CFRU Rebroadcast', 'BBC News', 'Democracy Now', 'Canadaland', 'Tales from the Bridge']
         existing_show_names = set()
 
         for day_column in response.css("div.schedule-day"):
@@ -24,7 +24,22 @@ class CfruShowsSpider(scrapy.Spider):
                 if all(skip_show not in current_show['showName'] for skip_show in shows_to_skip) and current_show['showName'] not in existing_show_names:
                     existing_show_names.add(current_show['showName'])
                     current_show['img'] = show.xpath(".//div[@class='show_image']/img/@src").get()
-                    desc = show.xpath(".//div[@class='description']/p/text()").get()
+
+
+                    # loop through each paragraph in the div with the description class
+                    desc_paragraphs = show.xpath(".//div[@class='description']/p")
+
+
+                    desc = ''
+                    for p in desc_paragraphs:
+                        if p.xpath("./text()") and len(p.xpath("./text()").get().strip()):
+                            desc += f"<p>{p.xpath('./text()').get().strip()}</p>"
+                        
+                        
+                    
+
+
+
                     current_show['desc'] = desc.strip() if desc is not None else ''  
                     current_show['host'] = show.xpath(".//div[@class='hosts']/text()").get().replace('hosted by','').strip()
                     current_show['internal_link'] = show.xpath(".//div[@class='links']/a[text()='archives']/@href").get()

@@ -77,7 +77,7 @@ export default function ShowPage() {
         
 
 
-        <div className={styles.desc}>{show.desc}</div>
+        <div className={styles.desc} dangerouslySetInnerHTML={{__html:show.desc}}  />
 
         <div className={styles.iconDetailsList}>
           {/* <LinkIcon icon={<IoCalendarClearSharp/>} label='Latest Episode' txt={<EpDate dtStr={show.newestEpDate}/>} /> */}
