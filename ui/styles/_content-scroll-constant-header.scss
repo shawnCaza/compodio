@@ -1,0 +1,15 @@
+// Everything that wraps around #everything needs to be 100% height
+html, body, #__next{
+	height: 100%;
+}
+
+// a div containing header and content footer. All visible content.
+#everything{
+	display: flex; 
+	height: 100%; 
+	flex-direction: column
+}
+
+#content{
+	flex: 1; overflow: auto
+}

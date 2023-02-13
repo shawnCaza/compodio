@@ -12,13 +12,15 @@ function Layout({ children}:layoutProps) {
 
     return (
         <>
-            <Header>
-                <Branding/>
-                <SearchContainer/>
-                <MainMenu/>
-            </Header>
-            <div id='content'>
-                {children}
+            <div id='everything'>
+                <Header>
+                    <Branding/>
+                    <SearchContainer/>
+                    <MainMenu/>
+                </Header>
+                <div id='content'>
+                    {children}
+                </div>
             </div>
         </>
     )

@@ -1,8 +1,10 @@
+@import "../../../../styles/abstracts/abstracts"; 
+
  .cardContainer {
     height: auto;
     width: auto;
     display: grid;
-    grid-template-columns: repeat( auto-fill, 222px );
+    grid-template-columns: repeat( auto-fill, minmax(px2em(222), 1fr) );
     column-gap: 1.5em;
   row-gap: 2em;    
 }

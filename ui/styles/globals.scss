@@ -30,6 +30,10 @@
 --------------------------------------------------------------*/
 @import "./accessibility"; 
 
+/*--------------------------------------------------------------
+# Keep header on screen while content scrolls
+--------------------------------------------------------------*/
+@import "./content-scroll-constant-header"; 
 
 
 html,
@@ -42,6 +46,8 @@ body {
 body {
   color: var(--foreground-colour);
   background: var(--background-colour);
+  //for fixed header with scoll on content when needed.
+
 }
 
 a {
