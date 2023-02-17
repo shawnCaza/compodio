@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 // import Modal from "../layout/modal";
 import { IoMenuSharp } from "react-icons/io5";
+import styles from './MainMenu.module.scss'
+
 
 function MainMenu() {
     // const setMainMenuOpen = props.setMainMenuOpen;
@@ -14,14 +16,14 @@ function MainMenu() {
         return (
             <>
                 <button
-                className=""
-                // onClick={toggleMainMenu}
-                aria-haspopup="dialog"
+                 className={styles.menuButton}
+                 // onClick={toggleMainMenu}
+                 aria-haspopup="dialog"
                 >
-                <span className='menu-icon'>
-                <IoMenuSharp/>
-                </span>                 
-            </button>
+                    <span id="dd" className={styles.menuIcon}>
+                        <IoMenuSharp/>
+                    </span>                 
+                </button>
                 {/* <Modal modalOpen={mainMeuOpen} setModalOpen={setMainMenuOpen} labeledBy="main-menu-label" >
                     <h2 id='main-menu-label' className='screen-reader-text'>Site Menu</h2>
                     <div>
