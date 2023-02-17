@@ -1,6 +1,5 @@
 @import "../../../../styles/abstracts/abstracts";
 
-// pixel size expressed in em
 @function FindImgBoxWidth($height) {
 	// this is based on the 16:9 image ratio
 	@return $height*1.777;

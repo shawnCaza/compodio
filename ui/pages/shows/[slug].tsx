@@ -14,6 +14,8 @@ import EpDate from '../../components/show/epDate/EpDate';
 import { useShowLength } from '../../components/show/hooks/useShowLength';
 import ShowCards from '../../components/show/showCards/ShowCards';
 import { useShowsQuery, getShows } from '../../hooks/queries/shows';
+import TagsContainer from '../../components/show/showCards/TagsContainer/TagsContainer';
+
 import styles from './showsPage.module.scss'
 
 
@@ -92,6 +94,9 @@ export default function ShowPage() {
           <LinkIcon icon={<IoTimeSharp/>} label={'Episode Length'} txt={showLength} />
           }
         </div>
+        {show.tagIds &&
+          <TagsContainer currentTagIds={JSON.parse(show.tagIds)} maxTags={null} />
+        }
       </div>
 
 

@@ -8,7 +8,7 @@ import { useMappedShowTags } from '../../../../hooks/useMappedShowTags';
 
 interface TagsContainerProps {
     currentTagIds: Array<number>,
-    maxTags: number
+    maxTags: number | null | undefined
 }
 
 
@@ -25,7 +25,7 @@ export async function getServerSideProps() {
   }
 
 
-function TagsContainer ({currentTagIds, maxTags}:TagsContainerProps) {
+function TagsContainer ({currentTagIds, maxTags=null}:TagsContainerProps) {
 
     const allTags =  useTagsQuery();
     

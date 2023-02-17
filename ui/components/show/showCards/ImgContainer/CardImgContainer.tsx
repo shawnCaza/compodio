@@ -13,15 +13,15 @@ function CardImgContainer ({show}:imgContainerProps) {
     const {baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding} = useShowImgParams(show);
 
 
-    let displaySizes = "222px"; //based on css value for full width of container
+    let displaySizes = "21em"; //based on css value for full width of container
     // Margin images will be of different widths and have a different `displaySizes` value. 
     // Let's calculate the display width for the `sizes` attribute in the picture tag.
     //numbers used in calculation rely in css width/height values.
     if (needsPadding){
         const totalVerticalPadding = 24; //Based on css margin
-        const containerHeight = 124 // Based on css
+        const containerHeight = 336/1.77 // Based on css
         const imgDisplayHeight = containerHeight - totalVerticalPadding;
-        displaySizes = imgDisplayHeight * w2HRatio + 'px';
+        displaySizes = (imgDisplayHeight * w2HRatio)/16 + 'em';
         
     } 
     // console.log(displaySizes);
