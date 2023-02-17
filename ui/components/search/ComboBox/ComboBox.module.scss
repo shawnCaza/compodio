@@ -1,4 +1,7 @@
+@import "../../../styles/abstracts/abstracts";
+
 .container{
+    height: 40px;
     width: 300px;
     margin: 0 20px;
     flex: 0 1 300px;
@@ -19,18 +22,21 @@
 }
 
 .searchButton{
+    font-size: 1rem;
+    flex: 0 0 px2em(40);
     height: 100%;
     padding: 10px;
 
     svg{
-        width: 20px;
+        width: px2em(20);
         fill: var(--foreground-contrast-colour);
     }
 }
 
 .input{
+    max-width: calc(100% - px2em(80, $type: rem));
     font-size: 1.125em;
-    flex: 1 0 auto;
+    flex: 1 1 auto;
     padding: 4px;
     background-color: transparent;
     color: var(--foreground-contrast-colour);

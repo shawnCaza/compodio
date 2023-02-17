@@ -11,8 +11,17 @@
 }   
 
 // pixel size expressed in em
-@function px2em($sizeValue) {
+@function px2em($sizeValue, $type: em) {
 	
-	@return $sizeValue/16 +0em;
+    // if type is em, return the value in em
+    @if $type == em {
+        @return $sizeValue/16 +0em;
+    }
+
+    // if type is rem, return the value in rem
+    @if $type == rem {
+        @return $sizeValue/16 +0rem;
+    }
+
 }
 
