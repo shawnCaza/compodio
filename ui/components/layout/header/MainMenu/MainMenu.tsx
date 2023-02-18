@@ -20,7 +20,7 @@ function MainMenu() {
                  // onClick={toggleMainMenu}
                  aria-haspopup="dialog"
                 >
-                    <span id="dd" className={styles.menuIcon}>
+                    <span className={styles.menuIcon}>
                         <IoMenuSharp/>
                     </span>                 
                 </button>
