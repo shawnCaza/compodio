@@ -14,6 +14,7 @@ import EpDate from '../../components/show/epDate/EpDate';
 import { useShowLength } from '../../components/show/hooks/useShowLength';
 import ShowCards from '../../components/show/showCards/ShowCards';
 import { useShowsQuery, getShows } from '../../hooks/queries/shows';
+import { getTags } from '../../hooks/queries/tags';
 import TagsContainer from '../../components/show/showCards/TagsContainer/TagsContainer';
 
 import styles from './showsPage.module.scss'
@@ -22,8 +23,11 @@ import styles from './showsPage.module.scss'
 
 export async function getServerSideProps() {
     const queryClient = new QueryClient();
-  
-    await queryClient.prefetchQuery('shows', getShows);
+
+    await Promise.all([
+      queryClient.prefetchQuery('tags', getTags),
+      queryClient.prefetchQuery('shows', getShows)
+    ]);
   
     return {
       props: {

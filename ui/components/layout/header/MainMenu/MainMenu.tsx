@@ -1,30 +1,40 @@
 import React, { useState, useEffect } from "react";
-// import Modal from "../layout/modal";
+import Modal from "react-modal";
+
 import { IoMenuSharp } from "react-icons/io5";
 import styles from './MainMenu.module.scss'
 
 
 function MainMenu() {
-    // const setMainMenuOpen = props.setMainMenuOpen;
 
-    // const mainMeuOpen = props.mainMeuOpen;
+    Modal.setAppElement('#everything');
+    const [isOpen, setIsOpen] = useState(false);
 
-    // const toggleMainMenu = () => {
-    //     mainMeuOpen ? setMainMenuOpen(0) : setMainMenuOpen(1);
-    // }   
+    const toggleMainMenu = () => {
+        isOpen ? setIsOpen(false) : setIsOpen(true);
+    }   
+
+
 
         return (
             <>
                 <button
                  className={styles.menuButton}
-                 // onClick={toggleMainMenu}
+                 onClick={toggleMainMenu}
+                 aria-label="Open Main Menu"
                  aria-haspopup="dialog"
                 >
                     <span className={styles.menuIcon}>
                         <IoMenuSharp/>
                     </span>                 
                 </button>
-                {/* <Modal modalOpen={mainMeuOpen} setModalOpen={setMainMenuOpen} labeledBy="main-menu-label" >
+                 <Modal 
+                    isOpen={isOpen}
+                    onRequestClose={toggleMainMenu}
+                    parentSelector={() => document.getElementById('__next') as HTMLElement}
+                    aria={{
+                        labelledby: "main-menu-label"
+                    }} >
                     <h2 id='main-menu-label' className='screen-reader-text'>Site Menu</h2>
                     <div>
                         <ul className="main-menu-option-list">
@@ -38,7 +48,7 @@ function MainMenu() {
                     </div>
 
 
-                </Modal> */}
+                </Modal>
             </>
         )
     }
