@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
-
-import { IoMenuSharp } from "react-icons/io5";
+import { IoMenuSharp, IoCloseSharp } from "react-icons/io5";
 import styles from './MainMenu.module.scss'
 
 
@@ -25,7 +24,7 @@ function MainMenu() {
                  aria-haspopup="dialog"
                 >
                     <span className={styles.menuIcon}>
-                        <IoMenuSharp/>
+                        {isOpen ? <IoCloseSharp/> : <IoMenuSharp/>}
                     </span>                 
                 </button>
                  <Modal 
@@ -34,7 +33,10 @@ function MainMenu() {
                     parentSelector={() => document.getElementById('__next') as HTMLElement}
                     aria={{
                         labelledby: "main-menu-label"
-                    }} >
+                    }} 
+                    overlayClassName={styles.mainMenuModal}
+                    className={styles.mainMenuModalContent}
+                >
                     <h2 id='main-menu-label' className='screen-reader-text'>Site Menu</h2>
                     <div>
                         <ul className="main-menu-option-list">
