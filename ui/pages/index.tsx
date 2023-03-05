@@ -42,11 +42,21 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-      <ContentSection heading={'Recommended'} tag='h2'>
+      <ContentSection heading={'Putting the Podcast in Community Radio'} tag='h1'>
+            
+            <p>
+              Compodio strives to make it easier to listen to community radio shows online. We do this by generating podcast feeds for shows that don't already have one. Our categorized, searchable database of shows, also simplifies finding your favourite shows and discovering new ones.
+
+            </p>         
           
-          <ShowCards shows={recomendedShows} />         
+        </ContentSection> 
         
-      </ContentSection>    
+        <ContentSection heading={'Recommended'} tag='h2'>
+            
+            <ShowCards shows={recomendedShows} />         
+          
+        </ContentSection> 
+
         <ContentSection heading={'Recently Updated'} tag='h2'>
           
             <ShowCards shows={shows.slice(0,10)} />         
