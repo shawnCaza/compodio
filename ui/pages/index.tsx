@@ -1,6 +1,7 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { useShowsQuery, getShows } from '../hooks/queries/shows';
+import { useRecommendedShows } from '../hooks/useRecommendedShows';
 import { getTags } from '../hooks/queries/tags';
 import { dehydrate, QueryClient} from 'react-query';
 import ContentSection from '../components/layout/ContentSection/contentSection';
@@ -24,10 +25,14 @@ export async function getServerSideProps() {
 export default function Home() {
   const shows = useShowsQuery();
 
-  if (!shows){
-    return;
-  } 
+ 
 
+  const recomendedShows = useRecommendedShows();
+  
+  if (!shows || !recomendedShows){
+    return;
+  }
+  console.log(recomendedShows);
   return (
     <>
       <Head>
@@ -37,9 +42,14 @@ export default function Home() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+      <ContentSection heading={'Recommended'} tag='h2'>
+          
+          <ShowCards shows={recomendedShows} />         
+        
+      </ContentSection>    
         <ContentSection heading={'Recently Updated'} tag='h2'>
           
-            <ShowCards shows={shows.slice(0,200)} />         
+            <ShowCards shows={shows.slice(0,10)} />         
           
         </ContentSection>    
       </main>
