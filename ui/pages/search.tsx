@@ -35,9 +35,6 @@ export async function getServerSideProps(context) {
     //create array using only the item prop from each object in the searchResults array
     const searchItems = searchResults.map((result) => result.item);
 
-
-
-
     return (
         <ContentSection heading={`Searching for: ${searchTerm}`} tag='h1'>
           <ShowCards shows={searchItems} />
