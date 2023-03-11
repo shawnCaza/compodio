@@ -22,11 +22,20 @@ export default function SearchContainer() {
   function handleSearch(inputValue:string) {
     // Called from useComboBox, to filter shows based on input,
     // Then slice just the top results.
-    const searchResults = Object.values(fuse.search(inputValue));
-    return searchResults.slice(0,7);
+    let searchResults: Array<Fuse.FuseResult<Show> | String>  = Object.values(fuse.search(inputValue)).slice(0,7);
+    
+    //add inputValue to the end of the array if not empty
+    if(inputValue !== ''){
+      searchResults.push(inputValue)
+    }
+
+    return searchResults;
   }
 
   function handleSelection(selectedItem:fuseResult){
+    // Called from useComboBox, to handle the selection of a show
+    // from the search results.
+   
     const href = `/shows/${selectedItem.item.slug}`;
     router.push(href)
   }
