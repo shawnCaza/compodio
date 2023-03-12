@@ -2,8 +2,8 @@
 import React, {useState,  ReactNode } from "react";
 import { Show } from "../../../hooks/queries/shows"; 
 import { IoSearchSharp, IoCloseSharp } from "react-icons/io5";
-import Link from "next/link";
-
+import ResultListItem from "../ResultListItem/ResultListItem";
+import SearchPageLink from "../SearchPageLink/SearchPageLink";
 import { useCombobox } from 'downshift'
 import ShowLink from "../../show/ShowLink";
 import styles from './ComboBox.module.scss'
@@ -19,18 +19,8 @@ interface fuseResult{
   score: number;
   refIndex: number;
 }
+export type {fuseResult};
 
-function SearchResultsLink({searchStr}){
-  
-  return (
-    <>
-    <Link href={`/search?s=${searchStr}`}>
-        <IoSearchSharp/>
-        {`View Results for: "${searchStr}"`}
-    </Link>
-    </>
-  )
-}
 
 //This is required for accessibility aria-live messages (e.g., after making a selection).
 const itemToString = (result:fuseResult | string | null) => {
@@ -70,9 +60,7 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
     onSelectedItemChange: ({ selectedItem }) => {
       
         if(selectedItem){ 
-           //if the selectedItem is a string, then it's the search all link and we don't need to do anything
-          if(typeof selectedItem === 'string'){return}
-          //if the selectedItem is a fuseResult, then it's a show and we need to handle the selection
+
               handleSelection(selectedItem)
             };
       },
@@ -122,33 +110,30 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
         <ul className={styles.dropdown}
           {...getMenuProps()}
         >
-          {isOpen && inputItems.length > 0 &&
+          {isOpen && inputItems.length > 1 &&
             inputItems.map((result, index) => (
               
-              //if the result is a string, it's the input value, so we want to link to the search page
-              typeof result === 'string' && result != '' ? 
-
-              <li ref={result} className={
-                styles.dropdownItem
-                + (highlightedIndex === index ? ' ' + styles.highlightedItem : '')}
-                {...getItemProps({result, index, key: result})}
+              <ResultListItem 
+                result={result} 
+                highlightedIndex={highlightedIndex} 
+                index={index} 
+                getItemProps={getItemProps} 
+                key={itemToString(result)}
               > 
-               <SearchResultsLink searchStr={result}/>
-              </li>
 
-              :
-              //otherwise, it's a show, so we want to link to the show page
+              {
+                // if the result is a string, it's the input value, meaning we want to link to the search result page for the input value
+                typeof result === 'string' && result != '' ? 
 
-              <li ref={result.item.id} className={
-                styles.dropdownItem 
-                + (highlightedIndex === index ? ' ' + styles.highlightedItem : '')}
-                {...getItemProps({result, index, key: result.item.id})}
-              >
+                  <SearchPageLink searchStr={result}/>
+                :
 
-                  {result.item.showName}
+                //otherwise, it's a show, so we want to link to the show page
 
-              </li>
+                  result.item.showName
 
+              }
+              </ResultListItem>
             ))}
 
         </ul>

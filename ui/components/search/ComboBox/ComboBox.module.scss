@@ -59,11 +59,26 @@
 }
 
 .dropdownItem{
-    padding: 5px;
+    padding: 10px;
 }
 
 .highlightedItem{
-    background-color: var(--background-contrast-colour);
-    color: var(--foreground-contrast-colour);
+    background-color: var(--foreground-colour);
+    // color: var(--foreground-contrast-colour);
     cursor: pointer;
+}
+
+.SearchPageLinkItem{
+    display: flex;
+    align-items: center;
+    color: var(--brand-colour);
+}
+
+.searchListPageLinkIcon {
+    width:40px;
+    height: 40px;
+    padding: 5px;
+    svg{
+        width: 100%;
+    }
 }

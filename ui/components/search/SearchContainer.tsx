@@ -36,6 +36,14 @@ export default function SearchContainer() {
     // Called from useComboBox, to handle the selection of a show
     // from the search results.
    
+    // if string, then it's the search input value, so we need to
+    // navigate to the search page.
+    if(typeof selectedItem === 'string'){
+      const href = `/search?s=${selectedItem}`;
+      router.push(href)
+      return
+    }
+
     const href = `/shows/${selectedItem.item.slug}`;
     router.push(href)
   }
