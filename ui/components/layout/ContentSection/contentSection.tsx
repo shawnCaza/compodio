@@ -4,19 +4,24 @@ import styles from './ContentSection.module.scss'
 interface contentSectionProps {
     heading: string | null,
     tag: keyof JSX.IntrinsicElements, // TODO could constrain to heading tag: https://stackoverflow.com/a/60837221
+    centered?: boolean,
+    readingWidth?: boolean,
     children: ReactNode
 }
 
-function ContentSection({heading=null, tag:Tag, children}:contentSectionProps ) {
+function ContentSection({heading=null, tag:Tag, centered=false, readingWidth=false, children}:contentSectionProps ) {
 
     return (
         <>
-            <div className={styles.paddedContentSection}>
+            <div className={
+                styles.paddedContentSection 
+                + (centered ? " " + styles.centeredSection : '')
+                + (readingWidth ? " " + styles.readingWidth : '')
+                }>
                 <Tag>{heading}</Tag>
                     
                 {children}
                     
-
             </div>
         </>
     )
