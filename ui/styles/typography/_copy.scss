@@ -1,2 +1,8 @@
 :root{line-height: 1.5;}
+body {
+    font-size: clamp(1rem, calc(0.5rem + 1vw), 1.25rem);
+  }
 
+  button{
+    font-size: inherit;
+  }

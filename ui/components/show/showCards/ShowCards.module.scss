@@ -7,7 +7,7 @@
 }
 
 .desc{
-    padding: 7px;
+    padding: var(--card-padding);
 
     span a{
         color: var(--foreground-contrast-colour);
