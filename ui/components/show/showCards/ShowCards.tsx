@@ -9,7 +9,7 @@ import FeedUrl from '../showFeed/ShowFeed';
 import ShowLink from '../ShowLink';
 import GradientBg from '../../commonElements/GradientBg';
 import ImgContainer from './ImgContainer/CardImgContainer';
-import TagsContainer from './TagsContainer/TagsContainer';
+import TagsContainer from '../../layout/cardElements/TagsContainer/TagsContainer';
 
 import styles from "./showCards.module.scss";
 
@@ -42,9 +42,9 @@ function ShowCards({shows}:ShowCardsProps) {
                 </Heading>
 
                 <GradientBg colours={show.dom_colours}>
-
-                  <ImgContainer show={show} />
-
+                  <ShowLink slug={show.slug}>
+                    <ImgContainer show={show} />
+                  </ShowLink>
                 </GradientBg>
               </div>
 
@@ -57,11 +57,18 @@ function ShowCards({shows}:ShowCardsProps) {
               Your browser does not support the audio element.
               </audio>  */}
               <FeedUrl showId={show.id} slug={show.slug} />
-              <Desc desc={show.desc} approxLength={65} />
+              <div className={styles.desc}>
+                <Desc desc={show.desc} approxLength={125} />
+                <span> 
+                  <ShowLink slug={show.slug}>
+                    &nbsp;More.
+                  </ShowLink>
+                </span>
+              </div>
               {show.tagIds &&
               <TagsContainer currentTagIds={JSON.parse(show.tagIds)} maxTags={3} />
               }
-            </Card>
+            </Card> 
           )}
         </Container>
       </>

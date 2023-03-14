@@ -3,5 +3,7 @@
     text-align: center;
     color: var(--background-colour);
     background-color: var(--foreground-colour);
-    
+    a{
+        color: var(--background-colour);
+    }
 }

@@ -15,7 +15,7 @@ import { useShowLength } from '../../components/show/hooks/useShowLength';
 import ShowCards from '../../components/show/showCards/ShowCards';
 import { useShowsQuery, getShows } from '../../hooks/queries/shows';
 import { getTags } from '../../hooks/queries/tags';
-import TagsContainer from '../../components/show/showCards/TagsContainer/TagsContainer';
+import TagsContainer from '../../components/layout/cardElements/TagsContainer/TagsContainer';
 
 import styles from './showsPage.module.scss'
 

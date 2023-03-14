@@ -4,9 +4,9 @@
 @import "./abstracts/abstracts"; 
 
 /*--------------------------------------------------------------
-# custom properties 
+# custom properties --> required to be in globals.
 --------------------------------------------------------------*/
-@import "./custom-properties";
+@import "./abstracts/variables/custom-properties"; 
 
 /*--------------------------------------------------------------
 # Normalize
@@ -50,9 +50,13 @@ body {
 
 }
 
-a {
+a, a button {
   color: inherit;
   text-decoration: none;
+  color: var(--brand-colour);
+  &:hover{
+    text-decoration: underline;
+  }
 }
 
 @media (prefers-color-scheme: dark) {

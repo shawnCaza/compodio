@@ -9,8 +9,9 @@
     //     max-width: px2em(250);
     // }
     
-    border: 1px solid lightgray;
+    border: 1px solid var(--foreground-contrast-colour);
     border-radius: .5em;
+    overflow: hidden; //So children don't spill outside the border-radius
     display: flex;
     flex-direction: column; 
     justify-content: space-between;

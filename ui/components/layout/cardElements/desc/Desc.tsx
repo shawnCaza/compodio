@@ -1,4 +1,3 @@
-import styles from './Desc.module.scss'
 import { makeSnippet } from '../../../../functions/utility/txtSnippet';
 
 interface descType{
@@ -23,7 +22,7 @@ function CardDesc({desc, approxLength=0}:descType) {
 
     return (
         <>
-            <div className={styles.desc}>{displayDesc}</div>
+            {displayDesc}
         </>
     )
 } 

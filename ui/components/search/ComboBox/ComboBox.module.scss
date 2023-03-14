@@ -71,13 +71,16 @@
 .SearchPageLinkItem{
     display: flex;
     align-items: center;
+    justify-content: center;
     color: var(--brand-colour);
+    padding-right: 17px; //to maintain visual centeredness. Expanded from regular 10px, to compensate for padding on icon below. 
 }
 
 .searchListPageLinkIcon {
     width:40px;
     height: 40px;
-    padding: 7px;
+    padding: 7px 7px 7px 7px;
+
     svg{
         width: 100%;
     }

@@ -5,3 +5,12 @@
 .title{
     margin: 0;
 }
+
+.desc{
+    padding: 7px;
+
+    span a{
+        color: var(--foreground-contrast-colour);
+        font-weight: 800;
+    }
+}
