@@ -12,15 +12,15 @@ export function useMappedShowTags(allTags:TagMap, showTagIds: Array<number>, max
 
     // sort tags by frequency
 
-    showTags.sort((a:Tags, b:Tags) => a.freq - b.freq);
+    showTags.sort((a:Tag, b:Tag) => a.freq - b.freq);
     
     if(!maxTags || maxTags >= showTags.length){
         return showTags;
     } else { 
         const leastFrequentTags = showTags.slice(0, maxTags-1)
-        //last element in array
+        
         const mostCommonTag = showTags[showTags.length-1]
-        //combine leastFreqTags and mostCommonTag
+        
         return [...leastFrequentTags, mostCommonTag];
     }
   }
