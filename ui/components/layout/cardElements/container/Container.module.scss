@@ -16,8 +16,8 @@
     width: auto;
     display: grid;
     grid-template-columns: repeat( auto-fill, minmax(var(--card-size-rem), 1fr) );
-    column-gap: 1.5rem;
-    row-gap: 2rem;
+    column-gap: 1.5em;
+    row-gap: 3.5em;
     @include mq('xl'){
         grid-template-columns: repeat( auto-fill, minmax(var(--xl-card-size-rem), 1fr) );
     }
