@@ -6,9 +6,26 @@
 }
 
 .cardImgContainer {
-    $width: 336;
-    max-height:px2em(FindImgBoxHeight($width)); // This value needs to match up to the calculation for `displaySizes` in the component.
-    max-width: px2em(336); // this is based on the 16:9 image ratio used to determin when an image fills the width of the card vs needs padding.
+    // These values needs to match up to the calculation for `displaySizes` in the component.
+    $width: $card-width - 2;
+    --max-height: #{px2em(FindImgBoxHeight($width),'rem')}; 
+    $xl-width: $xl-card-width - 2;
+    --xl-height: #{px2em(FindImgBoxHeight($xl-width),'rem')};
+    $xxl-width: $xxl-card-width - 2;
+    --xxl-height: #{px2em(FindImgBoxHeight($xxl-width),'rem')};
+    
+    height: var(--max-height); 
+    max-width: px2em($width,'rem'); // this is based on the 16:9 image ratio used to determin when an image fills the width of the card vs needs padding.
+    
+    @include mq('xl'){
+        height: var(--xl-height); 
+        max-width: px2em($xl-width,'rem'); 
+    }
+    @include mq('xxl'){
+        height: var(--xxl-height); 
+        max-width: px2em($xxl-width,'rem'); 
+    }
+    
     width:fit-content;
     display:block;
     margin:auto;

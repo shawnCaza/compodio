@@ -8,7 +8,7 @@ import Desc from '../../layout/cardElements/desc/Desc';
 import FeedUrl from '../showFeed/ShowFeed';
 import ShowLink from '../ShowLink';
 import GradientBg from '../../commonElements/GradientBg';
-import ImgContainer from './ImgContainer/CardImgContainer';
+import CardImgContainer from './ImgContainer/CardImgContainer';
 import TagsContainer from '../../layout/cardElements/TagsContainer/TagsContainer';
 
 import styles from "./showCards.module.scss";
@@ -43,7 +43,7 @@ function ShowCards({shows}:ShowCardsProps) {
 
                 <GradientBg colours={show.dom_colours}>
                   <ShowLink slug={show.slug}>
-                    <ImgContainer show={show} />
+                    <CardImgContainer show={show} />
                   </ShowLink>
                 </GradientBg>
               </div>

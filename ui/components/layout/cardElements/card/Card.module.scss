@@ -1,14 +1,21 @@
+@import "../../../../styles/abstracts/abstracts"; 
+
 .card{
-    margin: 0 auto;
-    // min-width: 21em; 
-    width: 21rem; 
-    // @include mq('wide'){
-    //     max-width: px2em(240);
-    // }
-    // @include mq('large'){
-    //     max-width: px2em(250);
-    // }
+
+ 
+    width: var(--card-size-rem); //correspons with grid size in Container.module.scss
+
+
+    @include mq('xl'){
+        width: var(--xl-card-size-rem);
+    }
+
+    @include mq('xxl'){
+        width: var(--xxl-card-size-rem);
+    }
+  
     
+    margin: 0 auto;
     border: 1px solid var(--foreground-contrast-colour);
     border-radius: .5em;
     overflow: hidden; //So children don't spill outside the border-radius

@@ -13,16 +13,33 @@ function CardImgContainer ({show}:imgContainerProps) {
     const {baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding} = useShowImgParams(show);
 
 
-    let displaySizes = "21rem"; //based on css value for full width of container
-    // Margin images will be of different widths and have a different `displaySizes` value. 
+    let displaySizes = "(min-width: 85.375rem) 24.125rem, (min-width: 96rem) 24.875rem, 21rem"; //based on css values for full width of container
+    
+    // Margin images, that needsPadding will be of different widths and have a different `displaySizes` value. 
     // Let's calculate the display width for the `sizes` attribute in the picture tag.
     //numbers used in calculation rely in css width/height values.
     if (needsPadding){
-        const totalVerticalPadding = 24; //Based on css margin
-        const containerHeight = 336/1.77 // Based on css
-        const imgDisplayHeight = containerHeight - totalVerticalPadding;
-        displaySizes = (imgDisplayHeight * w2HRatio)/16 + 'rem';
-        
+        const cardBreakPointWidths= [{'bp': 85.375, 'w': 24.125}, {'bp': 96, 'w': 24.875}, {'bp': 0, 'w': 21}]
+
+        const totalVerticalPadding = 24/16; //Based on css margin converted to rem
+        // const containerHeight = 336/1.77 // Based on css
+        // const imgDisplayHeight = containerHeight - totalVerticalPadding;
+        // displaySizes = (imgDisplayHeight * w2HRatio)/16 + 'rem';
+
+        // create srcset sizes string using each breakpoint
+        let displaySizesArr = Array<string>();
+        cardBreakPointWidths.forEach((size)=>{
+            const containerHeight = size.w/1.77
+            const imgDisplayHeight = containerHeight - totalVerticalPadding;  
+            if (size.bp !== 0){
+
+                displaySizesArr.push(`(min-width: ${size.bp}rem) ${imgDisplayHeight * w2HRatio}rem`);
+            } else {   
+                displaySizesArr.push(`${imgDisplayHeight * w2HRatio}rem`); 
+            }
+        });
+        displaySizes = displaySizesArr.join(', ');
+
     } 
     // console.log(displaySizes);
     return (
