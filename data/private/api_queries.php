@@ -65,6 +65,7 @@ function get_all_tags(){
                     'freq', freq)
                 ) as allTags
             from all_tags
+            ORDER BY freq
             ;";
     $result = mysqli_query($db, $sql);
     confirm_result_set($result);

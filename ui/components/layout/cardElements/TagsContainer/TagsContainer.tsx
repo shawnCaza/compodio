@@ -1,6 +1,6 @@
 import Link from 'next/link'
 
-import { useTagsQuery, getTags, Tags } from '../../../../hooks/queries/tags';
+import { useTagsQuery, getTags, Tag } from '../../../../hooks/queries/tags';
 import { dehydrate, QueryClient} from 'react-query';
 
 import styles from './TagsContainer.module.scss'

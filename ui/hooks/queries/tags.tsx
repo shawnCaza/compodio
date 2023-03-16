@@ -8,15 +8,15 @@ export const tagsStaleTime = () => {
   return staleTime;
 }
 
-interface Tags {
+interface Tag {
   id: number,
   tag: string,
-  frequency: number
+  freq: number
 }
 
-type TagMap = Record<string, Tags>;
+type TagMap = Record<string, Tag>;
 
-export type {Tags, TagMap};
+export type {Tag, TagMap};
 
 export const getTags = async () => {
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URI}/get_all_tags.php`);
@@ -24,7 +24,7 @@ export const getTags = async () => {
       throw new Error('Network error.')
     }
     const response = await res.json();
- 
+    
     return response;
   };
   

@@ -1,17 +1,22 @@
-import { Tags, TagMap } from "./queries/tags"
+import { Tag, TagMap } from "./queries/tags"
 
 
 export function useMappedShowTags(allTags:TagMap, showTagIds: Array<number>, maxTags:number|null=null) {
    
-    const showTags= showTagIds.reduce((tags:Tags[], tagId, idx) => {
+    const showTags= showTagIds.reduce((tags:Tag[], tagId, idx) => {
         
-        if(!maxTags || maxTags > idx){
             tags.push(allTags[tagId])
-        }
         
         return tags;
     },[])
 
-    return showTags;
-   
+    // sort tags by frequency
+
+    showTags.sort((a:Tags, b:Tags) => a.freq - b.freq);
+    
+    if(!maxTags){
+        return showTags;
+    } else { 
+        return showTags.slice(0, maxTags);
+    }
   }
