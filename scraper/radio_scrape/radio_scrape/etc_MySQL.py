@@ -83,13 +83,13 @@ class MySQL():    #------------------------------------------------------
         self.close(cursor, conn)
 
     # ---------------------------------------------------------
-    def insert_all_tags(self, data_for_db):
+    def insert_all_tags(self, data_for_db, keywords_only:list):
         
 
-        query = """INSERT INTO all_tags (`tag`, `frequency`)
+        query = """INSERT INTO all_tags (`tag`, `freq`)
                 VALUES (%s, %s) as new
                 ON DUPLICATE KEY UPDATE
-                `tag` = new.`tag`, `frequency` = new.`frequency`;
+                `tag` = new.`tag`, `freq` = new.`freq`;
                 """
 
         # connect to MySQL
@@ -100,6 +100,15 @@ class MySQL():    #------------------------------------------------------
         cursor.executemany(query, data_for_db)
         conn.commit()
         print(cursor.rowcount, "Records inserted successfully")
+
+        # remove record from all_tags if it is not in keywords_only
+        query = f"""DELETE FROM all_tags WHERE tag NOT IN ('{"', '".join(keywords_only)}')"""
+        print(query)
+        cursor.execute(query)
+        conn.commit()
+        print(cursor.rowcount, "Records deleted successfully")
+
+        
 
     # ---------------------------------------------------------
 
