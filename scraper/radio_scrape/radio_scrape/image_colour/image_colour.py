@@ -60,7 +60,11 @@ def desaturate(rgb_colour_value):
 
 def find_avg_dominant_colours(image_path, quantity = 3):
     """
-        Returns object with list of objects: {'freq': decimal reqpresenting frequency at which colour is present in image, 'hex': string hex code of colour}.
+        Returns object with list of objects: 
+        {
+        'freq': decimal reqpresenting frequency at which colour is present in image, 
+        'hex': string hex code of colour
+        }.
         `image_path` specifies the path to a local image.
         `quantity` specifies the number of colours to return.
         The colour are an average of the dominant clusters of colours. For example, an image with equal amount of red and yellow might return orange.

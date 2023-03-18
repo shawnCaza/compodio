@@ -3,7 +3,7 @@
 
 .detailAndImageWrapper{
 
-    @include mq('lg') {
+    @include mq('xl') {
         display: flex;
         flex-direction: row;
         justify-content: center; 
@@ -18,7 +18,7 @@
 
     flex: 0 1 40%;
     
-    @include mq('md') {
+    @include mq('xl') {
         flex: unset;
     }
 }
@@ -37,7 +37,7 @@
         line-height: 1em;
     }
 
-    @include mq('lg') {
+    @include mq('xl') {
         min-width: 686px;
         h1{
             text-align: left;

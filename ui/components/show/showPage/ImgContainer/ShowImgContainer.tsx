@@ -16,8 +16,8 @@ function defineSizes(containerHeights:{height:number, breakpoint:number}[], tota
         //add comma + space to sizes string if not first iteration
         if(sizes.length > 0){sizes += ', '};
         //add media query to sizes string
-        if(containerHeight.breakpoint > 0){sizes += `(min-width: ${(containerHeight.breakpoint/16)}em) `};
-        sizes += displayWidthEM.toPrecision(3) + 'em';
+        if(containerHeight.breakpoint > 0){sizes += `(min-width: ${(containerHeight.breakpoint/16)}rem) `};
+        sizes += displayWidthEM.toPrecision(3) + 'rem';
     });
     
     return sizes;
@@ -30,7 +30,7 @@ function ShowImgContainer ({show}:imgContainerProps) {
 
 
         const totalVerticalPadding = 40; //Based on css margin
-        const containerHeights = [{'height':281, "breakpoint":768}, {'height':180, "breakpoint":0}] // Based on css
+        const containerHeights = [{'height':281, "breakpoint":1366}, {'height':180, "breakpoint":0}] // Based on css
         
         const displaySizes = defineSizes(containerHeights, totalVerticalPadding, w2HRatio);
          
