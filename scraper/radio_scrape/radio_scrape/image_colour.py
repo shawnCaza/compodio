@@ -82,24 +82,17 @@ def find_avg_dominant_colours(image_path, quantity = 3):
     # Find most dominant colors
     cluster = KMeans(n_clusters=quantity).fit(reshape)
     freq_n_colours = get_colour_frequencies(cluster, cluster.cluster_centers_)
-    print('freq_n_colours', freq_n_colours)
+    # print('freq_n_colours', freq_n_colours)
 
     # Sort from lightest to darkest 
     freq_n_colours.sort(reverse=True, key=lambda colour: colorsys.rgb_to_hls(*colour[1])[1])
-    print('hls', [colorsys.rgb_to_hls(*colour[1])[2] for colour in freq_n_colours])
+
     
-    # ignore below, will just save frequency data for now so we have more options later.
-    # if one colour is super dominant, just use that one.
-    # sum_of_frequencies = sum([freq_colour[0] for freq_colour in freq_n_colours])
-    # super_dom_colours = [freq_colour[2] for freq_colour in freq_n_colours if freq_colour[0]/sum_of_frequencies > .7]
-    
-    # if len(super_dom_colour):
 
-        
-    freq_n_hex = [{'freq': round(Decimal(freq_hex[0]),2), 'hex': freq_hex[2]} for freq_hex in freq_n_colours]
+    # freq_n_hex = [{'freq': round(Decimal(freq_hex[0]),2), 'hex': freq_hex[2]} for freq_hex in freq_n_colours]
+    dom_hex_colours = [ colour[2] for colour in freq_n_colours]
 
-
-    return freq_n_hex
+    return dom_hex_colours
 
 
 if __name__ == '__main__':

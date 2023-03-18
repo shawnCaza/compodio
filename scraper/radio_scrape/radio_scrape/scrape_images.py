@@ -28,11 +28,31 @@ def download_img(save_base, img, ext):
     image = Image.open(f"{save_base}.{ext}")
     image = image.convert('RGB')
     image.save(f"{save_base}.webp", 'webp', lossless=0, quality=50)            
-    
-    sizes_used = generate_sizes(image, save_base)
+    sizes = determine_sizes(image)
+    sizes_used = generate_sizes(image, save_base, sizes)
 
 
     return sizes_used
+
+def determine_sizes(image):
+    """
+        Because images are often not the same aspect ratio as the responsive image container, 
+        the image widths we need depend on the aspect ratio of the image compared to max-heights/widths allowed in css/components.
+    """
+    orig_w = image.size[0]
+    orig_h = image.size[1]
+    aspect_ratio = orig_w / orig_h
+
+    sizes = []
+
+    for max in [{'w':None, 'h':180}, {'w':336, 'h':189}, {'w':388, 'h':218}, {'w':400, 'h':225}, {'w':None, 'h':280}]:
+        new_potential_w = int(max['h'] * aspect_ratio)
+        new_w = new_potential_w if not max['w'] or new_potential_w < max['w'] else max['w']
+        sizes.append(new_w)
+        sizes.append(new_w*2)
+        sizes.append(new_w*3)
+    sizes.sort()
+    return sizes
 
 def generate_sizes(image, save_base, sizes=[250,350,500,750,1000,1250,1500,1750,2000,2400], formats=['webp','jpeg']):
     """
@@ -102,7 +122,7 @@ def scrape_images():
 
                 sizes = download_img(save_file_base, show['img'], "jpg")
 
-                dom_colours = image_colour.find_dominant_colours(f"{save_file_base}.jpg")
+                dom_colours = image_colour.find_avg_dominant_colours(f"{save_file_base}.jpg")
                 
                 print(show['id'], src_last_updt, sizes, json.dumps(dom_colours))
                 
