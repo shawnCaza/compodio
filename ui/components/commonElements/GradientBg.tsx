@@ -17,7 +17,7 @@ function define_bg_colours(colours: string | null){
         coloursArr = JSON.parse(colours);
     }
 
-    if (coloursArr.length > 1){
+    if (coloursArr.length > 0){
         
         // Transform array into string of colours for css
         const gradient_colour_def = coloursArr.reverse().reduce(

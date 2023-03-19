@@ -1,6 +1,7 @@
 import time
 import json, requests
 import pathlib
+import math
 
 from PIL import Image
 
@@ -28,25 +29,28 @@ def download_img(save_base, img, ext):
     image = Image.open(f"{save_base}.{ext}")
     image = image.convert('RGB')
     image.save(f"{save_base}.webp", 'webp', lossless=0, quality=50)            
-    sizes = determine_sizes(image)
+    sizes = determine_sizes(orig_w=image.size[0], orig_h=image.size[1])
     sizes_used = generate_sizes(image, save_base, sizes)
 
 
     return sizes_used
 
-def determine_sizes(image):
+def determine_sizes(orig_w, orig_h):
     """
         Because images are often not the same aspect ratio as the responsive image container, 
         the image widths we need depend on the aspect ratio of the image compared to max-heights/widths allowed in css/components.
     """
-    orig_w = image.size[0]
-    orig_h = image.size[1]
+
     aspect_ratio = orig_w / orig_h
 
     sizes = []
 
-    for max in [{'w':None, 'h':180}, {'w':336, 'h':189}, {'w':388, 'h':218}, {'w':400, 'h':225}, {'w':None, 'h':280}]:
-        new_potential_w = int(max['h'] * aspect_ratio)
+    for max in [{'w':None, 'h':180, 'margin':40}, {'w':334, 'h':188, 'margin':24}, {'w':386, 'h':218, 'margin':24}, {'w':398, 'h':224, 'margin':24}, {'w':None, 'h':280, 'margin':0}]:
+
+        margin_height_reduction = max['margin'] if aspect_ratio < 16/9 or max['margin'] == 40 else 0
+
+        new_potential_w = math.ceil((max['h']-margin_height_reduction) * aspect_ratio)
+
         new_w = new_potential_w if not max['w'] or new_potential_w < max['w'] else max['w']
         sizes.append(new_w)
         sizes.append(new_w*2)
@@ -152,4 +156,5 @@ def scrape_images():
 
 if __name__ == '__main__':
     scrape_images()
-    
+    # print(determine_sizes(924,598))
+    # print(determine_sizes(324,180))

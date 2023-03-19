@@ -21,7 +21,7 @@ function CardImgContainer ({show}:imgContainerProps) {
     if (needsPadding){
         const cardBreakPointWidths= [{'bp': 85.375, 'w': 24.125}, {'bp': 96, 'w': 24.875}, {'bp': 0, 'w': 21}]
 
-        const totalVerticalPadding = 24/16; //Based on css margin converted to rem
+        const totalVerticalPadding = 24/16; //Based on css px margin. Converted for use with rem
         // const containerHeight = 336/1.77 // Based on css
         // const imgDisplayHeight = containerHeight - totalVerticalPadding;
         // displaySizes = (imgDisplayHeight * w2HRatio)/16 + 'rem';

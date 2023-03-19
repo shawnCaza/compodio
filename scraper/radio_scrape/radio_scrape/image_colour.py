@@ -38,7 +38,7 @@ def get_colour_frequencies(cluster, centroids):
     # Group cluster's (percentage, rgb, hex), 
     # filter out very light colours (hls[1] > 235) and dark colours (hls[1] < 20)
     # desaturate colours
-    colours = [(percent, color, convert_to_hex(desaturate(color))) for (percent, color) in zip(hist, centroids) if colorsys.rgb_to_hls(*color)[1] > 20 and colorsys.rgb_to_hls(*color)[1] < 235]
+    colours = [(percent, color, convert_to_hex(desaturate(color))) for (percent, color) in zip(hist, centroids) if colorsys.rgb_to_hls(*color)[1] > 30 and colorsys.rgb_to_hls(*color)[1] < 215]
     return colours
 
 def convert_to_hex(rgb_colour_value):
@@ -55,7 +55,7 @@ def desaturate(rgb_colour_value):
         Desaturates a colour by converting it to hls and then back to rgb.
     """
     hls = colorsys.rgb_to_hls(*rgb_colour_value)
-    rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.66)
+    rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.5)
     return rgb
 
 def find_avg_dominant_colours(image_path, quantity = 3):
