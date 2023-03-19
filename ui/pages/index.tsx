@@ -4,6 +4,7 @@ import { useShowsQuery, getShows } from '../hooks/queries/shows';
 import { useRecommendedShows } from '../hooks/useRecommendedShows';
 import { getTags } from '../hooks/queries/tags';
 import { dehydrate, QueryClient} from 'react-query';
+import { Server, Client } from "react-hydration-provider";
 import ContentSection from '../components/layout/ContentSection/contentSection';
 import ShowCards from '../components/show/showCards/ShowCards';
 
@@ -27,12 +28,12 @@ export default function Home() {
 
  
 
-  const recomendedShows = useRecommendedShows();
+  const {recShowsSuffled, serverRecShows} = useRecommendedShows();
   
-  if (!shows || !recomendedShows){
+  if (!shows || !recShowsSuffled){
     return;
   }
-  console.log(recomendedShows);
+  // console.log(recomendedShows);
   return (
     <>
       <Head>
@@ -52,9 +53,13 @@ export default function Home() {
         </ContentSection> 
         
         <ContentSection heading={'Recommended'} tag='h2'>
-            
-            <ShowCards shows={recomendedShows} />         
-          
+          <Server>
+            {/* TODO: these should should placeholder content rather than actual content the flashes away on switch to client content*/}
+            <ShowCards shows={serverRecShows} />         
+          </Server>
+          <Client>
+            <ShowCards shows={recShowsSuffled} />         
+          </Client>
         </ContentSection> 
 
         <ContentSection heading={'Recently Updated'} tag='h2'>

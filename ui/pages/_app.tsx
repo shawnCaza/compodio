@@ -5,7 +5,7 @@ import "../styles/globals.scss";
 import Layout from "../components/layout/Layout";
 import { getShows, showsStaleTime } from "../hooks/queries/shows";
 import { getTags, tagsStaleTime } from "../hooks/queries/tags";
-
+import { HydrationProvider} from "react-hydration-provider";
 function App({ Component, pageProps }: AppProps) {
   
   const [queryClient] = useState(() => new QueryClient());
@@ -15,9 +15,11 @@ function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
-        <Layout>
-          <Component {...pageProps} />
-        </Layout>
+        <HydrationProvider>
+          <Layout>
+            <Component {...pageProps} />
+          </Layout>
+        </HydrationProvider>
       </Hydrate>
     </QueryClientProvider>
   );

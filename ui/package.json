@@ -20,6 +20,7 @@
     "next": "13.1.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hydration-provider": "^1.0.2",
     "react-icons": "^4.7.1",
     "react-modal": "^3.16.1",
     "react-query": "^3.39.2",
