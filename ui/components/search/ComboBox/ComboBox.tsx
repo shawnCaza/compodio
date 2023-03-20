@@ -25,11 +25,13 @@ export type {fuseResult};
 //This is required for accessibility aria-live messages (e.g., after making a selection).
 const itemToString = (result:fuseResult | string | null) => {
   if(!result){return ''}
-  if(typeof result === 'string'){return result}
-  return result.item.showName
+  return typeof result === 'string' ? result : result.item.showName
 }
 
-
+const defineItemKey = (result:fuseResult | string | null) => {
+  if(!result){return ''}
+  return typeof result === 'string' ? 'search-all' : result.item.showName
+}
 
 
 function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
@@ -50,6 +52,10 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
     selectItem,
   } = useCombobox({
     items: inputItems,
+    labelId:"search-label",
+    inputId:"search-input",
+    menuId:"search-autocomplete-menu",
+    toggleButtonId:"search-toggle-button",
     itemToString,
     onInputValueChange: ({ inputValue }) => {
       setInputItems(
@@ -118,7 +124,7 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
                 highlightedIndex={highlightedIndex} 
                 index={index} 
                 getItemProps={getItemProps} 
-                key={itemToString(result)}
+                key={defineItemKey(result)}
               > 
 
               {

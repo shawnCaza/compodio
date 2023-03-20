@@ -1,6 +1,7 @@
 import { useRouter } from 'next/router'
 import Link from 'next/link';
 import { dehydrate, QueryClient} from 'react-query';
+import { Server, Client } from "react-hydration-provider";
 
 import {GoGlobe} from 'react-icons/go';
 import {CiClock2} from 'react-icons/ci';
@@ -13,6 +14,10 @@ import ShowFeed from '../../components/show/showFeed/ShowFeed';
 import EpDate from '../../components/show/epDate/EpDate';
 import { useShowLength } from '../../components/show/hooks/useShowLength';
 import ShowCards from '../../components/show/showCards/ShowCards';
+import { useRecommendedShows } from '../../hooks/useRecommendedShows';
+import ContentSection from '../../components/layout/ContentSection/contentSection';
+
+
 import { useShowsQuery, getShows } from '../../hooks/queries/shows';
 import { getTags } from '../../hooks/queries/tags';
 import TagsContainer from '../../components/layout/cardElements/TagsContainer/TagsContainer';
@@ -65,6 +70,12 @@ export default function ShowPage() {
   
   if(!show){return null};
 
+  const {recShowsSuffled, serverRecShows}:randomShowResults = useRecommendedShows();
+  if (!recShowsSuffled || !serverRecShows ){
+    return;
+  }
+
+
   return (
     <>
     <div className={styles.detailAndImageWrapper}>
@@ -106,6 +117,15 @@ export default function ShowPage() {
 
 
     </div>
+    <ContentSection heading='Recommended' tag='h2'>
+      <Server>
+        {/* TODO: these should should placeholder content rather than actual content the flashes away on switch to client content*/}
+        <ShowCards shows={serverRecShows} />         
+      </Server>
+      <Client>
+        <ShowCards shows={recShowsSuffled} />         
+      </Client>
+    </ContentSection>
     </>
   )
 }

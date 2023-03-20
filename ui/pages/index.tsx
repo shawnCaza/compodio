@@ -1,12 +1,17 @@
 import Head from 'next/head'
 import styles from '../styles/Home.module.css'
-import { useShowsQuery, getShows } from '../hooks/queries/shows';
+import { useShowsQuery, getShows, Show } from '../hooks/queries/shows';
 import { useRecommendedShows } from '../hooks/useRecommendedShows';
 import { getTags } from '../hooks/queries/tags';
 import { dehydrate, QueryClient} from 'react-query';
 import { Server, Client } from "react-hydration-provider";
 import ContentSection from '../components/layout/ContentSection/contentSection';
 import ShowCards from '../components/show/showCards/ShowCards';
+
+interface randomShowResults{
+  recShowsSuffled?:Show[],
+  serverRecShows?:Show[],
+}
 
 export async function getServerSideProps() {
   const queryClient = new QueryClient();
@@ -26,14 +31,14 @@ export async function getServerSideProps() {
 export default function Home() {
   const shows = useShowsQuery();
 
- 
-
-  const {recShowsSuffled, serverRecShows} = useRecommendedShows();
-  
-  if (!shows || !recShowsSuffled){
+  if (!shows ){
     return;
   }
-  // console.log(recomendedShows);
+
+  const {recShowsSuffled, serverRecShows}:randomShowResults = useRecommendedShows();
+  if (!recShowsSuffled || !serverRecShows ){
+    return;
+  }
   return (
     <>
       <Head>
