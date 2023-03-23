@@ -15,12 +15,12 @@ class CfruSpider(scrapy.Spider):
     mySQL = MySQL()
     show_results = mySQL.get_shows_by_source('cfru')
     show_id_map = {show['showName']:show['id'] for show in show_results}
-    start_urls = [show['internal_link'] for show in show_results]
+    start_urls = [show['ext_link'] for show in show_results]
     allowed_domains = ['cfru.ca']
 
 
     def parse(self, response):
-        
+        pass
         for episode in response.css('div.archiveList-post'):
             current_episode = episode_item()
 
