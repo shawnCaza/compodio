@@ -83,6 +83,22 @@ class MySQL():    #------------------------------------------------------
         self.close(cursor, conn)
 
     # ---------------------------------------------------------
+    def insert_ext_feed_link(self, ext_feed_link):
+        # connect to MySQL
+        conn, cursor = self.connect()
+        self.use_compodio_DB(cursor)
+        
+        query = """INSERT INTO ext_feed_links (show_id, link, type) VALUES (%s, %s, %s)"""
+        cursor.execute(query,(ext_feed_link['show_id'], ext_feed_link['link'], ext_feed_link['feed_type']))
+
+        try:
+            conn.commit()
+        except:
+            print(cursor.statement,)
+        time.sleep(.2)
+        self.close(cursor, conn)
+
+    # ---------------------------------------------------------
     def insert_all_tags(self, data_for_db, keywords_only:list):
         
 
@@ -148,6 +164,21 @@ class MySQL():    #------------------------------------------------------
         self.use_compodio_DB(cursor)
         # select data
         cursor.execute(f"""select * from shows where source='{source}'""")
+
+        return cursor.fetchall()
+    
+    #------------------------------------------------------   
+         
+    def get_shows_ext_sites(self):
+        # connect to MySQL
+        conn, cursor = self.connect()
+        self.use_compodio_DB(cursor)
+        # select data
+        cursor.execute("""
+            SELECT id, showName, ext_link 
+            FROM shows
+            WHERE ext_link != ''
+        """)
 
         return cursor.fetchall()
  

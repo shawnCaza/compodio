@@ -11,4 +11,9 @@ def show_pipelines():
     'radio_scrape.pipelines.SaveShow': 200,
     }
 
+def external_feed_pipelines():
+    return {
+    'radio_scrape.pipelines.SaveExtFeedLink': 100,
+    }
+
 

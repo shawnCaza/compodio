@@ -53,7 +53,7 @@ export default function CommentPage() {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
-        <ContentSection heading={`#${pageTag.tag}`} tag='h1'>
+        <ContentSection heading={`Tag: #${pageTag.tag}`} tag='h1'>
             {tagShows &&
               <ShowCards shows={tagShows} />         
             }

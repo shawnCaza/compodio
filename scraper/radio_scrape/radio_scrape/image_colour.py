@@ -38,7 +38,8 @@ def get_colour_frequencies(cluster, centroids):
     # Group cluster's (percentage, rgb, hex), 
     # filter out very light colours (hls[1] > 235) and dark colours (hls[1] < 20)
     # desaturate colours
-    colours = [(percent, color, convert_to_hex(desaturate(color))) for (percent, color) in zip(hist, centroids) if colorsys.rgb_to_hls(*color)[1] > 30 and colorsys.rgb_to_hls(*color)[1] < 215]
+    colours = [(percent, decontrast(desaturate(color)), convert_to_hex(decontrast(desaturate(color)))) for (percent, color) in zip(hist, centroids) ]
+    # colours = [(percent, desaturate(color), convert_to_hex(decontrast(desaturate(color)))) for (percent, color) in zip(hist, centroids) if colorsys.rgb_to_hls(*color)[1] > 60 and colorsys.rgb_to_hls(*color)[1] < 205]
     return colours
 
 def convert_to_hex(rgb_colour_value):
@@ -55,7 +56,28 @@ def desaturate(rgb_colour_value):
         Desaturates a colour by converting it to hls and then back to rgb.
     """
     hls = colorsys.rgb_to_hls(*rgb_colour_value)
-    rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.5)
+    print('saturation', hls[2], convert_to_hex(rgb_colour_value))
+    if hls[2] > .75 or hls[2] < -.75:
+        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.25)
+    elif hls[2] > .5 or hls[2] < -.5:
+        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.333)
+    elif hls[2] > .25 or hls[2] < -.25:
+        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.5)
+    else:
+        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.66)
+    return rgb
+
+def decontrast(rgb_colour_value):
+    """
+        Decontrasts a colour by converting it to hls and then back to rgb.
+    """
+    hls = colorsys.rgb_to_hls(*rgb_colour_value)
+    if hls[1] < 80:
+        rgb = colorsys.hls_to_rgb(hls[0], 80, hls[2])
+    elif hls[1] > 175:
+        rgb = colorsys.hls_to_rgb(hls[0], 175, hls[2])
+    else:
+        rgb = rgb_colour_value
     return rgb
 
 def find_avg_dominant_colours(image_path, quantity = 3):
@@ -82,20 +104,20 @@ def find_avg_dominant_colours(image_path, quantity = 3):
     # Find most dominant colors
     cluster = KMeans(n_clusters=quantity).fit(reshape)
     freq_n_colours = get_colour_frequencies(cluster, cluster.cluster_centers_)
-    # print('freq_n_colours', freq_n_colours)
+    print('freq_n_colours', freq_n_colours)
 
-    # Sort from lightest to darkest 
-    freq_n_colours.sort(reverse=True, key=lambda colour: colorsys.rgb_to_hls(*colour[1])[1])
+    # Sort from darkest to lightest
+    freq_n_colours.sort(reverse=False, key=lambda colour: colorsys.rgb_to_hls(*colour[1])[1])
 
     
 
     # freq_n_hex = [{'freq': round(Decimal(freq_hex[0]),2), 'hex': freq_hex[2]} for freq_hex in freq_n_colours]
-    dom_hex_colours = [ colour[2] for colour in freq_n_colours]
+    dom_hex_colours = [  colour[2] for colour in freq_n_colours]
 
     return dom_hex_colours
 
 
 if __name__ == '__main__':
 
-    dom_colours = find_avg_dominant_colours('/Users/scaza/Desktop/t3.jpeg')
-    print(dom_colours)
+    dom_colours = find_avg_dominant_colours('/Users/scaza/Desktop/t2.webp')
+    print(f"#{dom_colours[0]}, #{dom_colours[1]}, #{dom_colours[2]}")

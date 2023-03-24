@@ -26,3 +26,8 @@ class show_item(scrapy.Item):
     duration = scrapy.Field()
     slug = scrapy.Field()
     
+class ext_feed_item(scrapy.Item):
+    # define the fields for your item here like:
+    link = scrapy.Field()
+    show_id = scrapy.Field()
+    feed_type = scrapy.Field()

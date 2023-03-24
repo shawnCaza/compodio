@@ -27,8 +27,6 @@ function get_eps_by_show_id($show_id){
     return $result;
 
 }
-
-
 ///// alert subs stats admin page
 
 function get_subscription_status_counts(){

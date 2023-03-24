@@ -42,3 +42,9 @@ class SaveShow:
         mySQL = MySQL()
         mySQL.insert_show(show)
         return show
+
+class SaveExtFeedLink:
+    def process_item(self, ext_feed, spider):
+        mySQL = MySQL()
+        mySQL.insert_ext_feed_link(ext_feed)
+        return ext_feed
