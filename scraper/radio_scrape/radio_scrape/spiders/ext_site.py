@@ -6,8 +6,29 @@ from scrapy.spiders import CrawlSpider, Rule, Request
 from scrapy.linkextractors import LinkExtractor
 
 from urllib.parse import urlparse
+import requests
 
 from radio_scrape.etc_MySQL import MySQL
+
+# function to seperate any camel case words in string to seperate words, use full words for variable names
+def camel_case_split(str):
+    split_words = [[str[0]]]
+    for character in str[1:]:
+        if split_words[-1][-1].islower() and character.isupper():
+            split_words.append(list(character))
+        else:
+            split_words[-1].append(character)
+    return ' '.join([''.join(word) for word in split_words])
+
+def validate_pod_link(pod_link, show_name):
+
+    # use requests to get text content of pod_link
+    r = requests.get(pod_link)
+    # check if show name is in text content
+    if show_name.lower() not in r.text.lower() and camel_case_split(show_name).lower() not in r.text.lower():
+        return False
+    else:
+        return True
 
 def get_domain(url):
     
@@ -44,7 +65,7 @@ class ExtSiteSpider(scrapy.Spider):
     def start_requests(self):
         
         for show in self.show_results:
-            yield scrapy.Request(show['ext_link'], meta={'id':show['id']})
+            yield scrapy.Request(show['ext_link'], meta={'id':show['id'], 'showName':show['showName']})
 
 
     def parse(self, response):
@@ -52,7 +73,10 @@ class ExtSiteSpider(scrapy.Spider):
         print("\n--------------------------------------------\n")
         print(response.url)
         links = response.css('a::attr(href)').getall()
-    
+
+        # Get show name from passed meta data
+        show_name = response.meta['showName']
+
         # Create list of podcast domains
         podcast_domains = ['podcasts.apple.com', 'spotify.com/show', 'podcasts.google.com', 'google.com/podcasts']
         feed_types = ['apple', 'spotify', 'google', 'google']
@@ -64,6 +88,26 @@ class ExtSiteSpider(scrapy.Spider):
 
             for pod_link in podcast_links:
                 print("\n\n~~~~~~~~~ {pod_link} ~~~~~~\n\n")
+
+                # Because a shows website may link to other podcasts we need to validate if the podcast feed link contains text matching the title of the current show
+                # Because some shows like 'FoodFarm Talk' may not use camel case in their feed link we need to check both variations
+
+                pod_link_valid = validate_pod_link(pod_link, show_name)
+                if not pod_link_valid:
+                    print("Show name not in text content, skipping link")
+                    continue
+
+                # use requests to get text content of pod_link
+                r = requests.get(pod_link)
+                # check if show name is in text content
+                if show_name.lower() not in r.text.lower() and camel_case_split(show_name).lower() not in r.text.lower():
+                    # if not, then skip this link
+                    print("Show name not in text content, skipping link")
+                    continue
+
+                # If show name is in text content, then create item
+
+
                 current_feed_link = ext_feed_item()
 
                 # Get show id from passed meta data
@@ -80,11 +124,11 @@ class ExtSiteSpider(scrapy.Spider):
         else:
             # If no podcast links, then use linkextractor to find links to other pages
             # and follow them
-            print('look for more pages to scrape')
+            
             for link in self.link_extractor.extract_links(response):
 
                 
-                yield Request(link.url, meta={'id':response.meta['id']}, callback=self.parse)
+                yield Request(link.url, meta={'id':response.meta['id'], 'showName':show_name}, callback=self.parse)
 
 
     

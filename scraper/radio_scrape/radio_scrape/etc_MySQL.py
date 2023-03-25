@@ -89,6 +89,13 @@ class MySQL():    #------------------------------------------------------
         self.use_compodio_DB(cursor)
         
         query = """INSERT INTO ext_feed_links (show_id, link, type) VALUES (%s, %s, %s)"""
+
+        # same as above query but update if record already exists
+        query = """INSERT INTO ext_feed_links (show_id, link, type) VALUES (%s, %s, %s) as new
+                ON DUPLICATE KEY UPDATE
+                `show_id` = new.`show_id`, `link` = new.`link`, `type` = new.`type`;
+                """
+
         cursor.execute(query,(ext_feed_link['show_id'], ext_feed_link['link'], ext_feed_link['feed_type']))
 
         try:
