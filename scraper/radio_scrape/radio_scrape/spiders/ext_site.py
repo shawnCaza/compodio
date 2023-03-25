@@ -12,7 +12,7 @@ from radio_scrape.etc_MySQL import MySQL
 def get_domain(url):
     
     parsed_uri = urlparse(url)
-    domain = f'{parsed_uri.scheme}://{parsed_uri.netloc}/'  
+    domain = parsed_uri.netloc 
     return domain
 
 def generate_key_from_link(link):
@@ -21,6 +21,8 @@ def generate_key_from_link(link):
     domain_key = ''.join([char for char in parsed_uri.netloc if char.isalpha()])
     return domain_key
 
+# Don't want to crawl all of twitter
+do_not_crawl = ['twitter','facebook','podomatic', 'mixcloud', 'soundcloud', 'linktr.ee', 'anchor.fm', 'tumblr', 'instagram', 'youtube', 'itunes', 'podbay', 'blogspot', 'tripod.com', 'wordpress.com', 'stitcher', 'tunein', 'overcast', 'player.fm', 'podbean', 'pca.st', 'podcastaddict', 'podcastrepublic', 'podcasts.apple.com', 'spotify.com', 'google.com', 'podcastone.com', 'podcastindex.org', 'podcastland.com', 'podcastpedia.org', 'podcastalley.com', 'podcast411.com', 'podcastdirectory.com', 'podcast.net', 'podcast.com']
 
 class ExtSiteSpider(scrapy.Spider):
     name = 'ext_site'
@@ -29,30 +31,31 @@ class ExtSiteSpider(scrapy.Spider):
         'ITEM_PIPELINES': external_feed_pipelines()
     }
 
-
-
     mySQL = MySQL()
     show_results = mySQL.get_shows_ext_sites()
-    show_id_map = {generate_key_from_link(show['ext_link']):show['id'] for show in show_results}
-    start_urls = [show['ext_link'] for show in show_results]
-    
 
     
-    allowed_domains = [get_domain(show['ext_link']) for show in show_results ]
-    print(allowed_domains)
+    allowed_domains = [get_domain(show['ext_link']) for show in show_results if not any(domain in show['ext_link'] for domain in do_not_crawl)]
+    print('allowed:', allowed_domains)
+
     # initialize link extractor, deny links with a depth of 2 or more
     link_extractor = LinkExtractor(deny=r'/\w+/\w+', allow_domains=allowed_domains, unique=True)
     
+    def start_requests(self):
+        
+        for show in self.show_results:
+            yield scrapy.Request(show['ext_link'], meta={'id':show['id']})
+
 
     def parse(self, response):
-        print("--------------------------------------------")
-        print("--------------------------------------------")
-        print("--------------------------------------------")
+        
+        print("\n--------------------------------------------\n")
+        print(response.url)
         links = response.css('a::attr(href)').getall()
     
         # Create list of podcast domains
-        podcast_domains = ['podcasts.apple.com', 'spotify.com/show/']
-        feed_types = ['apple', 'spotify']
+        podcast_domains = ['podcasts.apple.com', 'spotify.com/show', 'podcasts.google.com', 'google.com/podcasts']
+        feed_types = ['apple', 'spotify', 'google', 'google']
 
         # Filter out links that are not podcasts
         podcast_links = [link for link in links if any(domain in link for domain in podcast_domains)]
@@ -60,11 +63,11 @@ class ExtSiteSpider(scrapy.Spider):
         if len(podcast_links):
 
             for pod_link in podcast_links:
-                print(pod_link)
+                print("\n\n~~~~~~~~~ {pod_link} ~~~~~~\n\n")
                 current_feed_link = ext_feed_item()
 
-                # Get show id from show_id_map
-                show_id = self.show_id_map[generate_key_from_link(response.url)]
+                # Get show id from passed meta data
+                show_id = response.meta['id']
                 current_feed_link['show_id'] = show_id
 
                 current_feed_link['link'] = pod_link
@@ -74,16 +77,14 @@ class ExtSiteSpider(scrapy.Spider):
                 yield current_feed_link
 
 
-            #  stop following links
-            return
-            
-            
-
         else:
             # If no podcast links, then use linkextractor to find links to other pages
             # and follow them
+            print('look for more pages to scrape')
             for link in self.link_extractor.extract_links(response):
-                yield Request(link.url, callback=self.parse)
+
+                
+                yield Request(link.url, meta={'id':response.meta['id']}, callback=self.parse)
 
 
     
