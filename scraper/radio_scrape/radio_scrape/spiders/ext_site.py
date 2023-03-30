@@ -64,8 +64,10 @@ class ExtSiteSpider(scrapy.Spider):
     
     def start_requests(self):
         
-        for show in self.show_results:
-            yield scrapy.Request(show['ext_link'], meta={'id':show['id'], 'showName':show['showName']})
+        # for show in self.show_results:
+        #     yield scrapy.Request(show['ext_link'], meta={'id':show['id'], 'showName':show['showName']})
+        # for show in self.show_results:
+        yield scrapy.Request('https://www.democracynow.org/pages/help/podcasting', meta={'id':1437, 'showName':'Democracy Now'})
 
 
     def parse(self, response):
@@ -78,8 +80,10 @@ class ExtSiteSpider(scrapy.Spider):
         show_name = response.meta['showName']
 
         # Create list of podcast domains
-        podcast_domains = ['podcasts.apple.com', 'spotify.com/show', 'podcasts.google.com', 'google.com/podcasts']
-        feed_types = ['apple', 'spotify', 'google', 'google']
+        # itunes is outdated, but links currently redirect to apple
+        podcast_domains = ['podcasts.apple.com', 'itunes.apple.com/us/podcast/', 'spotify.com/show', 'podcasts.google.com', 'google.com/podcasts']
+
+        feed_types = ['apple', 'apple', 'spotify', 'google', 'google']
 
         # Filter out links that are not podcasts
         podcast_links = [link for link in links if any(domain in link for domain in podcast_domains)]
@@ -105,6 +109,13 @@ class ExtSiteSpider(scrapy.Spider):
                     print("Show name not in text content, skipping link")
                     continue
 
+                feed_type = feed_types[feed_types.index([feed_type for feed_type in feed_types if feed_type in pod_link][0])]
+
+                if feed_type == 'apple' and '.mp4' in r.text:
+                    # Apple also has video podcasts (used by democracy now). Need to note the difference
+                    feed_type = 'apple_video'
+                    
+
                 # If show name is in text content, then create item
 
 
@@ -116,7 +127,7 @@ class ExtSiteSpider(scrapy.Spider):
 
                 current_feed_link['link'] = pod_link
 
-                current_feed_link['feed_type'] = feed_types[feed_types.index([feed_type for feed_type in feed_types if feed_type in pod_link][0])]
+                current_feed_link['feed_type'] = feed_type
 
                 yield current_feed_link
 
