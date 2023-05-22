@@ -38,7 +38,6 @@ function define_bg_colours(colours: string | null){
         const gradient_css = `linear-gradient(to bottom, ${gradient_colour_def}, transparent)`
 
         return gradient_css
-        // return "#000";
     }  else{
 
         return "#000";

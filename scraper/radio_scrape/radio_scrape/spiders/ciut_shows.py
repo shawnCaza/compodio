@@ -23,7 +23,7 @@ class CiutShowsSpider(scrapy.spiders.SitemapSpider):
 
 
         if response.status != 404:
-            shows_to_skip = ['Rainbow Country', 'Democracy Now', 'Canadaland', 'Alternative Radio', 'Shows', 'The Green Majority', 'Beyond the Headlines']
+            shows_to_skip = ['Rainbow Country', 'Democracy Now', 'Canadaland', 'Shows']
             
             current_show = show_item()
 

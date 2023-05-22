@@ -7,14 +7,14 @@
 #     https://docs.scrapy.org/en/latest/topics/downloader-middleware.html
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 
-BOT_NAME = 'radio_scrape'
+BOT_NAME = 'compodio'
 
 SPIDER_MODULES = ['radio_scrape.spiders']
 NEWSPIDER_MODULE = 'radio_scrape.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-#USER_AGENT = 'radio_scrape (+http://www.yourdomain.com)'
+USER_AGENT = 'compodio (+http://www.compodio.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True

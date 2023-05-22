@@ -9,6 +9,8 @@ from itemadapter import ItemAdapter
 from radio_scrape.etc_MySQL import MySQL
 
 import requests
+import urllib.parse
+
 from slugify import slugify
 
 
@@ -19,14 +21,21 @@ class SaveEpisode:
         mySQL.insert_episode(episode)
         return episode
 
+class EncodeURL:
+    def process_item(self, episode, spider):
+        episode['mp3'] = episode['mp3'].encode('utf-8')
+        return episode
+    
 class GetFileSize:
     def process_item(self, episode, spider):
-        header = requests.head(episode['mp3'], stream=True).headers
-        if 'Content-length' in header.keys():
-            episode['file_size'] = header['Content-length']
-        else:
-            # 0 recomended when file size unknown (https://validator.w3.org/feed/docs/error/UseZeroForUnknown.html) 
-            episode['file_size'] = 0
+        
+        if not episode['file_size']:
+            header = requests.head(episode['mp3'], stream=True).headers
+            if 'Content-length' in header.keys():
+                episode['file_size'] = header['Content-length']
+            else:
+                # 0 recomended when file size unknown (https://validator.w3.org/feed/docs/error/UseZeroForUnknown.html) 
+                episode['file_size'] = 0
         
         return episode
 

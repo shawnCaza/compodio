@@ -1,8 +1,9 @@
 
 def episode_pipelines():
     return {
-    'radio_scrape.pipelines.GetFileSize': 100,
-    'radio_scrape.pipelines.SaveEpisode': 200,
+    'radio_scrape.pipelines.EncodeURL': 100,
+    'radio_scrape.pipelines.GetFileSize': 200,
+    'radio_scrape.pipelines.SaveEpisode': 300,
     }
 
 def show_pipelines():

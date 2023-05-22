@@ -2,10 +2,11 @@
 import mysql.connector as mysql
 from radio_scrape.radio_scrape import DBConfig as dbConf
 import time
+import logging
 
 class MySQL():    #------------------------------------------------------
     def connect(self):
-        
+        logging.getLogger("mysql.connector").setLevel(logging.WARNING)
         conn = mysql.connect(**dbConf.dbConfig)
         # create cursor 
         cursor = conn.cursor(dictionary=True)
@@ -88,12 +89,9 @@ class MySQL():    #------------------------------------------------------
         conn, cursor = self.connect()
         self.use_compodio_DB(cursor)
         
-        query = """INSERT INTO ext_feed_links (show_id, link, type) VALUES (%s, %s, %s)"""
-
-        # same as above query but update if record already exists
-        query = """INSERT INTO ext_feed_links (show_id, link, type) VALUES (%s, %s, %s) as new
+        query = """INSERT INTO ext_feed_links (show_id, link, feedType) VALUES (%s, %s, %s) as new
                 ON DUPLICATE KEY UPDATE
-                `show_id` = new.`show_id`, `link` = new.`link`, `type` = new.`type`;
+                `show_id` = new.`show_id`, `link` = new.`link`, `feedType` = new.`feedType`;
                 """
 
         cursor.execute(query,(ext_feed_link['show_id'], ext_feed_link['link'], ext_feed_link['feed_type']))
@@ -206,7 +204,7 @@ class MySQL():    #------------------------------------------------------
         self.use_compodio_DB(cursor)
         # select data
         cursor.execute(f"""with date_ranked_eps AS (
-                                select episodes.id, show_id, ep_date,
+                                select episodes.id, mp3, show_id, ep_date,
                                     rank() OVER (PARTITION BY show_id
                                                     ORDER BY ep_date DESC
                                                 ) AS `Rank`
@@ -215,18 +213,20 @@ class MySQL():    #------------------------------------------------------
                                 on shows.id = episodes.show_id
                                 where shows.source = '{source}'
                             )
-                            SELECT id, show_id, ep_date
+                            SELECT id, mp3, show_id, ep_date
                             FROM date_ranked_eps
                             WHERE `Rank` = 1""")
 
         return cursor.fetchall()
 
-    def remove_old_eps_by_show(self, show_id):
+    def remove_old_eps_by_show(self, show_id, where_clause = None):
         # connect to MySQL
         conn, cursor = self.connect()
         self.use_compodio_DB(cursor)
         
         query = f"""delete from episodes where show_id = {show_id}"""
+        if where_clause:
+            query += f""" and {where_clause}"""
         print('query', query)
         
         cursor.execute(query,)
@@ -285,4 +285,3 @@ class MySQL():    #------------------------------------------------------
         cursor.execute(query)
 
         return cursor.fetchall()
-

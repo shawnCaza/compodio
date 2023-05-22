@@ -11,7 +11,7 @@ class CfruShowsSpider(scrapy.Spider):
     start_urls = ['https://www.cfru.ca/shows/']
 
     def parse(self, response):
-        shows_to_skip = ['Rainbow Country', 'A Fill-In Broadcast', 'Your Show Here', 'CFRU Rebroadcast', 'BBC News', 'Democracy Now', 'Canadaland', 'Tales from the Bridge']
+        shows_to_skip = ['A Fill-In Broadcast', 'Your Show Here', 'CFRU Rebroadcast', 'BBC News', 'Rebroadcast']
         existing_show_names = set()
 
         for day_column in response.css("div.schedule-day"):

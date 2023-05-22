@@ -75,3 +75,26 @@ function get_all_tags(){
     return $all_tags['allTags'];
 
 }
+
+function get_all_ext_feeds(){
+
+    global $db;
+    //table ext_feed_links has columns named: show_id, link, feedType
+    //there can be multiple results for a show_id.
+    // link, and feedType are unique for each show_id 
+    // return a json object from ext_feed_links with the following shape:
+    // {show_id:{feedType:link, feedType:link,...},...}
+    $sql = "select json_objectagg(show_id, feeds) allExtFeeds
+            FROM (
+                SELECT show_id, JSON_OBJECTAGG(feedType, link) as feeds
+                FROM ext_feed_links GROUP BY show_id
+            ) t;";
+    $result = mysqli_query($db, $sql);
+    confirm_result_set($result);
+    $all_tags = mysqli_fetch_assoc($result); 
+
+    mysqli_free_result($result);
+    return $all_tags['allExtFeeds'];
+    
+
+}
