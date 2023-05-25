@@ -34,13 +34,13 @@ function get_all_shows(){
 
             /* Join most recent episode */
             INNER JOIN (
-            SELECT show_id, mp3, ep_date newestEpDate
-            FROM `episodes` eps
-            WHERE id IN (
-            SELECT MAX(id) id
-            FROM episodes
-            GROUP BY show_id
-            )
+                SELECT show_id, mp3, ep_date newestEpDate
+                FROM `episodes` 
+                WHERE ep_date IN (
+                    SELECT MAX(ep_date) ep_date
+                    FROM episodes
+                    GROUP BY show_id
+                )
             ) eps 
             ON `shows`.`id` = `eps`.`show_id`
 

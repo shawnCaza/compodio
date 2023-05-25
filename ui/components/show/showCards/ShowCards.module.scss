@@ -1,9 +1,11 @@
 .epDate{
     font-size: .8em;
+    color: var(--header-foreground-contrast-colour);
 }
 
 .title{
     margin: 0;
+    color: var(--header-foreground-colour);
 }
 
 .desc{

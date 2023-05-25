@@ -1,8 +1,8 @@
 .header{
     display:flex;
     justify-content:space-between;
-    background-color: var(--foreground-contrast-colour);
-    color: var(--background-contrast-colour);
+    background-color: var(--foreground-high-contrast-colour);
+    color: var(--header-foreground-colour);
     padding: 7px;
     align-items: center;
 }

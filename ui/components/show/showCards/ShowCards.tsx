@@ -33,7 +33,7 @@ function ShowCards({shows}:ShowCardsProps) {
             <Card key={show.id }>
               <div>
                 <Heading>
-                  <div className={styles.epDate}>
+                  <div className={styles.eperDate}>
                     <EpDate dtStr={show.newestEpDate} />
                   </div>
                   <ShowLink slug={show.slug} >
