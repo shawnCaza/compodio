@@ -53,7 +53,7 @@
     padding: 0;
     margin: 4px 0 0 0;
     z-index:9999;
-    background-color: var(--foreground-contrast-colour);
+    background-color: var(--header-background-high-contrast-colour);
     border-radius: var(--border-radius);
     box-shadow: 0 0 0 1px var(--border-contrast-colour);
 }
@@ -63,7 +63,7 @@
 }
 
 .highlightedItem{
-    background-color: var(--foreground-colour);
+    background-color: var(--header-background-colour);
     // color: var(--foreground-contrast-colour);
     cursor: pointer;
 }
