@@ -9,7 +9,8 @@
     --foreground-high-contrast-colour: #414141; //minimal accesible constrast when matched with brand colour - high contrast to foreground colour
     --background-colour:#eee;
     --background-contrast-colour:#cacaca;
-  
+    --background-high-contrast-colour:#aaaaaa; 
+   
     //main element / page body background
     --main-background-colour:#eee;
 
@@ -46,6 +47,7 @@
          --background-colour:#111;
          --main-background-colour:#2e2e2e;
          --background-contrast-colour: #2e2e2e;
-
+         --foreground-high-contrast-colour: #aaaaaa;
+         --background-high-contrast-colour:#414141;
   }
 }

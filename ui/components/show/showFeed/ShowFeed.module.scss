@@ -1,3 +1,5 @@
+@import "../../../styles/abstracts/abstracts";
+
 .showFeedContainer{
     padding: .5em;
 }
@@ -12,9 +14,9 @@
     display: flex;
     gap: 0.5em;
     justify-content: space-between;
-    background-color: lightgray;
-    color: #000;
-    padding:  0 0 0 .25em;
+    background-color: var(--background-high-contrast-colour);
+    color: var(--foreground-contrast-colour);
+    padding: 0 0 0 .25em;
     border-radius: 5px;
     border-top-right-radius: 5px;
     align-items: center;
@@ -26,10 +28,13 @@
 }
 
 .url{
-    border: none;
-    background: transparent;
+    border: 1px var(--foreground-high-contrast-colour) solid;
+    background: var(--background-contrast-colour);
     color: inherit;
     min-width: 33%;
+    flex: auto;
+    text-align: center;
+    border-radius: 5px;
 }
 
 .copiedMessage{
