@@ -7,12 +7,9 @@ import { dehydrate, QueryClient} from 'react-query';
 import { Server, Client } from "react-hydration-provider";
 import ContentSection from '../components/layout/ContentSection/contentSection';
 import ShowCards from '../components/show/showCards/ShowCards';
+import { randomShowResults } from '../hooks/useRecommendedShows';
 
-interface randomShowResults{
-  recShowsSuffled?:Show[],
-  serverRecShows?:Show[],
-}
-
+ 
 export async function getServerSideProps() {
   const queryClient = new QueryClient();
 
@@ -31,11 +28,12 @@ export async function getServerSideProps() {
 export default function Home() {
   const shows = useShowsQuery();
 
-  if (!shows ){
-    return;
-  }
+  // if (!shows ){
+  //   return;
+  // }
 
   const {recShowsSuffled, serverRecShows}:randomShowResults = useRecommendedShows();
+  
   if (!recShowsSuffled || !serverRecShows ){
     return;
   }
@@ -68,9 +66,11 @@ export default function Home() {
         </ContentSection> 
 
         <ContentSection heading={'Recently Updated'} tag='h2'>
-          
-            <ShowCards shows={shows.slice(0,10)} />         
-          
+            <>
+              {shows && 
+                <ShowCards shows={shows.slice(0,10)} />         
+              }
+            </>
         </ContentSection>    
       </main>
     </>

@@ -13,6 +13,15 @@ interface ExtFeed {
   [key: string]: {
     [key: string]: string
   }
+}
+
+// define type for Tag which has the following shape:
+// {"id": 1, "tag": "world", "freq": 23}
+interface Tag {
+  id: number,
+  tag: string,
+  freq: number
+}
 
 
 type TagMap = Record<string, Tag>;

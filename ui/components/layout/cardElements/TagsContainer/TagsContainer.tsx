@@ -27,10 +27,8 @@ export async function getServerSideProps() {
 
 function TagsContainer ({currentTagIds, maxTags=null}:TagsContainerProps) {
 
-    const allTags =  useTagsQuery();
+    const allTags =  useTagsQuery() ?? {};
     
-    if(!allTags){return null}
-
     const currentTags = useMappedShowTags(allTags, currentTagIds, maxTags)
 
     return (

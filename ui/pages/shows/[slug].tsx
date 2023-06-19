@@ -22,6 +22,8 @@ import { useShowsQuery, getShows } from '../../hooks/queries/shows';
 import { getTags } from '../../hooks/queries/tags';
 import TagsContainer from '../../components/layout/cardElements/TagsContainer/TagsContainer';
 
+import { randomShowResults } from '../../hooks/useRecommendedShows';
+
 import styles from './showsPage.module.scss'
 
 
@@ -68,12 +70,9 @@ export default function ShowPage() {
   const show = shows?.find(show => show.slug === querySlug);
   const showLength = useShowLength(show?.duration);
   
-  if(!show){return null};
-
   const {recShowsSuffled, serverRecShows}:randomShowResults = useRecommendedShows();
-  if (!recShowsSuffled || !serverRecShows ){
-    return;
-  }
+
+  if (!recShowsSuffled || !serverRecShows|| !show){return null}; 
 
 
   return (
@@ -93,9 +92,9 @@ export default function ShowPage() {
         <ShowFeed showId={show.id} slug={show.slug} />
         
 
-
-        <div className={styles.desc} dangerouslySetInnerHTML={{__html:show.desc}}  />
-
+        {show.desc &&
+          <div className={styles.desc} dangerouslySetInnerHTML={{__html:show.desc}}  />
+        }
         <div className={styles.iconDetailsList}>
           {/* <LinkIcon icon={<IoCalendarClearSharp/>} label='Latest Episode' txt={<EpDate dtStr={show.newestEpDate}/>} /> */}
           

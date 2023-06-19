@@ -8,6 +8,9 @@ export const showsStaleTime = () => {
   const staleTime = 3600000; //= 1 hour = 1000(1 second in milliseconds) * 60 (seconds) * 60 (minutes) * 1 (hour);
   return staleTime;
 }
+// define shows as the following interface or undefined
+
+
 
 interface Show {
   desc: string | null,
@@ -25,8 +28,8 @@ interface Show {
   slug: string | null,
   source: string,
   tagIds: string | null,
-
 }
+
 export type {Show};
 
 export const getShows = async () => {
@@ -40,6 +43,6 @@ export const getShows = async () => {
   };
   
   export function useShowsQuery() {
-    const { data } = useQuery<Show[]>( "shows");
+    const { data } = useQuery<Show[]| undefined>( "shows");
     return data;
   }

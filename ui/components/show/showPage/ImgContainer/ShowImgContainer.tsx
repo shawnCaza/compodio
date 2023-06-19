@@ -24,7 +24,7 @@ function defineSizes(containerHeights:{height:number, breakpoint:number}[], tota
 }
 
 function ShowImgContainer ({show}:imgContainerProps) {
-    if(!show.sizes || show.sizes.length < 3 ){return null}
+    // if(!show.sizes || show.sizes.length < 3 ){return null}
 
     const {baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding} = useShowImgParams(show);
 

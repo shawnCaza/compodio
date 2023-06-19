@@ -7,11 +7,13 @@ import { useShowsQuery, getShows } from "../hooks/queries/shows";
 import { getTags } from "../hooks/queries/tags";
 import { useFuseOptions } from "../components/search/fuse/hooks/useFuseOptions";
 
+import { GetServerSidePropsContext } from 'next';
+
 interface searchProps {
   searchTerm: string
 }
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps(context: GetServerSidePropsContext) {
   
   const searchTerm = context.query.s;
 
@@ -27,8 +29,8 @@ export async function getServerSideProps(context) {
   }
 
   export default function Search({searchTerm}:searchProps){
-    const shows = useShowsQuery();
-    if(!shows){return null}
+
+    const shows = useShowsQuery() ?? [];
 
     const fuse = new Fuse(shows, useFuseOptions());
     const searchResults = Object.values(fuse.search(searchTerm));

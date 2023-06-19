@@ -12,8 +12,8 @@ interface fuseResult{
 
 export default function SearchContainer() {
 
-  const shows = useShowsQuery();
-  if(!shows){return null}
+  const shows = useShowsQuery() ?? [];
+  
   const router = useRouter()
   
   const fuse = new Fuse(shows, useFuseOptions());

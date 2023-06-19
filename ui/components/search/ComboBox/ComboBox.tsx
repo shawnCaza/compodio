@@ -38,7 +38,7 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
     
     const [inputItems, setInputItems] = useState<fuseResult[]>([])
     
-    if(!inputItems){return null}
+    // if(!inputItems){return null}
     
     const {
     isOpen,

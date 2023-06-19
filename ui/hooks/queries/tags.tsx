@@ -14,7 +14,10 @@ interface Tag {
   freq: number
 }
 
-type TagMap = Record<string, Tag>;
+// set TagMap type to be an  object with string keys and Tag values
+type TagMap = {
+  [key: string]: Tag
+}
 
 export type {Tag, TagMap};
 

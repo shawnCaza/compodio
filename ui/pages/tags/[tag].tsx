@@ -25,12 +25,11 @@ export default function CommentPage() {
   const router = useRouter()
   const queryTag = router.query.tag as string
   const allShows = useShowsQuery();
-  const allTags = useTagsQuery();
+  const allTags = useTagsQuery() ?? {};
 
   if(!allTags && !allShows){return null}
 
   //Need to find ID for `queryTag` in the url.
-
   const pageTag = Object.values(allTags).find(tag => tag['tag'] === queryTag);
   
   if(!pageTag){return null} // TODO should throw a 404
