@@ -1,5 +1,5 @@
 interface showFeedUrl{
-    showId: number,
+    showId: string,
     slug: string | null
 }
 

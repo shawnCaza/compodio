@@ -37,6 +37,7 @@ export default function Home() {
   if (!recShowsSuffled || !serverRecShows ){
     return;
   }
+  
   return (
     <>
       <Head>
