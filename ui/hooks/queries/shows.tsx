@@ -18,7 +18,7 @@ interface Show {
   email: string | null,
   ext_link: string | null,
   host: string | null,
-  id: number,
+  id: string,
   dom_colours: string | null,
   sizes: string | null,
   internal_link: string,
