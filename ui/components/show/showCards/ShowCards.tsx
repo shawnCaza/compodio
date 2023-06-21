@@ -11,7 +11,7 @@ import GradientBg from '../../commonElements/GradientBg';
 import CardImgContainer from './ImgContainer/CardImgContainer';
 import TagsContainer from '../../layout/cardElements/TagsContainer/TagsContainer';
 
-import styles from "./showCards.module.scss";
+import styles from "./ShowCards.module.scss";
 
 interface ShowCardsProps{
     shows: Show[]
