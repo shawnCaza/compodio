@@ -1,0 +1,19 @@
+#ErrorDocument 404 /404
+
+
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+RewriteBase /public/
+
+RewriteRule ^index\.php$ - [R,L]
+RewriteRule ^$ index.php [L]
+
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^feed/([0-9]+)/([\+-_\w]+)$ index.php?id=$1&slug=$2 [QSA,L,NC]
+
+</IfModule>
