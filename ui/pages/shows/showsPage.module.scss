@@ -50,13 +50,13 @@
         display: flex;
         flex-wrap: wrap;
         justify-content: space-between;
-        padding: 0 0.5em;
+        padding: 0;
         
         .iconAndTextContainer{
             display: flex;
             align-items: center;
             justify-content: center;
-            flex: auto;
+            flex: 1 1 25%;
             .iconTxt{
                max-width: px2em(220);
             }
