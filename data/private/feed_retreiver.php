@@ -23,6 +23,7 @@ if (isset($_GET['id'])){
    
     $show = get_show_by_id($show_id);
     $episodes = get_eps_by_show_id($show_id);
+    $encoded_show_link = rawurlencode($show['internal_link']);
 
     // channel details
     echo "<rss version='2.0' 
@@ -31,7 +32,7 @@ if (isset($_GET['id'])){
         <channel>
             <title>{$show['showName']}</title>
             <description>{$show['desc']}</description>
-            <link>{$show['internal_link']}</link>
+            <link>{$encoded_show_link}</link>
             <docs>http://blogs.law.harvard.edu/tech/rss</docs>
             <itunes:author>{$show['host']}</itunes:author>
             
@@ -44,17 +45,19 @@ if (isset($_GET['id'])){
     foreach($episodes as $ep) {
         $ep_date = $ep['ep_date'];
         $ep_date = mysql2date( 'D, d M Y H:i:s +0000', $ep_date, false );
-
+        $encoded_mp3_link = rawurlencode($ep['mp3']);
         echo "<item>
                 <title>{$ep['ep_date']}</title>
-                <enclosure url='{$ep['mp3']}' length='{$ep['file_size']}' type='audio/mpeg'></enclosure>
+                <enclosure url='{$encoded_mp3_link}' length='{$ep['file_size']}' type='audio/mpeg'></enclosure>
                 <guid isPermaLink='false'>{$show['slug']}-{$ep['id']}'</guid>
                 <itunes:duration>{$show['duration']}</itunes:duration>
                 <pubDate>{$ep_date}</pubDate>
-             </item>";
+             </item>
+             ";
     }
 
-    echo "</channel></rss>";
+    echo "</channel>
+    </rss>";
 
 }
 
