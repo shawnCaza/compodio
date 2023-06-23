@@ -69,6 +69,8 @@ export default function ShowPage() {
   const shows = useShowsQuery();
   const show = shows?.find(show => show.slug === querySlug);
   const showLength = useShowLength(show?.duration);
+  // wrap show.desc in paragraph tags if not already present
+  const htmlDesc = show?.desc && show.desc.match(/^<p>/) ? show.desc : `<p>${show?.desc}</p>`;
   
   const {recShowsSuffled, serverRecShows}:randomShowResults = useRecommendedShows();
 
@@ -93,7 +95,8 @@ export default function ShowPage() {
         
 
         {show.desc &&
-          <div className={styles.desc} dangerouslySetInnerHTML={{__html:show.desc}}  />
+
+          <div className={styles.desc} dangerouslySetInnerHTML={{__html:htmlDesc}}  />
         }
         <div className={styles.iconDetailsList}>
           {/* <LinkIcon icon={<IoCalendarClearSharp/>} label='Latest Episode' txt={<EpDate dtStr={show.newestEpDate}/>} /> */}
