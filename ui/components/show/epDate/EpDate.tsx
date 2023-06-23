@@ -4,10 +4,12 @@ interface epDate{
 }
 
 function EpDate({dtStr}:epDate) {
-    var dt:Date = new Date(dtStr);
+    // sanitize dtStr for ios
+    const ios_valid_dtStr = dtStr.replace(/-/g, '/');
+    var dt:Date = new Date(ios_valid_dtStr);
     const opts: Intl.DateTimeFormatOptions = { weekday: 'long', year: 'numeric', month: 'short', day: 'numeric' };
     const dtFormated = dt.toLocaleDateString('en-US', opts);
-    
+
     return (
         <>
             {dtFormated}
