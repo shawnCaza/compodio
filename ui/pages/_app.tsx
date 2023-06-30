@@ -16,7 +16,7 @@ function App({ Component, pageProps }: AppProps) {
 
   // Because page scolling happens within content div (to maintain header at top of page), we need to update the scroll position of the "#content" div on changing to a new page. If a particular page has already been visited, we can use the scroll position from the previous visit of that specific page. Otherwise, we scroll to the top of the page.
   const router = useRouter();
-  const [scrollPositions, setScrollPositions] = useState({});
+  const [scrollPositions, setScrollPositions] = useState<{[key: string]: number}>({});
   
   React.useEffect(() => {
     console.log(scrollPositions)
