@@ -1,15 +1,16 @@
-// Everything that wraps around #everything needs to be 100% height
+// Elements that wrap around the #everything div need to be 100% height
 html, body, #__next{
 	height: 100%;
 }
 
-// a div containing header and content footer. All visible content.
+// a div containing header, content, and footer. All visible content.
 #everything{
 	display: flex; 
 	height: 100%; 
 	flex-direction: column
 }
 
+// This is the main content of the page and the only portion allowed to scroll
 #content{
 	flex: 1; overflow: auto
 }

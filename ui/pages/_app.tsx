@@ -6,11 +6,18 @@ import Layout from "../components/layout/Layout";
 import { getShows, showsStaleTime } from "../hooks/queries/shows";
 import { getTags, tagsStaleTime } from "../hooks/queries/tags";
 import { HydrationProvider} from "react-hydration-provider";
+import { useScrollRestoration } from "../hooks/next-restore-scroll-position";
+import { useRouter } from "next/router";
+
+
 function App({ Component, pageProps }: AppProps) {
   
   const [queryClient] = useState(() => new QueryClient());
   queryClient.setQueryDefaults('shows', { queryFn: getShows, staleTime: showsStaleTime()})
   queryClient.setQueryDefaults('tags', { queryFn: getTags, staleTime: tagsStaleTime()})
+  
+  const router = useRouter();
+  useScrollRestoration(router, {scrollAreaId: 'content'});
 
   return (
     <QueryClientProvider client={queryClient}>
