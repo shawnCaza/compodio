@@ -29,7 +29,7 @@ class EncodeURL:
 class GetFileSize:
     def process_item(self, episode, spider):
         
-        if not episode['file_size']:
+        if 'file_size' not in episode.keys():
             header = requests.head(episode['mp3'], stream=True).headers
             if 'Content-length' in header.keys():
                 episode['file_size'] = header['Content-length']
