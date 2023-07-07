@@ -6,7 +6,7 @@ from urllib.parse import urlparse, parse_qs
 
 from radio_scrape.items import episode_item
 from radio_scrape.pipeline_definitions import episode_pipelines
-from radio_scrape.etc_MySQL import MySQL
+from radio_scrape.scraper_MySQL import MySQL
 
 class CfruSpider(scrapy.Spider):
     name = 'ciut_episodes'        

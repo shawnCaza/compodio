@@ -7,7 +7,7 @@ from PIL import Image
 
 import util
 import image_colour
-import etc_MySQL
+import scraper_MySQL
 
 
 def setup_save_folder(save_folder_base, slug):
@@ -98,7 +98,7 @@ def scrape_images():
                           
     save_folder_base ='/Users/scaza/Sites/compodio_images/shows/'
 
-    mySQL = etc_MySQL.MySQL() 
+    mySQL = scraper_MySQL.MySQL() 
     shows = mySQL.get_query("""
         SELECT id, slug, img, last_updt
         FROM shows
@@ -142,7 +142,7 @@ def scrape_images():
 # TODO 
 # def remove_unused_images():
 #     # Should also delete records from image table and server if a certain age?
-#     mySQL = etc_MySQL.MySQL()                           
+#     mySQL = scaper_MySQL.MySQL()                           
 #     save_folder_base =''
 
 #     shows = mySQL.get_query("")

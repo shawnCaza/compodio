@@ -4,7 +4,7 @@ from pprint import pprint
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, ENGLISH_STOP_WORDS
 from sklearn.decomposition import NMF, MiniBatchNMF, LatentDirichletAllocation
 
-from etc_MySQL import MySQL
+from scraper_MySQL import MySQL
 
 class TagShows:
     

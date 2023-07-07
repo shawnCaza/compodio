@@ -6,7 +6,7 @@
 
 # useful for handling different item types with a single interface
 from itemadapter import ItemAdapter
-from radio_scrape.etc_MySQL import MySQL
+from radio_scrape.scraper_MySQL import MySQL
 
 import requests
 import urllib.parse

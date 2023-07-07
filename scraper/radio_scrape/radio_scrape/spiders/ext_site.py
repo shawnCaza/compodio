@@ -8,7 +8,7 @@ from scrapy.linkextractors import LinkExtractor
 from urllib.parse import urlparse
 import requests
 
-from radio_scrape.etc_MySQL import MySQL
+from radio_scrape.scraper_MySQL import MySQL
 
 # function to seperate any camel case words in string to seperate words, use full words for variable names
 def camel_case_split(str):
