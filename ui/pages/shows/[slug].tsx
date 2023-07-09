@@ -82,9 +82,7 @@ export default function ShowPage() {
     <div className={styles.detailAndImageWrapper}>
 
       <div className={styles.showImgWrapper}>
-        <GradientBg colours={show.dom_colours}>
           <ShowImgContainer show={show} />
-        </GradientBg>
       </div> 
 
       <div className={styles.showDetails}>
