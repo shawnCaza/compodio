@@ -3,8 +3,8 @@ from re import findall
 import scrapy
 from scrapy.spidermiddlewares.httperror import HttpError 
 
-from radio_scrape.items import show_item
-from radio_scrape.pipeline_definitions import show_pipelines
+from radio_scrape.radio_scrape.items import show_item
+from radio_scrape.radio_scrape.pipeline_definitions import show_pipelines
 
 class CiutShowsSpider(scrapy.spiders.SitemapSpider):
     name = 'ciut_shows'

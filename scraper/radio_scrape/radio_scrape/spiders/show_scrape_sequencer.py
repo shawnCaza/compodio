@@ -1,16 +1,42 @@
-# import scrapy
-# from twisted.internet import reactor
-# from scrapy.crawler import CrawlerRunner
-# from scrapy.utils.log import configure_logging
-# from scrapy.utils.project import get_project_settings
-# from ciut_shows import CiutShowsSpider
+import scrapy
+from scrapy.crawler import CrawlerProcess
+from twisted.internet import reactor
+from twisted.internet import defer
+from scrapy.crawler import CrawlerRunner
+from scrapy.utils.log import configure_logging
+from scrapy.utils.project import get_project_settings
+from ciut_shows import CiutShowsSpider
+from cfru_shows import CfruShowsSpider
+from ciut_eps import CiutEps
+from cfru_eps import CfruEps
+from radio_scrape.radio_scrape.server_sync.sync_compodio_data_to_server import sync_db
+setting = get_project_settings()
 
-# configure_logging()
-# settings = get_project_settings()
-# runner = CrawlerRunner(settings)
-# runner.crawl(CiutShowsSpider)
-# d = runner.join()
-# d.addBoth(lambda _: reactor.stop())
+process = CrawlerProcess(setting)
 
-# reactor.run() # the script will block here until all crawling jobs are finished
-# print("That's all folks")
+@defer.inlineCallbacks
+def crawl_seq():
+    global process
+
+    yield process.crawl(CiutShowsSpider)
+    yield process.crawl(CfruShowsSpider)
+    #reactor.stop()
+
+crawl_seq()
+
+# after the show spider completes, run the episode spiders
+@defer.inlineCallbacks
+def crawl_seq2():
+    global process
+
+    yield process.crawl(CiutEps)
+    yield process.crawl(CfruEps)
+    # reactor.stop()
+
+crawl_seq2()
+
+process.start() # the script will block here until the crawling is finished
+
+sync_db()
+
+print("done")

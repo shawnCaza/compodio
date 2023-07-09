@@ -1,6 +1,6 @@
 import scrapy
-from radio_scrape.items import show_item
-from radio_scrape.pipeline_definitions import show_pipelines
+from radio_scrape.radio_scrape.items import show_item
+from radio_scrape.radio_scrape.pipeline_definitions import show_pipelines
 
 class CfruShowsSpider(scrapy.Spider):
     name = 'cfru_shows'

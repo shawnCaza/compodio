@@ -2,11 +2,11 @@ import scrapy
 
 from datetime import datetime
 
-from radio_scrape.items import episode_item
-from radio_scrape.pipeline_definitions import episode_pipelines
-from radio_scrape.etc_MySQL import MySQL
+from radio_scrape.radio_scrape.items import episode_item
+from radio_scrape.radio_scrape.pipeline_definitions import episode_pipelines
+from radio_scrape.radio_scrape.scraper_MySQL import MySQL
 
-class CfruSpider(scrapy.Spider):
+class CfruEps(scrapy.Spider):
     name = 'cfru'        
     custom_settings = {
         'ITEM_PIPELINES': episode_pipelines()

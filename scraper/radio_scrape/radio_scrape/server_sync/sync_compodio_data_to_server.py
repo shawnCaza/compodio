@@ -1,6 +1,8 @@
-from Sync_helper import Sync_helper
+from radio_scrape.radio_scrape.server_sync.Sync_helper import Sync_helper
 
-server_syncer = Sync_helper()
+def sync_db():
 
-# Use db folder as save folder
-server_syncer.synch_tables('db/', f'compodio.sql', 'compodio.tar.gz')
+    server_syncer = Sync_helper()
+
+    # Use db folder as save folder
+    server_syncer.synch_tables('db/', f'compodio.sql', 'compodio.tar.gz')
