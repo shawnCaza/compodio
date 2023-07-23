@@ -21,19 +21,26 @@
 }
 
 .mainMenuModal{
+    position: fixed;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    inset: 50px 0 0;
+    padding: 80px;
     color: var(--background-contrast-colour);
+    background: var(--header-background-high-contrast-colour);
     font-size: 2em;
     line-height: 2;
+    
 }
 .mainMenuModalContent{
-    position: absolute;
-    inset: 50px 0 0;
-    
-    background: var(--header-background-high-contrast-colour);
+    display: inline;
+    background-color: transparent;
+    height: fit-content;
     overflow: auto;
-
-    padding: 80px;
-
+    div{
+        display: inline;
+    }
     ul{
         list-style: none;
         padding: 0;
