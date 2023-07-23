@@ -14,7 +14,7 @@ function MainMenu() {
     }   
 
 
-    
+
         return (
             <>
                 <button
@@ -30,7 +30,7 @@ function MainMenu() {
                  <Modal 
                     isOpen={isOpen}
                     onRequestClose={toggleMainMenu}
-                    parentSelector={() => document.getElementById('__next') as HTMLElement}
+                    parentSelector={() => document.getElementById('content') as HTMLElement}
                     aria={{
                         labelledby: "main-menu-label"
                     }} 
