@@ -49,9 +49,8 @@ export default function Home() {
       <main>
       <ContentSection heading={'Putting the Podcast in Community Radio'} tag='h1' centered={true} readingWidth={true}>
             
-            <p>
+            <p className='balanced'>
               Compodio simplifies access to community radio online. We generate podcast feeds for shows in need, and provide search and categoization features.
-
             </p>         
           
         </ContentSection> 
