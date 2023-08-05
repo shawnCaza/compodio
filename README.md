@@ -17,7 +17,7 @@ Contains a python [Scrapy](https://scrapy.org/) project that scrapes show data f
 In addition [Sci-kit learn](https://scikit-learn.org/stable/) is used to:
 <!-- add bullets -->
 - Generate tags for shows based on their descriptions in `show_keywords.py`
-- Perform k-means clustering on show images in `image_colour.py` to dominante colors for each show used to generate a background gradients in the UI.
+- Perform k-means clustering on show image colours in `image_colour.py` in order to generate the show specific CSS gradients used in the UI.
 
 `scrape_images.py` downloads show images and uses [Pillow](https://pillow.readthedocs.io/en/stable/) to generate a set of responsive images for the UI.
 
@@ -28,6 +28,8 @@ The api fetches data from a mysql database and returns it as json for the UI to 
 
 `data/public/index.php` is the entry point for poddcast feeds. It included `data/private/feed_retreiver.php` to fetch data from the database and generates rss feeds for each show.
 
+### db folder
+Contains database dumps
 
 ## Development
 
