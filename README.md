@@ -1,5 +1,55 @@
 # compodio
 
-Work in progress, currently online at [https://compodio.vercel.app/](https://compodio.vercel.app/).
+Work in progress, currently online at [https://www.compodio.com](https://www.compodio.com).
 
-Some community radio stations post audio recordings of their shows online, but do not provide a podcast feed. I would like to make rrs feeds for these shows so they can be subscribed to in a podcatcher.
+Some community radio stations post audio recordings of their shows online, but do not provide a podcast feed. This project provides rrs feeds for radio shows along side a UI  with search and categoization features.
+
+## Overview
+
+### UI folder
+
+Contains a [next.js](https://nextjs.org/) project using SSR, [react-query](https://react-query.tanstack.com/) for server state, CSS modules for styling, and [fuse.js](https://fusejs.io/) for search.
+
+### scraper folder
+
+Contains a python [Scrapy](https://scrapy.org/) project that scrapes show data from radio station websites.
+
+In addition [Sci-kit learn](https://scikit-learn.org/stable/) is used to:
+<!-- add bullets -->
+- Generate tags for shows based on their descriptions in `show_keywords.py`
+- Perform k-means clustering on show images in `scrape_images.py` to dominante colors for each show used to generate a background gradients in the UI.
+
+scrape_images.py downloads show images and uses [Pillow](https://pillow.readthedocs.io/en/stable/) to generate responsive images for the UI.
+
+### data folder
+Contains a php api, and the podcast feed generator.
+
+The api fetches data from a mysql database and returns it as json for the UI to consume.
+
+data/public/index.php is the entry point for rss feeds. It fetches data from the database and generates rss feeds for each show.
+
+
+## Development
+
+### Prerequisites
+
+- [python 3.11](https://www.python.org/downloads/) 
+- [next.js 13.1.1](https://nextjs.org/docs/getting-started)
+- [mysql 8.0.23](https://dev.mysql.com/downloads/mysql/)
+- [php 8.2.3](https://www.php.net/downloads.php)
+
+### Setup
+
+1. Clone the repo to local server folder
+2. Install python dependencies: `pip install -r scraper/requirements.txt`
+3. Install next.js dependencies: `npm install`
+4. import database from `db/compodio.sql`
+5. add db credentials for php to `data/private/db_credentials.php` using `data/private/db_credentials_default.php` as a template
+6. add db credentials for python to `scraper/radio_scrape/radio_scrape/DBConfig.py` using `DBConfig-default.py` as a template
+7. define local path for show images in `scraper/radio_scrape/radio_scrape/scrape_images.py`
+8. In /UI add `.env.local` file with the following contents:
+```
+NEXT_PUBLIC_API_URI = 'http://localhost/path-to-project-folder/data/'
+NEXT_PUBLIC_feed_URI = 'http://localhost/path-to-project-folder/feed/'
+NEXT_PUBLIC_image_server_URI = 'http://localhost/compodio_images/'
+```
