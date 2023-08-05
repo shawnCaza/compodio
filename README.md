@@ -17,16 +17,16 @@ Contains a python [Scrapy](https://scrapy.org/) project that scrapes show data f
 In addition [Sci-kit learn](https://scikit-learn.org/stable/) is used to:
 <!-- add bullets -->
 - Generate tags for shows based on their descriptions in `show_keywords.py`
-- Perform k-means clustering on show images in `scrape_images.py` to dominante colors for each show used to generate a background gradients in the UI.
+- Perform k-means clustering on show images in `image_colour.py` to dominante colors for each show used to generate a background gradients in the UI.
 
-scrape_images.py downloads show images and uses [Pillow](https://pillow.readthedocs.io/en/stable/) to generate responsive images for the UI.
+`scrape_images.py`` downloads show images and uses [Pillow](https://pillow.readthedocs.io/en/stable/) to generate a set of responsive images for the UI.
 
 ### data folder
 Contains a php api, and the podcast feed generator.
 
 The api fetches data from a mysql database and returns it as json for the UI to consume.
 
-data/public/index.php is the entry point for rss feeds. It fetches data from the database and generates rss feeds for each show.
+`data/public/index.php` is the entry point for poddcast feeds. It included `data/private/feed_retreiver.php` to fetch data from the database and generates rss feeds for each show.
 
 
 ## Development
@@ -40,7 +40,7 @@ data/public/index.php is the entry point for rss feeds. It fetches data from the
 
 ### Setup
 
-1. Clone the repo to local server folder
+1. Clone the repo to local server folder (required for the php portion of the project)
 2. Install python dependencies: `pip install -r scraper/requirements.txt`
 3. Install next.js dependencies: `npm install`
 4. import database from `db/compodio.sql`
