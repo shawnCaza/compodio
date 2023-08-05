@@ -19,7 +19,7 @@ In addition [Sci-kit learn](https://scikit-learn.org/stable/) is used to:
 - Generate tags for shows based on their descriptions in `show_keywords.py`
 - Perform k-means clustering on show images in `image_colour.py` to dominante colors for each show used to generate a background gradients in the UI.
 
-`scrape_images.py`` downloads show images and uses [Pillow](https://pillow.readthedocs.io/en/stable/) to generate a set of responsive images for the UI.
+`scrape_images.py` downloads show images and uses [Pillow](https://pillow.readthedocs.io/en/stable/) to generate a set of responsive images for the UI.
 
 ### data folder
 Contains a php api, and the podcast feed generator.
