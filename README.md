@@ -26,7 +26,7 @@ Contains a php api, and the podcast feed generator.
 
 The api fetches data from a mysql database and returns it as json for the UI to consume.
 
-`data/public/index.php` is the entry point for poddcast feeds. It included `data/private/feed_retreiver.php` to fetch data from the database and generates rss feeds for each show.
+`data/public/index.php` is the entry point for poddcast feeds. It includes `data/private/feed_retreiver.php` to fetch data from the database and generates rss feeds for each show.
 
 ### db folder
 Contains database dumps
@@ -44,7 +44,7 @@ Contains database dumps
 
 1. Clone the repo to local server folder (required for the php portion of the project)
 2. Install python dependencies: `pip install -r scraper/requirements.txt`
-3. Install next.js dependencies: `npm install`
+3. Install next.js dependencies in the UI folder: `npm install`
 4. import database from `db/compodio.sql`
 5. add db credentials for php to `data/private/db_credentials.php` using `data/private/db_credentials_default.php` as a template
 6. add db credentials for python to `scraper/radio_scrape/radio_scrape/DBConfig.py` using `DBConfig-default.py` as a template
