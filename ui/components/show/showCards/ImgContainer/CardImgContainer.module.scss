@@ -15,7 +15,7 @@
     --xxl-height: #{px2em(FindImgBoxHeight($xxl-width),'rem')};
     
     max-height: var(--max-height); 
-    height: auto;
+    height: auto; //causes CLS as images load
     max-width: px2em($width,'rem'); // this is based on the 16:9 image ratio used to determin when an image fills the width of the card vs needs padding.
     
     @include mq('xl'){

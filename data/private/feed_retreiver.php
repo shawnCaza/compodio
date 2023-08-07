@@ -24,6 +24,8 @@ if (isset($_GET['id'])){
     $show = get_show_by_id($show_id);
     $episodes = get_eps_by_show_id($show_id);
     $encoded_show_link = rawurlencode($show['internal_link']);
+    $show_desc = htmlentities($show['desc'], ENT_XML1, 'UTF-8');
+    $host = htmlentities($show['host'], ENT_XML1, 'UTF-8');
 
     // channel details
     echo "<rss version='2.0' 
@@ -31,10 +33,10 @@ if (isset($_GET['id'])){
         xmlns:itunes='http://www.itunes.com/dtds/podcast-1.0.dtd'>
         <channel>
             <title>{$show['showName']}</title>
-            <description>{$show['desc']}</description>
+            <description>{$show_desc}</description>
             <link>{$encoded_show_link}</link>
             <docs>http://blogs.law.harvard.edu/tech/rss</docs>
-            <itunes:author>{$show['host']}</itunes:author>
+            <itunes:author>{$host}</itunes:author>
             
             <itunes:owner>
                 <itunes:name>{$show['source']}</itunes:name>
