@@ -26,13 +26,14 @@ if (isset($_GET['id'])){
     $encoded_show_link = rawurlencode($show['internal_link']);
     $show_desc = htmlentities($show['desc'], ENT_XML1, 'UTF-8');
     $host = htmlentities($show['host'], ENT_XML1, 'UTF-8');
+    $show_name = htmlentities($show['showName'], ENT_XML1, 'UTF-8');
 
     // channel details
     echo "<rss version='2.0' 
         xmlns:atom='http://www.w3.org/2005/Atom'
         xmlns:itunes='http://www.itunes.com/dtds/podcast-1.0.dtd'>
         <channel>
-            <title>{$show['showName']}</title>
+            <title>{$show_name}</title>
             <description>{$show_desc}</description>
             <link>{$encoded_show_link}</link>
             <docs>http://blogs.law.harvard.edu/tech/rss</docs>

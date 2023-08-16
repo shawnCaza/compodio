@@ -4,47 +4,47 @@ function get_all_shows(){
 
     global $db;
     $sql = "
-            SELECT 
-            `shows`.`desc`,
-            `shows`.`duration`,
-            `shows`.`email`,
-            `shows`.`ext_link`,
-            `shows`.`host`,
-            `shows`.`id`,
-            `shows`.`internal_link`,
-            `shows`.`showName`,
-            `shows`.`slug`,
-            `shows`.`source`,
-            `show_images`.`dom_colours`,
-            `show_images`.`sizes`,
-            `eps`.`mp3`, 
-            `eps`.`newestEpDate`, 
-            `show_tags`.`tagIds` 
+    SELECT 
+    `shows`.`desc`,
+    `shows`.`duration`,
+    `shows`.`email`,
+    `shows`.`ext_link`,
+    `shows`.`host`,
+    `shows`.`id`,
+    `shows`.`internal_link`,
+    `shows`.`showName`,
+    `shows`.`slug`,
+    `shows`.`source`,
+    `show_images`.`dom_colours`,
+    `show_images`.`sizes`,
+    `eps`.`mp3`, 
+    `eps`.`newestEpDate`, 
+    `show_tags`.`tagIds` 
 
-            FROM `shows`
+    FROM `shows`
 
-            LEFT JOIN show_images ON `show_images`.`show_id` = `shows`.`id`
+    LEFT JOIN show_images ON `show_images`.`show_id` = `shows`.`id`
 
-            /* Collect all the show tags into an array */
-            LEFT JOIN (
-            SELECT show_id, JSON_ARRAYAGG(tag_id) AS tagIds
-            FROM show_tags GROUP BY show_id
-            ) show_tags
-            ON `show_tags`.`show_id` = `shows`.`id`
+    /* Collect all the show tags into an array */
+    LEFT JOIN (
+    SELECT show_id, JSON_ARRAYAGG(tag_id) AS tagIds
+    FROM show_tags GROUP BY show_id
+    ) show_tags
+    ON `show_tags`.`show_id` = `shows`.`id`
 
-            /* Join most recent episode */
-            INNER JOIN (
-                SELECT show_id, mp3, ep_date newestEpDate
-                FROM `episodes` 
-                WHERE ep_date IN (
-                    SELECT MAX(ep_date) ep_date
-                    FROM episodes
-                    GROUP BY show_id
-                )
-            ) eps 
-            ON `shows`.`id` = `eps`.`show_id`
+    /* Join most recent episode */
+    INNER JOIN (
+        SELECT `episodes`.`show_id`, mp3, ep_date newestEpDate
+        FROM `episodes` 
+        RIGHT JOIN (
+            SELECT show_id, MAX(ep_date) max_ep_date
+            FROM episodes
+            GROUP BY show_id
+        ) newest on `newest`.`show_id` = `episodes`.`show_id` and `newest`.`max_ep_date` = `episodes`.`ep_date`
+    ) eps 
+    ON `shows`.`id` = `eps`.`show_id`
 
-            ORDER BY newestEpDate DESC
+    ORDER BY newestEpDate DESC
             ;";
     $result = mysqli_query($db, $sql);
     confirm_result_set($result);

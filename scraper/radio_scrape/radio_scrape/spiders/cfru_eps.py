@@ -24,7 +24,7 @@ class CfruEps(scrapy.Spider):
     def start_requests(self):
     
         for show in self.show_results:
-            yield scrapy.Request(show['internal_link'], meta={'id':show['id']})
+            yield scrapy.Request(show['internal_link'], meta={'id':show['id'], 'show_name':show['showName']})
 
     def parse(self, response):
 
@@ -36,30 +36,34 @@ class CfruEps(scrapy.Spider):
             all_eps_scraped = False
 
             title = episode.xpath(".//div[contains(@class,'archive-title')]/text()").get()
-            # example full_desc "Tiempo de Mujeres – November 19, 2022 at 20:00"
-            date_str = title.rsplit(" – ",1)[1]
-            print(date_str)
-            ep_date = datetime.strptime(date_str, "%B %d, %Y at %H:%M")
-            
-            if show_id in self.newest_ep_map.keys():
-                most_recent_ep_date = self.newest_ep_map[show_id]['ep_date']
-            else:
-                most_recent_ep_date = None
 
-            if not most_recent_ep_date or ep_date > most_recent_ep_date:
+            # cfru playist is sometimes mashed into other shows (title will contain a '+'). They all show up in the ordinary cfru archive page. Don't want to duplicate episodes across shows.
 
-                current_episode = episode_item()
+            if not (response.meta['show_name'] == 'CFRU Playlist' and '+' in title):
 
-                current_episode['mp3'] = episode.xpath('.//a/@href').get()
-                current_episode['show_id'] = show_id
-                current_episode['ep_date'] = ep_date
+                # example full_desc "Tiempo de Mujeres – November 19, 2022 at 20:00"
+                date_str = title.rsplit(" – ",1)[1]
+                print(date_str)
+                ep_date = datetime.strptime(date_str, "%B %d, %Y at %H:%M")
+                
+                if show_id in self.newest_ep_map.keys():
+                    most_recent_ep_date = self.newest_ep_map[show_id]['ep_date']
+                else:
+                    most_recent_ep_date = None
 
+                if not most_recent_ep_date or ep_date > most_recent_ep_date:
 
-                yield current_episode
+                    current_episode = episode_item()
 
-            else:
-                all_eps_scraped = True
-                break
+                    current_episode['mp3'] = episode.xpath('.//a/@href').get()
+                    current_episode['show_id'] = show_id
+                    current_episode['ep_date'] = ep_date
+
+                    yield current_episode
+
+                else:
+                    all_eps_scraped = True
+                    break
 
         if not all_eps_scraped:
 
