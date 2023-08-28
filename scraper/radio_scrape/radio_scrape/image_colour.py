@@ -5,6 +5,8 @@ from PIL import Image, ImageChops
 import colorsys
 from sklearn.cluster import KMeans
 
+
+
 # finding avg dominant colours in image
 # from https://stackoverflow.com/questions/43111029/how-to-find-the-average-colour-of-an-image-in-python-with-opencv
 
@@ -60,11 +62,11 @@ def desaturate(rgb_colour_value):
     if hls[2] > .75 or hls[2] < -.75:
         rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.25)
     elif hls[2] > .5 or hls[2] < -.5:
-        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.333)
+        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.666)
     elif hls[2] > .25 or hls[2] < -.25:
-        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.5)
+        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.75)
     else:
-        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.66)
+        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.85)
     return rgb
 
 def decontrast(rgb_colour_value):
@@ -72,8 +74,8 @@ def decontrast(rgb_colour_value):
         Decontrasts a colour by converting it to hls and then back to rgb.
     """
     hls = colorsys.rgb_to_hls(*rgb_colour_value)
-    if hls[1] < 80:
-        rgb = colorsys.hls_to_rgb(hls[0], 80, hls[2])
+    if hls[1] < 100:
+        rgb = colorsys.hls_to_rgb(hls[0], 100, hls[2])
     elif hls[1] > 175:
         rgb = colorsys.hls_to_rgb(hls[0], 175, hls[2])
     else:
@@ -119,5 +121,33 @@ def find_avg_dominant_colours(image_path, quantity = 3):
 
 if __name__ == '__main__':
 
-    dom_colours = find_avg_dominant_colours('/Users/scaza/Desktop/t2.webp')
-    print(f"#{dom_colours[0]}, #{dom_colours[1]}, #{dom_colours[2]}")
+    # dom_colours = find_avg_dominant_colours('/Users/scaza/Desktop/t2.webp')
+    # print(f"#{dom_colours[0]}, #{dom_colours[1]}, #{dom_colours[2]}")
+
+    import scraper_MySQL
+    import time
+    import json
+
+    save_folder_base ='/Users/scaza/Sites/compodio_images/shows/'
+
+    mySQL = scraper_MySQL.MySQL() 
+    shows = mySQL.get_query("""
+        SELECT id, slug, img, last_updt, sizes
+        FROM shows
+        LEFT JOIN show_images ON show_id = id
+    """)
+
+    folders_to_sync_list = [] # scraped images will be synched to remote server after being processed locally
+    
+    for show in shows:
+
+        if len(show['img']) and show['slug']:
+
+
+                save_file_base = f"{save_folder_base}{show['slug']}/{show['slug']}"
+
+
+                dom_colours = find_avg_dominant_colours(f"{save_file_base}.jpg")
+                
+                
+                mySQL.insert_image(show['id'], show['last_updt'], show['sizes'], json.dumps(dom_colours))
