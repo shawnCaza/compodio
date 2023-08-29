@@ -1,10 +1,11 @@
 from decimal import *
-
+from collections import namedtuple
 import cv2, numpy as np
 from PIL import Image, ImageChops
 import colorsys
 from sklearn.cluster import KMeans
-
+from colormath.color_objects import  LabColor, sRGBColor, HSLColor
+from colormath.color_conversions import convert_color
 
 
 # finding avg dominant colours in image
@@ -12,24 +13,9 @@ from sklearn.cluster import KMeans
 
 # finding border colour from https://stackoverflow.com/questions/10985550/detect-if-an-image-has-a-border-programmatically-return-boolean
 
-def is_there_a_border(image_path):
-    with Image.open(image_path).convert('RGB') as im:
-
-        corner_pixel = im.getpixel((0,0))
-
-        bg = Image.new(im.mode, im.size, corner_pixel)
-        diff = ImageChops.difference(im, bg)
-        diff = ImageChops.add(diff, diff, 2.0, -100)
-        bbox = diff.getbbox()
-        corner_rgb = [value for value in corner_pixel]
-        print(corner_rgb)
-        corner_hex = convert_to_hex([value for value in corner_rgb])
-        
-    return all((bbox[0], bbox[1], (bbox[0] + bbox[2]) <= im.size[0], (bbox[1] + bbox[3]) <= im.size[1])), corner_hex
-
 
 def get_colour_frequencies(cluster, centroids):
-    """Returns tuple containing (frequency, RGB, hex colour)"""
+    """Returns tuple containing (frequency, LAB)"""
 
     # Get the number of different clusters, create histogram, and normalize
     labels = np.arange(0, len(np.unique(cluster.labels_)) + 1)
@@ -38,49 +24,64 @@ def get_colour_frequencies(cluster, centroids):
     hist /= hist.sum()
 
     # Group cluster's (percentage, rgb, hex), 
-    # filter out very light colours (hls[1] > 235) and dark colours (hls[1] < 20)
-    # desaturate colours
-    colours = [(percent, decontrast(desaturate(color)), convert_to_hex(decontrast(desaturate(color)))) for (percent, color) in zip(hist, centroids) ]
-    # colours = [(percent, desaturate(color), convert_to_hex(decontrast(desaturate(color)))) for (percent, color) in zip(hist, centroids) if colorsys.rgb_to_hls(*color)[1] > 60 and colorsys.rgb_to_hls(*color)[1] < 205]
+    colours = []
+    # define named tuple with fields for percent, rgb, and hex
+    ColourDetails = namedtuple('Colour', ('frequency', 'lab'))
+    for (percent, color) in zip(hist, centroids):
+
+        # convert color to colormath rgb so we can easily perfrom conversions
+        rgb = sRGBColor(*color, is_upscaled=True)
+        lab = convert_color(rgb, LabColor)
+
+        # convert lab to hex clamp to 0-255
+        hex = convert_color(lab, sRGBColor).get_rgb_hex()
+
+
+
+        # desaturate and lower contrast so bg colours don't compete with image
+        labProcessed = decontrast(desaturate(lab))
+
+
+        # add named tuple to colours list with percent, rgb, and hex
+        colours.append(ColourDetails(percent,labProcessed))
+
+
+    
+
     return colours
 
-def convert_to_hex(rgb_colour_value):
-    """
-        Converts a list of RGB values to a hex value. 
-     
-    """
-    rounded_rgb = [int(x) for x in rgb_colour_value]
-    hex = "{:02x}{:02x}{:02x}".format(*rounded_rgb)
-    return hex
 
-def desaturate(rgb_colour_value):
+def desaturate(lab):
     """
         Desaturates a colour by converting it to hls and then back to rgb.
     """
-    hls = colorsys.rgb_to_hls(*rgb_colour_value)
-    print('saturation', hls[2], convert_to_hex(rgb_colour_value))
-    if hls[2] > .75 or hls[2] < -.75:
-        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.25)
-    elif hls[2] > .5 or hls[2] < -.5:
-        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.666)
-    elif hls[2] > .25 or hls[2] < -.25:
-        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.75)
-    else:
-        rgb = colorsys.hls_to_rgb(hls[0], hls[1], hls[2]*.85)
-    return rgb
 
-def decontrast(rgb_colour_value):
+    # convert lab to hsl using colormath
+    hsl = convert_color(lab, HSLColor)
+    
+    # desaturate
+    # print("saturation", hsl.hsl_s)
+    # reduce saturation on negative e
+    print('--')
+    print('init', hsl.hsl_s)
+    hsl.hsl_s = hsl.hsl_s - (hsl.hsl_s * 0.25)
+    print('desaturated', hsl.hsl_s)
+
+    # convert back to lab
+    lab = convert_color(hsl, LabColor)
+
+    return lab
+
+def decontrast(lab):
     """
-        Decontrasts a colour by converting it to hls and then back to rgb.
+       redduce contrast of a lab colour
     """
-    hls = colorsys.rgb_to_hls(*rgb_colour_value)
-    if hls[1] < 100:
-        rgb = colorsys.hls_to_rgb(hls[0], 100, hls[2])
-    elif hls[1] > 175:
-        rgb = colorsys.hls_to_rgb(hls[0], 175, hls[2])
-    else:
-        rgb = rgb_colour_value
-    return rgb
+    # print("lab lightness", lab.lab_l)
+    if lab.lab_l > 60:
+        lab.lab_l = 60 + ((lab.lab_l - 60) * 0.7 )
+    elif lab.lab_l < 7.5:
+        lab.lab_l = 7.5
+    return lab
 
 def find_avg_dominant_colours(image_path, quantity = 3):
     """
@@ -94,9 +95,6 @@ def find_avg_dominant_colours(image_path, quantity = 3):
         The colour are an average of the dominant clusters of colours. For example, an image with equal amount of red and yellow might return orange.
     """
 
-    # Doesn't always seem to work. When it does, corner image might not be most representative pixel. I some cases images need to be trimmed.
-    # has_solid_border, potential_border_hex_colour = is_there_a_border(image_path)
-    # print('solid border?', has_solid_border, potential_border_hex_colour)
 
     # Load image and convert to a list of pixels
     image = cv2.imread(image_path)
@@ -106,23 +104,22 @@ def find_avg_dominant_colours(image_path, quantity = 3):
     # Find most dominant colors
     cluster = KMeans(n_clusters=quantity).fit(reshape)
     freq_n_colours = get_colour_frequencies(cluster, cluster.cluster_centers_)
-    print('freq_n_colours', freq_n_colours)
+    # print('freq_n_colours', freq_n_colours)
 
     # Sort from darkest to lightest
-    freq_n_colours.sort(reverse=False, key=lambda colour: colorsys.rgb_to_hls(*colour[1])[1])
+    freq_n_colours.sort(reverse=False, key=lambda colour: colour.lab.lab_l)
+
+    dom_hex_colours = [ convert_color(colour.lab, sRGBColor).get_rgb_hex() for colour in freq_n_colours]
 
     
-
-    # freq_n_hex = [{'freq': round(Decimal(freq_hex[0]),2), 'hex': freq_hex[2]} for freq_hex in freq_n_colours]
-    dom_hex_colours = [  colour[2] for colour in freq_n_colours]
-
+    for dom_hex_colour in dom_hex_colours:
+        print( dom_hex_colour, ",")
+ 
     return dom_hex_colours
 
 
 if __name__ == '__main__':
 
-    # dom_colours = find_avg_dominant_colours('/Users/scaza/Desktop/t2.webp')
-    # print(f"#{dom_colours[0]}, #{dom_colours[1]}, #{dom_colours[2]}")
 
     import scraper_MySQL
     import time
@@ -134,13 +131,14 @@ if __name__ == '__main__':
     shows = mySQL.get_query("""
         SELECT id, slug, img, last_updt, sizes
         FROM shows
-        LEFT JOIN show_images ON show_id = id
+        RIGHT JOIN show_images ON show_id = id
     """)
 
     folders_to_sync_list = [] # scraped images will be synched to remote server after being processed locally
     
     for show in shows:
 
+        # if len(show['img']) and show['slug'] and show['id'] == 196:
         if len(show['img']) and show['slug']:
 
 
