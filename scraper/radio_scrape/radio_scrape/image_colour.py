@@ -32,15 +32,12 @@ def get_colour_frequencies(cluster, centroids):
         # convert color to colormath rgb so we can easily perfrom conversions
         rgb = sRGBColor(*color, is_upscaled=True)
         lab = convert_color(rgb, LabColor)
-
-        # convert lab to hex clamp to 0-255
-        hex = convert_color(lab, sRGBColor).get_rgb_hex()
-
-
+        # print('rgb', rgb)
+        # print('lab', lab)
 
         # desaturate and lower contrast so bg colours don't compete with image
         labProcessed = decontrast(desaturate(lab))
-
+        # print('labProcessed', labProcessed)
 
         # add named tuple to colours list with percent, rgb, and hex
         colours.append(ColourDetails(percent,labProcessed))
@@ -56,16 +53,11 @@ def desaturate(lab):
         Desaturates a colour by converting it to hls and then back to rgb.
     """
 
-    # convert lab to hsl using colormath
+    # convert lab to hsl 
     hsl = convert_color(lab, HSLColor)
     
-    # desaturate
-    # print("saturation", hsl.hsl_s)
-    # reduce saturation on negative e
-    print('--')
-    print('init', hsl.hsl_s)
-    hsl.hsl_s = hsl.hsl_s - (hsl.hsl_s * 0.25)
-    print('desaturated', hsl.hsl_s)
+    # desaturate a little more the more saturated it is
+    hsl.hsl_s = hsl.hsl_s - ((hsl.hsl_s * 0.25) + (hsl.hsl_s / 65) * 5)
 
     # convert back to lab
     lab = convert_color(hsl, LabColor)
@@ -76,11 +68,16 @@ def decontrast(lab):
     """
        redduce contrast of a lab colour
     """
-    # print("lab lightness", lab.lab_l)
     if lab.lab_l > 60:
-        lab.lab_l = 60 + ((lab.lab_l - 60) * 0.7 )
-    elif lab.lab_l < 7.5:
-        lab.lab_l = 7.5
+        # Too bright, reduce brightness. The brighter the more we reduce
+        lab.lab_l = 60 + ((lab.lab_l - 60) * 0.4 )
+    elif lab.lab_l < 20:
+        # Too dark, increase brightness. The darker the more we increase
+
+        # Make sure L is not less than 1 or crazy things happen in the next step
+        lab.lab_l = lab.lab_l if lab.lab_l > 1 else 1
+        # Make L at least ten, plus a bit more based on how dark it is
+        lab.lab_l = 10 + (lab.lab_l * 0.5 ) + 20 / lab.lab_l * .15
     return lab
 
 def find_avg_dominant_colours(image_path, quantity = 3):
@@ -104,17 +101,12 @@ def find_avg_dominant_colours(image_path, quantity = 3):
     # Find most dominant colors
     cluster = KMeans(n_clusters=quantity).fit(reshape)
     freq_n_colours = get_colour_frequencies(cluster, cluster.cluster_centers_)
-    # print('freq_n_colours', freq_n_colours)
 
     # Sort from darkest to lightest
     freq_n_colours.sort(reverse=False, key=lambda colour: colour.lab.lab_l)
 
     dom_hex_colours = [ convert_color(colour.lab, sRGBColor).get_rgb_hex() for colour in freq_n_colours]
 
-    
-    for dom_hex_colour in dom_hex_colours:
-        print( dom_hex_colour, ",")
- 
     return dom_hex_colours
 
 
@@ -138,8 +130,8 @@ if __name__ == '__main__':
     
     for show in shows:
 
-        # if len(show['img']) and show['slug'] and show['id'] == 196:
-        if len(show['img']) and show['slug']:
+        if len(show['img']) and show['slug'] and show['id'] == 175:
+        # if len(show['img']) and show['slug']:
 
 
                 save_file_base = f"{save_folder_base}{show['slug']}/{show['slug']}"
