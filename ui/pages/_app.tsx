@@ -13,7 +13,7 @@ import { useRouter } from "next/router";
 function App({ Component, pageProps }: AppProps) {
   
   const [queryClient] = useState(() => new QueryClient());
-  queryClient.invalidateQueries(); // for testing use this temporarily to clear cache on page load
+  // queryClient.invalidateQueries(); // for testing use this temporarily to clear cache on page load
   queryClient.setQueryDefaults('shows', { queryFn: getShows, staleTime: showsStaleTime()})
   queryClient.setQueryDefaults('tags', { queryFn: getTags, staleTime: tagsStaleTime()})
   
