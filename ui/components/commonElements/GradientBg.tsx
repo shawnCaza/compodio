@@ -11,7 +11,7 @@ interface gradientBgProps{
 
 function define_bg_colours(colours: string | null){
     
-    let coloursArr = ['000000'];
+    let coloursArr = ['#000000'];
     
     if (colours){
         coloursArr = JSON.parse(colours);
@@ -23,7 +23,7 @@ function define_bg_colours(colours: string | null){
         const gradient_colour_def = coloursArr.reduce(
             (gradient_string:string, colour:string, idx:number) =>{ 
                 
-                let current_colour_def = `${gradient_string} #${colour}`;
+                let current_colour_def = `${gradient_string} ${colour}`;
                 
                 if(idx < coloursArr.length -1){
                     current_colour_def += ", "
