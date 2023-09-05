@@ -14,7 +14,7 @@ function CardImgContainer ({show}:imgContainerProps) {
 
     // If show.sizes is null, that means we don't actually have the image.
     // So we'll just return null and not render the image.
-    if(!show.sizes ){return null}
+    if(!show.sizes || !baseUrl || !defaultImage || !imageSizes || !w2HRatio || needsPadding ){return null}
 
 
 
