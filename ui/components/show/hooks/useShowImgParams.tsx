@@ -4,6 +4,8 @@ export function useShowImgParams(show:Show) {
         // TODO length > 3 required for image not resized as it has empty sizes array
     // Should we have a way to know the size of super small images?
 
+      if(!show.sizes ){return null}
+
       const baseUrl:string = `${process.env.NEXT_PUBLIC_image_server_URI}shows/${show.slug}/${show.slug}`
 
       //For the sizes attribute in img tag with srcset
