@@ -28,6 +28,9 @@ function ShowImgContainer ({show}:imgContainerProps) {
 
     const {baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding} = useShowImgParams(show);
 
+    // If show.sizes is null, that means we don't actually have the image.
+    // So we'll just return null and not render the image.
+    if(!show.sizes || !baseUrl || !defaultImage || !imageSizes || !w2HRatio || needsPadding ){return null}
 
         const totalVerticalPadding = 40; //Based on css margin
         const containerHeights = [{'height':281, "breakpoint":1366}, {'height':180, "breakpoint":0}] // Based on css
