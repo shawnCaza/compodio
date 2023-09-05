@@ -13,7 +13,6 @@ export function useShowImgParams(show:Show) {
         
 
       const defaultImage:string = `${process.env.NEXT_PUBLIC_image_server_URI}shows/${show.slug}/${show.slug}.jpg`
-      console.log(show.showName, show.sizes);
 
       const imageSizes:Array<{'w':number,'h':number}> = JSON.parse(show.sizes ?? '[{"w":0,"h":0}]')
       
