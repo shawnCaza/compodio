@@ -30,7 +30,7 @@
     background: var(--header-background-high-contrast-colour);
     font-size: 2em;
     line-height: 2;
-    
+    z-index: 1;
 }
 .mainMenuModalContent{
     display: inline;

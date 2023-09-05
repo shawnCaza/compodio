@@ -10,8 +10,13 @@ interface imgContainerProps {
 function CardImgContainer ({show}:imgContainerProps) {
     // if(!show.sizes || show.sizes.length < 3 ){return null}
 
-    const {baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding} = useShowImgParams(show);
 
+
+    // If show.sizes is null, that means we don't actually have the image.
+    // So we'll just return null and not render the image.
+    if(!show.sizes ){return null}
+
+    const {baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding} = useShowImgParams(show);
 
     let displaySizes = "(min-width: 85.375rem) 24.125rem, (min-width: 96rem) 24.875rem, 21rem"; //based on css values for full width of container
     
@@ -43,7 +48,7 @@ function CardImgContainer ({show}:imgContainerProps) {
     } 
     // console.log(displaySizes);
     return (
-        <div className={`${styles.cardImgContainer} ${needsPadding ? styles.cardImgPadded : ''}`} >
+        <div className={`${styles.cardImgContainer} ${needsPadding ? styles.cardImgPadded : styles.cardImgFullWidth}`} >
             <PictureTag
                 loading = {undefined} 
                 alt="" 
