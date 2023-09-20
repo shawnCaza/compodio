@@ -5,4 +5,4 @@ def sync_db():
     server_syncer = Sync_helper()
 
     # Use db folder as save folder
-    server_syncer.synch_tables('db/', f'compodio.sql', 'compodio.tar.gz')
+    server_syncer.synch_tables('/Users/scaza/Sites/community-podcast/db/', f'compodio.sql', 'compodio.tar.gz')
