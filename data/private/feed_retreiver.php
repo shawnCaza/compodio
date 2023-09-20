@@ -48,11 +48,15 @@ if (isset($_GET['id'])){
     foreach($episodes as $ep) {
         $ep_date = $ep['ep_date'];
         $ep_date = mysql2date( 'D, d M Y H:i:s +0000', $ep_date, false );
+        // format date to "Sept 1, 2020"
+        $ep_human_date = mysql2date( 'M j, Y', $ep_date, false );
+
+
         // Need to encode link to be valid XML. Also need to maintain the slashes and colon in the link for it the link to work
         // $encoded_mp3_link = str_replace("%3A",":", implode('/', array_map('rawurlencode', explode('/', $ep['mp3_link']))));
         $encoded_mp3_link = str_replace("%3A",":", implode('/', array_map('rawurlencode', explode('/', $ep['mp3']))));
         echo "<item>
-                <title>{$ep['ep_date']}</title>
+                <title>{$show_name} - {$ep_human_date}</title>
                 <enclosure url='{$encoded_mp3_link}' length='{$ep['file_size']}' type='audio/mpeg'></enclosure>
                 <guid isPermaLink='false'>{$show['slug']}-{$ep['id']}'</guid>
                 <itunes:duration>{$show['duration']}</itunes:duration>
