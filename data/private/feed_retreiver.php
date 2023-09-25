@@ -2,7 +2,7 @@
 header('Content-type: application/rss+xml; charset=utf-8');
 // echo '<?xml-stylesheet type="text/css" href="/podcasting/includes/style/rss-style.css"
 
-function mysql2date( $format, $date, $translate = true ) {
+function mysql2date( $format, $date ) {
     // Adapted from WP - https://developer.wordpress.org/reference/functions/mysql2date/
 	if ( empty( $date ) ) {
 		return false;
@@ -17,6 +17,12 @@ function mysql2date( $format, $date, $translate = true ) {
 	return $datetime->format( $format );
 }
 
+function get_human_date($date) {
+    // format date to "Sept 1, 2020 9AM"
+    $human_date = mysql2date( 'M j, Y', $date, false );
+    return $human_date;
+}
+
 if (isset($_GET['id'])){
     require_once(PRIVATE_PATH .'/feed_queries.php');
     $show_id = $_GET['id'];
@@ -27,6 +33,8 @@ if (isset($_GET['id'])){
     $show_desc = htmlentities($show['desc'], ENT_XML1, 'UTF-8');
     $host = htmlentities($show['host'], ENT_XML1, 'UTF-8');
     $show_name = htmlentities($show['showName'], ENT_XML1, 'UTF-8');
+
+
 
     // channel details
     echo "<rss version='2.0' 
@@ -44,25 +52,58 @@ if (isset($_GET['id'])){
                 <itunes:email>{$show['email']}</itunes:email>
             </itunes:owner>
             <itunes:image href='{$show['img']}'></itunes:image>";
+    
+    $current_ep_idx = 0;
+    $current_ep_part = 0;
+    $previous_ep_date = null;
+    $num_eps = count($episodes);
 
     foreach($episodes as $ep) {
         $ep_date = $ep['ep_date'];
-        $ep_date = mysql2date( 'D, d M Y H:i:s +0000', $ep_date, false );
-        // format date to "Sept 1, 2020"
-        $ep_human_date = mysql2date( 'M j, Y', $ep_date, false );
+        $ep_date = mysql2date( 'D, d M Y H:i:s +0000', $ep_date );
+        // format date to "Sept 1, 2020 9AM"
+        $ep_human_date = get_human_date($ep['ep_date']);
+        $ep_human_date_with_hour = mysql2date( 'M j, Y gA', $ep['ep_date'] );
+
+        // CFRU is an example of a site where 1 episode may have multiple mp3 files since they post everything in 1 hour segments and some shows are longer than 1 hour. For cases like this let's check for eps where $ep_date has the same year, month, and day as $previous_ep_date and specify part numbers.
+        
+
+        
+
+        if ( $current_ep_idx > 0 && $ep_human_date == get_human_date($episodes[$current_ep_idx - 1]['ep_date'])) {
+            // Previous ep matches
+            $current_ep_part++;
+        
+        } elseif ( $current_ep_idx < $num_eps - 1 && $ep_human_date == get_human_date($episodes[$current_ep_idx + 1]['ep_date']) ) {
+            //the next episode is a duplicate 
+            $current_ep_part = 1;
+        } else {
+            $current_ep_part = 0;
+        }
+        
+        if($current_ep_part > 0) {
+            $ep_title= $ep_human_date_with_hour;
+        }
+        else {
+            $ep_title= $ep_human_date;
+        }
+
 
 
         // Need to encode link to be valid XML. Also need to maintain the slashes and colon in the link for it the link to work
         // $encoded_mp3_link = str_replace("%3A",":", implode('/', array_map('rawurlencode', explode('/', $ep['mp3_link']))));
         $encoded_mp3_link = str_replace("%3A",":", implode('/', array_map('rawurlencode', explode('/', $ep['mp3']))));
         echo "<item>
-                <title>{$show_name} - {$ep_human_date}</title>
+                <title>$ep_title</title>
                 <enclosure url='{$encoded_mp3_link}' length='{$ep['file_size']}' type='audio/mpeg'></enclosure>
                 <guid isPermaLink='false'>{$show['slug']}-{$ep['id']}'</guid>
                 <itunes:duration>{$show['duration']}</itunes:duration>
                 <pubDate>{$ep_date}</pubDate>
              </item>
              ";
+
+        $current_ep_idx++;
+        $previous_ep_human_date = $ep_date;
     }
 
     echo "</channel>

@@ -24,7 +24,7 @@ function get_eps_by_show_id($show_id){
     $result = mysqli_query($db, $sql);
     confirm_result_set($result);
     
-    return $result;
+    return $result->fetch_all(MYSQLI_ASSOC);
 
 }
 ///// alert subs stats admin page
