@@ -63,7 +63,7 @@ if (isset($_GET['id'])){
         $ep_date = mysql2date( 'D, d M Y H:i:s +0000', $ep_date );
         // format date to "Sept 1, 2020 9AM"
         $ep_human_date = get_human_date($ep['ep_date']);
-        $ep_human_date_with_hour = mysql2date( 'M j, Y gA', $ep['ep_date'] );
+        $ep_human_date_with_hour = mysql2date( 'gA M j, Y', $ep['ep_date'] );
 
         // CFRU is an example of a site where 1 episode may have multiple mp3 files since they post everything in 1 hour segments and some shows are longer than 1 hour. For cases like this let's check for eps where $ep_date has the same year, month, and day as $previous_ep_date and specify part numbers.
         
@@ -94,8 +94,9 @@ if (isset($_GET['id'])){
         // $encoded_mp3_link = str_replace("%3A",":", implode('/', array_map('rawurlencode', explode('/', $ep['mp3_link']))));
         $encoded_mp3_link = str_replace("%3A",":", implode('/', array_map('rawurlencode', explode('/', $ep['mp3']))));
         echo "<item>
-                <title>$ep_title</title>
+                <title>{$ep_title}</title>
                 <enclosure url='{$encoded_mp3_link}' length='{$ep['file_size']}' type='audio/mpeg'></enclosure>
+                <description>{$show_name} for {$ep_title}</description>
                 <guid isPermaLink='false'>{$show['slug']}-{$ep['id']}'</guid>
                 <itunes:duration>{$show['duration']}</itunes:duration>
                 <pubDate>{$ep_date}</pubDate>
