@@ -2,7 +2,7 @@
 header('Content-type: application/rss+xml; charset=utf-8');
 // echo '<?xml-stylesheet type="text/css" href="/podcasting/includes/style/rss-style.css"
 
-function mysql2date( $format, $date ) {
+function mysql2date( $format, $date, $useGMT = false ) {
     // Adapted from WP - https://developer.wordpress.org/reference/functions/mysql2date/
 	if ( empty( $date ) ) {
 		return false;
@@ -13,7 +13,9 @@ function mysql2date( $format, $date ) {
 	if ( false === $datetime ) {
 		return false;
 	}
-
+    if($useGMT){
+        $datetime->setTimezone(new DateTimeZone('GMT'));
+    }
 	return $datetime->format( $format );
 }
 
@@ -36,11 +38,14 @@ if (isset($_GET['id'])){
 
     // use last episode for eTag headers
     $newest_ep = end($episodes);
-    $newest_ep_modified = $newest_ep['modified'];
+    //use EST for modified even though we call it GMT, since there could be a slight delay between scraping and publishing
+    $newest_ep_modified = mysql2date( 'D, d M Y H:i:s -0000', $newest_ep['modified'] );
     $newest_file_size = $newest_ep['file_size'];
     $etag = '"' . $newest_ep_modified . '-' . $newest_file_size . '"';
     header("Etag: {$etag}");
+    header("Last-Modified: {$newest_ep_modified}"); 
 
+    
 
 
     // channel details
@@ -66,17 +71,13 @@ if (isset($_GET['id'])){
     $num_eps = count($episodes);
 
     foreach($episodes as $ep) {
-        $ep_date = $ep['ep_date'];
-        $ep_date = mysql2date( 'D, d M Y H:i:s +0000', $ep_date );
+        $ep_date_est_string = $ep['ep_date'];
+        $ep_date = mysql2date( 'D, d M Y H:i:s +0000', $ep_date_est_string, true); 
         // format date to "Sept 1, 2020 9AM"
-        $ep_human_date = get_human_date($ep['ep_date']);
-        $ep_human_date_with_hour = mysql2date( 'gA M j, Y', $ep['ep_date'] );
+        $ep_human_date = get_human_date($ep_date_est_string);
+        $ep_human_date_with_hour = mysql2date( 'gA M j, Y', $ep_date_est_string );
 
         // CFRU is an example of a site where 1 episode may have multiple mp3 files since they post everything in 1 hour segments and some shows are longer than 1 hour. For cases like this let's check for eps where $ep_date has the same year, month, and day as $previous_ep_date and specify part numbers.
-        
-
-        
-
         if ( $current_ep_idx > 0 && $ep_human_date == get_human_date($episodes[$current_ep_idx - 1]['ep_date'])) {
             // Previous ep matches
             $current_ep_part++;
