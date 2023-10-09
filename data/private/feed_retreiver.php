@@ -34,6 +34,13 @@ if (isset($_GET['id'])){
     $host = htmlentities($show['host'], ENT_XML1, 'UTF-8');
     $show_name = htmlentities($show['showName'], ENT_XML1, 'UTF-8');
 
+    // use last episode for eTag headers
+    $newest_ep = end($episodes);
+    $newest_ep_modified = $newest_ep['modified'];
+    $newest_file_size = $newest_ep['file_size'];
+    $etag = '"' . $newest_ep_modified . '-' . $newest_file_size . '"';
+    header("Etag: {$etag}");
+
 
 
     // channel details
