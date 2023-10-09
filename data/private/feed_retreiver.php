@@ -2,7 +2,7 @@
 header('Content-type: application/rss+xml; charset=utf-8');
 // echo '<?xml-stylesheet type="text/css" href="/podcasting/includes/style/rss-style.css"
 
-function mysql2date( $format, $date, $useGMT = false ) {
+function mysql2date( $format, $date, $useGMT = false, $compensate_for_delay_to_server_sync = false ) {
     // Adapted from WP - https://developer.wordpress.org/reference/functions/mysql2date/
 	if ( empty( $date ) ) {
 		return false;
@@ -15,6 +15,9 @@ function mysql2date( $format, $date, $useGMT = false ) {
 	}
     if($useGMT){
         $datetime->setTimezone(new DateTimeZone('GMT'));
+    }
+    if($compensate_for_delay_to_server_sync){
+        $datetime->modify('+ 1 hour');
     }
 	return $datetime->format( $format );
 }
@@ -38,8 +41,7 @@ if (isset($_GET['id'])){
 
     // use last episode for eTag headers
     $newest_ep = end($episodes);
-    //use EST for modified even though we call it GMT, since there could be a slight delay between scraping and publishing
-    $newest_ep_modified = mysql2date( 'D, d M Y H:i:s -0000', $newest_ep['modified'] );
+    $newest_ep_modified = mysql2date( 'D, d M Y H:i:s -0000', $newest_ep['modified'], true, true );
     $newest_file_size = $newest_ep['file_size'];
     $etag = '"' . $newest_ep_modified . '-' . $newest_file_size . '"';
     header("Etag: {$etag}");
