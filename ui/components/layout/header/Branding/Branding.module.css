@@ -1,0 +1,37 @@
+/*--------------------------------------------------------------
+# mixins 
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+# Variables
+--------------------------------------------------------------*/
+.container {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+}
+
+.logoContainer {
+  width: 36px;
+  height: 36px;
+  margin-right: 5px;
+}
+
+.logo {
+  fill: var(--brand-colour);
+  width: 100%;
+  height: 100%;
+}
+
+.siteName {
+  color: var(--brand-colour);
+  font-size: 1.2em;
+  display: none;
+}
+@media only screen and (min-width: 37.5rem) {
+  .siteName {
+    display: inherit;
+  }
+}/*# sourceMappingURL=Branding.module.css.map */

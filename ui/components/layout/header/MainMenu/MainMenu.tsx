@@ -27,14 +27,14 @@ function MainMenu() {
                         {isOpen ? <IoCloseSharp/> : <IoMenuSharp/>}
                     </span>                 
                 </button>
-                 <Modal 
+                <Modal 
                     isOpen={isOpen}
                     onRequestClose={toggleMainMenu}
                     parentSelector={() => document.getElementById('content') as HTMLElement}
                     aria={{
                         labelledby: "main-menu-label"
                     }} 
-                    overlayClassName={styles.mainMenuModal}
+                    overlayClassName={styles.mainMenuModalOverlay}
                     className={styles.mainMenuModalContent}
                 >
                     <h2 id='main-menu-label' className='screen-reader-text'>Site Menu</h2>
@@ -48,8 +48,6 @@ function MainMenu() {
                             </li>
                         </ul>
                     </div>
-
-
                 </Modal>
             </>
         )

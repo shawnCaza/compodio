@@ -2,14 +2,24 @@ button,
 input[type="button"],
 input[type="reset"],
 input[type="submit"] {
-    border: none;
-    background: none;
-    color: inherit;
-    
+    border: 0;
+    font-weight: 700;
+    background-color: var(--header-background-high-contrast-colour);
+    color: var(--header-foreground-colour);
+    fill: var(--header-foreground-colour);
+    border-radius: var(--border-radius);
+    display: block;
+    padding: 7px;
+
     &:hover{
         cursor: pointer;
+        background-color: var(--header-background-colour);
+        color: var(--brand-colour);
+        fill: var(--brand-colour);
     }
-    // padding: 7px 10px;
+    svg{
+        fill: inherit;
+    }
    
     // &:active,
     // &:focus {
@@ -17,6 +27,11 @@ input[type="submit"] {
     // }
 }
 
+.highlight-button{
+    background-color: var(--brand-colour);
+    color: var(--header-background-colour);
+    fill: var(--header-background-colour);
+}
 
 
 

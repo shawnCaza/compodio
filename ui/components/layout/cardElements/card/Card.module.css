@@ -1,0 +1,33 @@
+/*--------------------------------------------------------------
+# mixins 
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+# Variables
+--------------------------------------------------------------*/
+.card {
+  width: var(--card-size-rem);
+  margin: 0 auto;
+  border: 1px solid var(--foreground-contrast-colour);
+  border-radius: 0.5em;
+  overflow: hidden;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+}
+@media only screen and (min-width: 85.375rem) {
+  .card {
+    width: var(--xl-card-size-rem);
+  }
+}
+@media only screen and (min-width: 96rem) {
+  .card {
+    width: var(--xxl-card-size-rem);
+  }
+}/*# sourceMappingURL=Card.module.css.map */

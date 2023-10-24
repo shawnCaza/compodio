@@ -1,0 +1,111 @@
+/*--------------------------------------------------------------
+# mixins 
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+# Variables
+--------------------------------------------------------------*/
+@media only screen and (min-width: 85.375rem) {
+  .detailAndImageWrapper {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: row;
+            flex-direction: row;
+    -webkit-box-pack: center;
+        -ms-flex-pack: center;
+            justify-content: center;
+    width: 100%;
+    max-width: 1200px;
+    margin: 2em auto;
+    padding: 0 2em;
+  }
+}
+
+.showImgWrapper {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 1 40%;
+          flex: 0 1 40%;
+}
+@media only screen and (min-width: 85.375rem) {
+  .showImgWrapper {
+    -webkit-box-flex: unset;
+        -ms-flex: unset;
+            flex: unset;
+    width: 400px;
+  }
+}
+
+.showDetails {
+  padding: 0 1em;
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 375px;
+          flex: 1 1 375px;
+  max-width: 650px;
+  margin: 0 auto;
+}
+.showDetails h1 {
+  text-align: center;
+  margin-top: 0;
+  line-height: 1em;
+}
+@media only screen and (min-width: 85.375rem) {
+  .showDetails {
+    min-width: 686px;
+    margin: 0 0 0 2em;
+  }
+  .showDetails h1 {
+    text-align: left;
+    margin-top: 0;
+  }
+}
+.showDetails .iconDetailsList {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  padding: 0;
+}
+.showDetails .iconDetailsList .iconAndTextContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-flex: 1;
+      -ms-flex: 1 1 25%;
+          flex: 1 1 25%;
+}
+.showDetails .iconDetailsList .iconAndTextContainer .iconTxt {
+  max-width: 13.75em;
+}
+.showDetails .linkIcon {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 32px;
+          flex: 0 0 32px;
+  height: 32px;
+  padding: 5px 5px 5px 0;
+  display: inline-block;
+}
+.showDetails .linkIcon svg {
+  width: 100%;
+  height: 100%;
+}
+.showDetails .desc {
+  font-size: 1.25em;
+  font-weight: 500;
+}
+.showDetails .hostedWrapper {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}/*# sourceMappingURL=showsPage.module.css.map */

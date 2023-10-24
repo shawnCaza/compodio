@@ -26,10 +26,15 @@
     flex: 0 0 px2em(40);
     height: 100%;
     padding: 10px;
-
+    border-radius: var(--border-radius-pill) 0 0 var(--border-radius-pill);
+    background-color: inherit;
     svg{
         width: px2em(20);
         fill: var(--foreground-contrast-colour);
+    }
+    &:hover{
+        background-color: inherit;
+
     }
 }
 

@@ -31,9 +31,9 @@ function FeedUrl({showId, slug}:showFeedUrl) {
         <>  
             <div className={styles.showFeedContainer} >
                 
-                <div className={styles.subLabel}>
+                {/* <div className={styles.subLabel}>
                     Subscribe
-                </div>
+                </div> */}
 
                 <div className={styles.feedAndCopyButtonContainer}>
 
@@ -41,7 +41,7 @@ function FeedUrl({showId, slug}:showFeedUrl) {
                     <span className="screen-reader-text">RSS podcast subscription link:</span>
                     <input className={styles.url} value={feedLink} readOnly />
                     
-                    <CopyButton toCopy={feedLink} setDisplayCopiedMessage={setDisplayCopiedMessage} />
+                    {/* <CopyButton toCopy={feedLink} setDisplayCopiedMessage={setDisplayCopiedMessage} /> */}
                     {displayCopiedMessage &&
                         <>
                             <div className={styles.copiedMessage}>Copied to clipboard</div>

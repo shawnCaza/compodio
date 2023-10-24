@@ -17,8 +17,11 @@
   --foreground-high-contrast-colour: #414141;
   --background-colour:#eee;
   --background-contrast-colour:#cacaca;
+  --background-high-contrast-colour:#aaaaaa;
   --main-background-colour:#eee;
   --header-background-colour: #111;
+  --header-background-contrast-colour: #2e2e2e;
+  --header-background-high-contrast-colour: #414141;
   --header-foreground-colour: #eee;
   --header-foreground-contrast-colour:#cacaca;
   --border-radius: 4px;
@@ -35,8 +38,10 @@
     --foreground-colour: #eee;
     --foreground-contrast-colour:#cacaca;
     --background-colour:#111;
-    --main-background-colour:#414141;
+    --main-background-colour:#2e2e2e;
     --background-contrast-colour: #2e2e2e;
+    --foreground-high-contrast-colour: #aaaaaa;
+    --background-high-contrast-colour:#414141;
   }
 }
 /*--------------------------------------------------------------
@@ -383,6 +388,7 @@ caption, figcaption, label, legend { line-height: 1.375; } */
 --------------------------------------------------------------*/
 h1, h2, h3, h4, h5, h6 {
   margin: 1rem 0 0.5rem;
+  text-wrap: balance;
 }
 
 h1 {
@@ -421,6 +427,10 @@ button {
   font-size: inherit;
 }
 
+.balanced {
+  text-wrap: balance;
+}
+
 /*--------------------------------------------------------------
 # Forms
 --------------------------------------------------------------*/
@@ -428,15 +438,35 @@ button,
 input[type=button],
 input[type=reset],
 input[type=submit] {
-  border: none;
-  background: none;
-  color: inherit;
+  border: 0;
+  font-weight: 700;
+  background-color: var(--header-background-high-contrast-colour);
+  color: var(--header-foreground-colour);
+  fill: var(--header-foreground-colour);
+  border-radius: var(--border-radius);
+  display: block;
+  padding: 7px;
 }
 button:hover,
 input[type=button]:hover,
 input[type=reset]:hover,
 input[type=submit]:hover {
   cursor: pointer;
+  background-color: var(--header-background-colour);
+  color: var(--brand-colour);
+  fill: var(--brand-colour);
+}
+button svg,
+input[type=button] svg,
+input[type=reset] svg,
+input[type=submit] svg {
+  fill: inherit;
+}
+
+.highlight-button {
+  background-color: var(--brand-colour);
+  color: var(--header-background-colour);
+  fill: var(--header-background-colour);
 }
 
 /*--------------------------------------------------------------

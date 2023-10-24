@@ -10,7 +10,7 @@ import {IoTimeSharp} from 'react-icons/io5';
 
 import GradientBg from '../../components/commonElements/GradientBg';
 import ShowImgContainer from '../../components/show/showPage/ImgContainer/ShowImgContainer';
-import ShowFeed from '../../components/show/showFeed/ShowFeed';
+import RssLink from '../../components/show/rssLink/RssLink';
 import EpDate from '../../components/show/epDate/EpDate';
 import { useShowLength } from '../../components/show/hooks/useShowLength';
 import ShowCards from '../../components/show/showCards/ShowCards';
@@ -89,7 +89,9 @@ export default function ShowPage() {
         
         <h1>{show.showName}</h1>
         
-        <ShowFeed showId={show.id} slug={show.slug} />
+        <ContentSection heading='Subscribe:' tag='h5' centered={true} spacing='tight'>
+            <RssLink showId={show.id} slug={show.slug} showName={show.showName} />
+        </ContentSection>
         
 
         {show.desc &&
