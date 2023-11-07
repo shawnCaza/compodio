@@ -285,3 +285,24 @@ class MySQL():    #------------------------------------------------------
         cursor.execute(query)
 
         return cursor.fetchall()
+
+    # ---------------------------------------------------------
+    def insert_ep_ai_details(self, ep_id, desc, title):
+        # connect to MySQL
+        conn, cursor = self.connect()
+        self.use_compodio_DB(cursor)
+        
+        query = """UPDATE episodes
+                set ai_desc = %s,
+                ai_title = %s
+                WHERE id = '%s';
+                """
+        
+        cursor.execute(query,(desc, title, ep_id))
+
+        try:
+            conn.commit()
+        except:
+            print(cursor.statement,)
+        time.sleep(.2)
+        self.close(cursor, conn)

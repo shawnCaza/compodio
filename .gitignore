@@ -1,6 +1,5 @@
 python/radio_scrape/radio_scrape/DBConfig.py
 **/.DS_Store
-.gitignore
 python/test.py
 **/__pycache__/*
 **/__pycache__
@@ -9,3 +8,11 @@ python/test.py
 **/db_credentials.php
 scraper/test.py
 **/.env
+demo.mp3
+only_speech.wav
+temp_audio_for_ai_summary.mp3
+temp_speech_only_file_trimmed.wav
+temp_speech_only_file.wav
+temp_voice_only_file.wav
+scraper/test.py
+ui/.gitignore
