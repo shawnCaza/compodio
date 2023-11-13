@@ -287,22 +287,39 @@ class MySQL():    #------------------------------------------------------
         return cursor.fetchall()
 
     # ---------------------------------------------------------
-    def insert_ep_ai_details(self, ep_id, desc, title):
+    def insert_ep_ai_details(self, ep_id, desc):
         # connect to MySQL
         conn, cursor = self.connect()
         self.use_compodio_DB(cursor)
         
         query = """UPDATE episodes
-                set ai_desc = %s,
-                ai_title = %s
+                set ai_desc = %s
                 WHERE id = '%s';
                 """
         
-        cursor.execute(query,(desc, title, ep_id))
+        cursor.execute(query,(desc, ep_id))
 
         try:
             conn.commit()
         except:
             print(cursor.statement,)
-        time.sleep(.2)
+        self.close(cursor, conn)
+
+        # ---------------------------------------------------------
+    def set_show_lang(self, show_id, lang):
+        # connect to MySQL
+        conn, cursor = self.connect()
+        self.use_compodio_DB(cursor)
+        
+        query = """UPDATE shows
+                set lang = %s
+                WHERE id = %s;
+                """
+        
+        cursor.execute(query,(lang, show_id))
+
+        try:
+            conn.commit()
+        except:
+            print(cursor.statement,)
         self.close(cursor, conn)

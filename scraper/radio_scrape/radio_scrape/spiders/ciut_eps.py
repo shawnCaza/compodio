@@ -36,20 +36,7 @@ class CiutEps(scrapy.Spider):
         if show_id in self.newest_ep_map.keys():
             
             most_recent_mp3 = self.newest_ep_map[show_id]['ep_mp3']
-
-            if most_recent_mp3 and 'ciut.fm' in most_recent_mp3:
-                
-                # Older file scraped before podbean feed was available.
-                # most recent date no longer relevant, so set to None
-                most_recent_ep_date = None
-
-                # Need to clean up any episodes scraped before switch to podbean feed as they are no longer relevant
-                where_clause = """mp3 like '/%%ciut.fm%%'"""
-                self.mySQL.remove_old_eps_by_show(show_id, where_clause)
-
-            else:
-
-                most_recent_ep_date = self.newest_ep_map[show_id]['ep_date'] 
+            most_recent_ep_date = self.newest_ep_map[show_id]['ep_date'] 
 
         else:
             most_recent_ep_date = None
@@ -59,6 +46,16 @@ class CiutEps(scrapy.Spider):
 
         if podbean_info_link:
             print('has podbean player:', podbean_info_link)
+
+            if most_recent_mp3 and 'ciut.fm' in most_recent_mp3:
+                # Older file scraped before podbean feed was available.
+                # most recent date no longer relevant, so set to None
+                most_recent_ep_date = None
+
+                # Need to clean up any episodes scraped before switch to podbean feed as they are no longer relevant
+                where_clause = """mp3 like '/%%ciut.fm%%'"""
+                self.mySQL.remove_old_eps_by_show(show_id, where_clause)
+
             parsed_url = urlparse(podbean_info_link)
             query_string = parse_qs(parsed_url.query)
             podbean_show_id = query_string['i'][0]

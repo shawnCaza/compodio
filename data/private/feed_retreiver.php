@@ -79,6 +79,7 @@ if (isset($_GET['id'])){
         $ep_human_date = get_human_date($ep_date_est_string);
         $ep_human_date_with_hour = mysql2date( 'gA M j, Y', $ep_date_est_string );
 
+
         // CFRU is an example of a site where 1 episode may have multiple mp3 files since they post everything in 1 hour segments and some shows are longer than 1 hour. For cases like this let's check for eps where $ep_date has the same year, month, and day as $previous_ep_date and specify part numbers.
         if ( $current_ep_idx > 0 && $ep_human_date == get_human_date($episodes[$current_ep_idx - 1]['ep_date'])) {
             // Previous ep matches
@@ -98,7 +99,11 @@ if (isset($_GET['id'])){
             $ep_title= $ep_human_date;
         }
 
+        $ai_disclaimer = "[*** This description was auto-generated using AI. It's guaranteed to be *incorrect* on some level. We hope it's more useful than harmful. ***]";
+        
+        $ep_summary = (!empty($ep['ai_desc'])) ? "<br/><br/>" . htmlentities($ep['ai_desc'], ENT_XML1, 'UTF-8') . "<br/><br/>" .  $ai_disclaimer : '';
 
+        $ep_desc = "{$show_name} for {$ep_title}{$ep_summary}";
 
         // Need to encode link to be valid XML. Also need to maintain the slashes and colon in the link for it the link to work
         // $encoded_mp3_link = str_replace("%3A",":", implode('/', array_map('rawurlencode', explode('/', $ep['mp3_link']))));
@@ -106,7 +111,7 @@ if (isset($_GET['id'])){
         echo "<item>
                 <title>{$ep_title}</title>
                 <enclosure url='{$encoded_mp3_link}' length='{$ep['file_size']}' type='audio/mpeg'></enclosure>
-                <description>{$show_name} for {$ep_title}</description>
+                <description><![CDATA[{$ep_desc}]]></description>
                 <guid isPermaLink='false'>{$show['slug']}-{$ep['id']}'</guid>
                 <itunes:duration>{$show['duration']}</itunes:duration>
                 <pubDate>{$ep_date}</pubDate>

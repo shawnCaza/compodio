@@ -16,9 +16,10 @@ from slugify import slugify
 
 class SaveEpisode:
     def process_item(self, episode, spider):
-        print(episode, "\n\n")
-        mySQL = MySQL()
-        mySQL.insert_episode(episode)
+        if episode:
+            print(episode, "\n\n")
+            mySQL = MySQL()
+            mySQL.insert_episode(episode)
         return episode
 
 class EncodeURL:
@@ -30,12 +31,17 @@ class GetFileSize:
     def process_item(self, episode, spider):
         
         if 'file_size' not in episode.keys():
-            header = requests.head(episode['mp3'], stream=True).headers
-            if 'Content-length' in header.keys():
-                episode['file_size'] = header['Content-length']
+            r = requests.head(episode['mp3'], stream=True)
+            if r.status_code == 200:
+                header = r.headers
+                if 'Content-length' in header.keys():
+                    episode['file_size'] = header['Content-length']
+                else:
+                    # 0 recomended when file size unknown (https://validator.w3.org/feed/docs/error/UseZeroForUnknown.html) 
+                    episode['file_size'] = 0
             else:
-                # 0 recomended when file size unknown (https://validator.w3.org/feed/docs/error/UseZeroForUnknown.html) 
-                episode['file_size'] = 0
+                # File may not exist. Don't want to add it to DB
+                espisode = None
         
         return episode
 
