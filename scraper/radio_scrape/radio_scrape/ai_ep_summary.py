@@ -15,9 +15,10 @@ from transformers import pipeline
 import torch
 import torchaudio
 
+from nltk.tokenize.texttiling import TextTilingTokenizer
+
 import scraper_MySQL
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
-
 
 def main():
     download_file = 'temp_audio_for_ai_summary.mp3'
@@ -32,7 +33,7 @@ def main():
         WHERE ai_desc is null
         AND (lang is null OR lang = 'en')
         ORDER BY `episodes`.`id` DESC
-        LIMIT 30
+        LIMIT 50
     """)
     removed_eps = []
     for ep in eps:
@@ -79,18 +80,19 @@ def main():
 
                         summary_txt = create_summary(transcription, summarizer)
 
+                        summary_txt_paragraphed = add_paragraphs(summary_txt)
                         # title = create_title(summary[0]['summary_text'], title_summarizer)
                     else:
                         # no speech found in audio
-                        summary_txt = ''
+                        summary_txt_paragraphed = ''
                 else:
-                    summary_txt = ''
+                    summary_txt_paragraphed = ''
 
                 # add to db
                 print('saving to db')
                 print(datetime.datetime.utcnow())
-                print(summary_txt)
-                mySQL.insert_ep_ai_details(ep['id'], summary_txt)
+                print(summary_txt_paragraphed)
+                mySQL.insert_ep_ai_details(ep['id'], summary_txt_paragraphed)
 
                 time.sleep(120)
             
@@ -262,7 +264,7 @@ def transcribe_audio(audio_file, ep):
     elif len(show_name_parts) > 2 and show_name_shortened.lower() in txt[:key_phrase_search_limit].lower():
         print("found show name shortened key phrase", show_name_shortened)
         keyPhraseIdx = txt.lower().find(show_name_shortened.lower())
-    elif len(ep['host']) and ep['host'].split()[0] in txt[:key_phrase_search_limit]:
+    elif ep['host'] and len(ep['host']) and ep['host'].split()[0] in txt[:key_phrase_search_limit]:
         print("found host key phrase", ep['host'].split()[0])
         keyPhraseIdx = txt.find(ep['host'].split()[0])
     elif "From the roots up" in txt[:key_phrase_search_limit]:
@@ -312,7 +314,7 @@ def transcribe_audio(audio_file, ep):
         cleaned_txt = cleaned_txt[:last_station_idx]
 
     # Really short descriptions may not be useful and could contain lots of irrelevant info from ads / station messages.
-    if len(cleaned_txt) < 2200:
+    if len(cleaned_txt) < 900:
         cleaned_txt = None
 
     print('cleaned transcription',cleaned_txt)
@@ -354,7 +356,25 @@ def get_only_speech_timestamps(audio_tag_results: list[dict]):
             speech_timestamp_samples.append({'start': label['time']['start']*sample_rate, 'end':label['time']['end']*sample_rate})
     return speech_timestamp_samples
 
+def add_paragraphs(summary_txt:str):
+    """Returns text divided into paragraphs by detected 'shifts in topic'. Uses '\n\n' to denote paragraph breaks."""
+    print("**** Adding paragraphs")
+    print(datetime.datetime.utcnow())
+    
+    # Create tokenizer
+    tokenizer = TextTilingTokenizer()
 
+    # Tokenizer expects paragraphs in text. Since we don't have them, we'll add '\n\n' to every sentence.
+    paragraphed_summary_for_tokenizer = summary_txt.replace(".", ".\n\n").replace("?", "?\n\n").replace("!", "!\n\n")
+    
+    # Now we can feed the text to the tokenizer to detect 'topics'
+    topic_tokens = tokenizer.tokenize(paragraphed_summary_for_tokenizer)
+    
+    # remove the line breaks we added previously + mysterious whitespace, then reform our summary with paragraph breaks based on the tokenizer's topic detection.
+    paragraphs = [topic.replace("\n\n", " ").strip() for topic in topic_tokens]
+    summary_txt_paragraphed = "\n\n".join(paragraphs)
+
+    return summary_txt_paragraphed
 
 ###### From silero_vad
 def read_audio(path: str,
