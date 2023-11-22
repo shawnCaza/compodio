@@ -101,7 +101,7 @@ if (isset($_GET['id'])){
 
         $ai_disclaimer = "[*** This description was auto-generated using AI. It's guaranteed to be *incorrect* on some level. We hope it's more useful than harmful. ***]";
         
-        $ep_summary = (!empty($ep['ai_desc'])) ? "<br/><br/>" . htmlentities($ep['ai_desc'], ENT_XML1, 'UTF-8') . "<br/><br/>" .  $ai_disclaimer : '';
+        $ep_summary = (!empty($ep['ai_desc'])) ? "<br/><br/>" . nl2br(htmlentities($ep['ai_desc'], ENT_XML1, 'UTF-8')) . "<br/><br/>" .  $ai_disclaimer : '';
 
         $ep_desc = "{$show_name} for {$ep_title}{$ep_summary}";
 
