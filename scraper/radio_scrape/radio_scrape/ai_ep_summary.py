@@ -19,11 +19,15 @@ from nltk.tokenize.texttiling import TextTilingTokenizer
 
 import scraper_MySQL
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
+audio_directory = f"{os.path.dirname(os.path.realpath(__file__))}/temp_audio/"
 
 def main():
-    download_file = 'temp_audio_for_ai_summary.mp3'
-    speech_only_file = "temp_speech_only_file.wav"
-    speech_only_file_trimmed = "temp_speech_only_file_trimmed.wav"
+    global audio_directory
+    print('audio directory', audio_directory)
+    download_file = f'{audio_directory}temp_audio_for_ai_summary.mp3'
+    speech_only_file = f"{audio_directory}temp_speech_only_file.wav"
+    speech_only_file_trimmed = f"{audio_directory}temp_speech_only_file_trimmed.wav"
+
     # Get episodes without a description
     mySQL = scraper_MySQL.MySQL() 
     eps = mySQL.get_query("""
@@ -33,11 +37,11 @@ def main():
         WHERE ai_desc is null
         AND (lang is null OR lang = 'en')
         ORDER BY `episodes`.`id` DESC
-        LIMIT 50
+        LIMIT 1
     """)
     removed_eps = []
     for ep in eps:
-        voice_only_file = "temp_voice_only_file.wav" # reset voice only file, as it may have been trimmed in previous loop
+        voice_only_file = f"{audio_directory}temp_voice_only_file.wav" # reset voice only file, as it may have been trimmed in previous loop
 
         print("\n*****", ep['id'])
 
@@ -58,32 +62,37 @@ def main():
 
                 voice_only_file = reduce_audio_to_voice_only_using_silero(download_file, voice_only_file)
 
-                speech_found = reduce_audio_to_speech_only_using_whisper(voice_only_file, speech_only_file)
+                if voice_only_file != False:
+                    speech_found = reduce_audio_to_speech_only_using_whisper(voice_only_file, speech_only_file, ep)
 
-                if speech_found:
+                    if speech_found:
 
-                    save_portion_of_audio_file(speech_only_file, speech_only_file_trimmed, length="00:10:00")
+                        save_portion_of_audio_file(speech_only_file, speech_only_file_trimmed, length="00:10:00")
 
-                    transcription = transcribe_audio(speech_only_file_trimmed, ep)
+                        transcription = transcribe_audio(speech_only_file_trimmed, ep)
 
-                    if transcription:
-                        # summarizer = pipeline("summarization", model="facebook/bart-large-cnn") #limited length ~1024 tokens. Short and sweet, but often misses the point. https://huggingface.co/facebook/bart-large-cnn
-
-
-                        # summarizer = pipeline("summarization", model="google/bigbird-pegasus-large-bigpatent") # Pretty terrible at summarizing music shows. Lots of repition. - Max length 4096 https://huggingface.co/google/bigbird-pegasus-large-bigpatent
+                        if transcription:
+                            # summarizer = pipeline("summarization", model="facebook/bart-large-cnn") #limited length ~1024 tokens. Short and sweet, but often misses the point. https://huggingface.co/facebook/bart-large-cnn
 
 
-                        summarizer = pipeline("summarization", model="pszemraj/pegasus-x-large-book-summary") # Pretty good. Often does track listings. Can ramble on occasionaly. Max length ??? complains of indexing errors if > 1024 https://huggingface.co/pszemraj/pegasus-x-large-book-summary
+                            # summarizer = pipeline("summarization", model="google/bigbird-pegasus-large-bigpatent") # Pretty terrible at summarizing music shows. Lots of repition. - Max length 4096 https://huggingface.co/google/bigbird-pegasus-large-bigpatent
 
-                        # title_summarizer = pipeline("summarization", model="ybagoury/flan-t5-base-tldr_news")
-                        # title_summarizer = pipeline("summarization", model="JulesBelveze/t5-small-headline-generator")
 
-                        summary_txt = create_summary(transcription, summarizer)
+                            summarizer = pipeline("summarization", model="pszemraj/pegasus-x-large-book-summary") # Pretty good. Often does track listings. Can ramble on occasionaly. Max length ??? complains of indexing errors if > 1024 https://huggingface.co/pszemraj/pegasus-x-large-book-summary
 
-                        summary_txt_paragraphed = add_paragraphs(summary_txt)
-                        # title = create_title(summary[0]['summary_text'], title_summarizer)
+                            # title_summarizer = pipeline("summarization", model="ybagoury/flan-t5-base-tldr_news")
+                            # title_summarizer = pipeline("summarization", model="JulesBelveze/t5-small-headline-generator")
+
+                            summary_txt = create_summary(transcription, summarizer)
+
+                            summary_txt_paragraphed = add_paragraphs(summary_txt)
+                            # title = create_title(summary[0]['summary_text'], title_summarizer)
+                        else:
+                            # no speech found in audio
+                            summary_txt_paragraphed = ''
                     else:
-                        # no speech found in audio
+                        # no speech found in audio.
+                        # Could be something wrong with audio file.
                         summary_txt_paragraphed = ''
                 else:
                     summary_txt_paragraphed = ''
@@ -93,14 +102,14 @@ def main():
                 print(datetime.datetime.utcnow())
                 print(summary_txt_paragraphed)
                 mySQL.insert_ep_ai_details(ep['id'], summary_txt_paragraphed)
-
-                time.sleep(120)
             
             mySQL.set_show_lang(ep['show_id'], lang)
         else:
             print("mp3 not found")
-            removed_eps.append(ep['show_id'])
-            mySQL.remove_old_eps_by_show(ep['show_id'], f"id = {ep['id']}")
+            if r.status_code in [400, 401, 402, 403, 404, 405, 406, 407, 409, 410]:
+                print("removing episode from db")
+                removed_eps.append(ep['show_id'])
+                mySQL.remove_old_eps_by_show(ep['show_id'], f"id = {ep['id']}")
     
     print("removed eps:", removed_eps)
 
@@ -133,29 +142,39 @@ def detect_lang(download_file):
     print("language:", lang)
     return lang
 
-def reduce_audio_to_speech_only_using_whisper(orig_file, speech_only_file):
+def reduce_audio_to_speech_only_using_whisper(orig_file, speech_only_file, ep):
     """Reduce to voice parts only
     Uses whisper_at which is a fork of whisper that includes audio tagging
     Audio tagging set to identify speech and music.
     Returns True if speech only file was created, False if not.
     """
-
     
     print("**** Finding speech only timestamps")
     print(datetime.datetime.utcnow())
     model = whisper_at.load_model("tiny.en")
+    prompts = define_prompts(ep)
     audio_tagging_time_resolution = 6
     result = model.transcribe(orig_file, at_time_res=audio_tagging_time_resolution, no_speech_threshold=.75, fp16=False)
-
+    key_phrase_idx, key_phrase = find_key_phrase_idx(result["text"], ep)
+    print("segments", result['segments'])
+    
+    if key_phrase:
+        print("key phrase", key_phrase)
+        # find the start time of the key phrase in result['segments']
+        key_phrase_timestamps = [seg['start'] for seg in result['segments'] if key_phrase in seg['text'].lower()]
+        print("key phrase timestamps", key_phrase_timestamps)
 
     # 0 = speech, 137 = music
     # get list of all availabe sound type ids by calling: whisper.print_label_name(language='en')
     audio_tag_result = whisper_at.parse_at_label(result, language='follow_asr', top_k=5, p_threshold=0, include_class_list=[0, 137])
-
     
-
     # create list of speech only time stamps
-    speech_timestamp_samples = get_only_speech_timestamps(audio_tag_result)
+    if key_phrase and len(key_phrase_timestamps):
+        min_start_time = key_phrase_timestamps[0]
+    else:
+        min_start_time = None
+
+    speech_timestamp_samples = get_only_speech_timestamps(audio_tag_result, min_start_time)
 
     if len(speech_timestamp_samples):
         # merge all speech chunks to one audio
@@ -171,6 +190,7 @@ def reduce_audio_to_speech_only_using_whisper(orig_file, speech_only_file):
     
 
 def reduce_audio_to_voice_only_using_silero(orig_file, voice_only_file):
+    global audio_directory
     # Reduce to voice parts only
     print("**** Finding voice only timestamps")
     print(datetime.datetime.utcnow())
@@ -191,10 +211,14 @@ def reduce_audio_to_voice_only_using_silero(orig_file, voice_only_file):
     mp3 = read_audio(orig_file, sampling_rate=SAMPLING_RATE)
     # get speech timestamps from full audio file
     speech_timestamps = get_speech_timestamps(mp3, model, sampling_rate=SAMPLING_RATE)
-    # merge all speech chunks to one audio
-    print("Merging voice chunks into new file")
-    print(datetime.datetime.utcnow())
-    save_audio(voice_only_file, collect_chunks(speech_timestamps, mp3), sampling_rate=SAMPLING_RATE) 
+
+    if len(speech_timestamps):
+        # merge all speech chunks to one audio
+        print("Merging voice chunks into new file")
+        print(datetime.datetime.utcnow())
+        save_audio(voice_only_file, collect_chunks(speech_timestamps, mp3), sampling_rate=SAMPLING_RATE) 
+    else:
+        return False
 
     # get the length of the voice only file
 
@@ -207,7 +231,7 @@ def reduce_audio_to_voice_only_using_silero(orig_file, voice_only_file):
 
     if wav_total_minutes > 20:
         print('**** trimming voice only file')
-        trimmed_voice_file = "temp_voice_only_file_trimmed.wav"
+        trimmed_voice_file = f"{audio_directory}temp_voice_only_file_trimmed.wav"
         
         # Will take too long to summarize. let's reduce length before next steps
         # The longer the episode, the less chance their is music to cut out in the next step when searching for speech. 
@@ -229,64 +253,23 @@ def reduce_audio_to_voice_only_using_silero(orig_file, voice_only_file):
 
 
 def transcribe_audio(audio_file, ep):
+
     # transcribe the audio
     print('**** transcribing audio')
     print(datetime.datetime.utcnow())
+
     model = whisper.load_model("small.en")
-
-    show_prompts = f"{ep['showName']} {ep['host']}"
-    if ep['source'] == 'ciut':
-        station_prompts = "From the roots up CIUT 89.5 FM"
-    elif ep['source'] == 'cfru':
-        station_prompts = "CFRU archives You're listening to 93.3 FM."
-    else:
-        station_prompts = ""
-
-    result = model.transcribe(audio_file, no_speech_threshold=.6, fp16=False, initial_prompt= f"{show_prompts} {station_prompts}")
+    prompts = define_prompts(ep)
+    result = model.transcribe(audio_file, no_speech_threshold=.6, fp16=False, initial_prompt = prompts)
 
     txt = result["text"]
     print('transcription raw',txt)
-    # Often commercials at begining. This will muddle up description.
-    # Use keyword indicators to guess where the show actually starts
-    key_phrase_search_limit = 2500
 
-    show_name_punctuation_removed = ep['showName'].lower().translate(str.maketrans('', '', string.punctuation))
+    key_phrase_idx, key_phrase = find_key_phrase_idx(txt, ep)
 
-    # Often times show names are shortened when spoken. Creates a reduced version of the show name to search for.
-    show_name_parts = show_name_punctuation_removed.split()
-    if len(show_name_parts) > 2:
-        show_name_shortened = f"{show_name_parts[0]} {show_name_parts[1]}"
-        
-
-    if show_name_punctuation_removed in txt[:key_phrase_search_limit].lower():
-        print("found show name key phrase", show_name_punctuation_removed)
-        keyPhraseIdx = txt.lower().find(show_name_punctuation_removed)          
-    elif len(show_name_parts) > 2 and show_name_shortened.lower() in txt[:key_phrase_search_limit].lower():
-        print("found show name shortened key phrase", show_name_shortened)
-        keyPhraseIdx = txt.lower().find(show_name_shortened.lower())
-    elif ep['host'] and len(ep['host']) and ep['host'].split()[0] in txt[:key_phrase_search_limit]:
-        print("found host key phrase", ep['host'].split()[0])
-        keyPhraseIdx = txt.find(ep['host'].split()[0])
-    elif "From the roots up" in txt[:key_phrase_search_limit]:
-        print("found roots up key phrase")
-        keyPhraseIdx = txt.find("From the roots up")
-    elif "CFRU archives" in txt[:key_phrase_search_limit]:
-        print("found CFRU archives key phrase")
-        keyPhraseIdx = txt.find("CFRU archives")
-    # elif 'welcome' in txt[:key_phrase_search_limit]:
-    #     print("found welcome key phrase")
-    #     keyPhraseIdx = txt.find('welcome')
-    # elif 'hello' in txt[:key_phrase_search_limit]: 
-        # print("found hi key phrase")
-        # keyPhraseIdx = txt.find('hi')
-    else:
-        print("no key phrase found")
-        keyPhraseIdx = -1
-    
-
-    if keyPhraseIdx > -1:
-        print("key phrase found at index", keyPhraseIdx)
-        cleaned_txt = txt[keyPhraseIdx:]
+    if key_phrase:
+        print("key phrase found at index", key_phrase_idx)
+        cleaned_txt = txt[key_phrase_idx:]
     else:
         # If no key phrase found, just recklessly chop 800 characters + a percentage of length
         if len(txt) > 3000:
@@ -308,9 +291,11 @@ def transcribe_audio(audio_file, ep):
     # find last index of station reference
     last_station_idx = cleaned_txt.lower().rfind(ep['source'])
     
-    if station_boilerplate and last_station_boilerplate_idx > len(cleaned_txt)*.5:
+    if station_boilerplate and last_station_boilerplate_idx > len(cleaned_txt)*.4:
+        print("found station boilerplate. Cutting")
         cleaned_txt = cleaned_txt[:last_station_boilerplate_idx]
     elif last_station_idx > len(cleaned_txt)*.75:
+        print("found station name near end. Cutting")
         cleaned_txt = cleaned_txt[:last_station_idx]
 
     # Really short descriptions may not be useful and could contain lots of irrelevant info from ads / station messages.
@@ -343,17 +328,80 @@ def create_title(txt, summarizer):
     title = summarizer(txt, max_length=30, min_length=15, do_sample=True)
     return title
 
+def define_prompts(ep):
+    show_prompts = f"{ep['showName']} {ep['host']}"
+    if ep['source'] == 'ciut':
+        station_prompts = "From the roots up CIUT 89.5 FM"
+    elif ep['source'] == 'cfru':
+        station_prompts = "CFRU archives You're listening to 93.3 FM."
+    else:
+        station_prompts = ""
 
-def get_only_speech_timestamps(audio_tag_results: list[dict]):
+    return f"{show_prompts} {station_prompts}"
+
+def find_key_phrase_idx(txt, ep):
+    # Often commercials at begining. This will muddle up description.
+    # Use keyword indicators to guess where the show actually starts
+    key_phrase_search_limit = 5000
+
+    show_name_punctuation_removed = ep['showName'].lower().translate(str.maketrans('', '', string.punctuation))
+
+    # Often times show names are shortened when spoken. Creates a reduced version of the show name to search for.
+    show_name_parts = show_name_punctuation_removed.split()
+    if len(show_name_parts) > 2:
+        show_name_shortened = f"{show_name_parts[0]} {show_name_parts[1]}"
+
+
+    if show_name_punctuation_removed in txt[:key_phrase_search_limit].lower():
+        print("found show name key phrase", show_name_punctuation_removed)
+        key_phrase = show_name_punctuation_removed.lower()
+
+    elif len(show_name_parts) > 2 and show_name_shortened.lower() in txt[:key_phrase_search_limit].lower():
+        print("found show name shortened key phrase", show_name_shortened)
+        key_phrase = show_name_shortened.lower()
+
+    elif ep['host'] and len(ep['host']) and ep['host'].split()[0].lower() in txt[:key_phrase_search_limit].lower():
+        key_phrase = ep['host'].split()[0].lower()
+        print("found host key phrase", ep['host'].split()[0])
+       
+    elif "from the roots up" in txt[:key_phrase_search_limit].lower():
+        print("found roots up key phrase")
+        key_phrase = "from the roots up"
+
+    elif "cfru archives" in txt[:key_phrase_search_limit].lower():
+        key_phrase = "cfru archives"
+        print("found CFRU archives key phrase")
+        
+    # elif 'welcome' in txt[:key_phrase_search_limit]:
+    #     print("found welcome key phrase")
+    #     key_phrase_idx = txt.find('welcome')
+    # elif 'hello' in txt[:key_phrase_search_limit]: 
+        # print("found hi key phrase")
+        # key_phrase_idx = txt.find('hi')
+
+    else:
+        key_phrase = None
+        print("no key phrase found")
+        key_phrase_idx = -1
+    
+    if key_phrase:
+        key_phrase_idx = txt.lower().find(key_phrase)
+    
+    return key_phrase_idx, key_phrase
+
+def get_only_speech_timestamps(audio_tag_results: list[dict], min_start_time = None):
     """Returns list of only speech timestamps from audio_tag_result"""
     speech_timestamp_samples:list[dict] = []
     sample_rate = 16000
 
     for label in audio_tag_results:
+        
+        if min_start_time and label['time']['end'] > min_start_time or not min_start_time:
 
-        tags_dict = dict(label['audio tags'])
-        if 'Speech' in tags_dict:
-            speech_timestamp_samples.append({'start': label['time']['start']*sample_rate, 'end':label['time']['end']*sample_rate})
+            tags_dict = dict(label['audio tags'])
+            if 'Speech' in tags_dict:
+                speech_timestamp_samples.append({'start': label['time']['start']*sample_rate, 'end':label['time']['end']*sample_rate})
+
     return speech_timestamp_samples
 
 def add_paragraphs(summary_txt:str):
@@ -361,17 +409,25 @@ def add_paragraphs(summary_txt:str):
     print("**** Adding paragraphs")
     print(datetime.datetime.utcnow())
     
-    # Create tokenizer
-    tokenizer = TextTilingTokenizer()
+    if len(summary_txt) < 400:
+        return summary_txt
 
     # Tokenizer expects paragraphs in text. Since we don't have them, we'll add '\n\n' to every sentence.
-    paragraphed_summary_for_tokenizer = summary_txt.replace(".", ".\n\n").replace("?", "?\n\n").replace("!", "!\n\n")
+    paragraphed_summary_for_tokenizer = summary_txt.replace(".\"", ".\"\n\n").replace(".", ".\n\n").replace("?\"", "?\"\n\n").replace("?", "?\n\n").replace("!\"", "!\"\n\n").replace("!", "!\n\n")
+
+    if len(paragraphed_summary_for_tokenizer.split("\n\n")) < 7:
+        # trying to errors in tokenizer smoothing algorithm
+        return summary_txt
     
     # Now we can feed the text to the tokenizer to detect 'topics'
+    print("paragraphed_summary_for_tokenizer", paragraphed_summary_for_tokenizer)
+
+    # Create tokenizer
+    tokenizer = TextTilingTokenizer()
     topic_tokens = tokenizer.tokenize(paragraphed_summary_for_tokenizer)
     
-    # remove the line breaks we added previously + mysterious whitespace, then reform our summary with paragraph breaks based on the tokenizer's topic detection.
-    paragraphs = [topic.replace("\n\n", " ").strip() for topic in topic_tokens]
+    # remove the line breaks we added previously, then reform our summary with paragraph breaks based on the tokenizer's topic detection.
+    paragraphs = [topic.replace("\n\n", "").strip() for topic in topic_tokens]
     summary_txt_paragraphed = "\n\n".join(paragraphs)
 
     return summary_txt_paragraphed
