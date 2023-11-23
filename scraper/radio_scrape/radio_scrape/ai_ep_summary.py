@@ -101,6 +101,10 @@ def main():
                 print('saving to db')
                 print(datetime.datetime.utcnow())
                 print(summary_txt_paragraphed)
+                
+                # summary model(pegasus-x-large-book-summary) often hallucinates 'Underground Man' in place of a persons name.
+                summary_txt_paragraphed = summary_txt_paragraphed.replace('Underground Man', 'host').replace('underground man', 'host')
+
                 mySQL.insert_ep_ai_details(ep['id'], summary_txt_paragraphed)
             
             mySQL.set_show_lang(ep['show_id'], lang)

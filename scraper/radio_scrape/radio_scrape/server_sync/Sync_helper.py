@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 
 import os
 import sys
+from shutil import make_archive
 
 load_dotenv()
 
@@ -32,11 +33,9 @@ class Sync_helper():
 
     def compress(self, path, file, compressed_file):
         print('compressing file')
-        compresscmd = f"tar -czvf {path}{compressed_file} -C {path} {file}"
-        # compress the files without including the folder
-
-
-        os.system(compresscmd)
+        compressed_file_base_name = compressed_file.split('.')[0]
+        make_archive(f'{path}/{compressed_file_base_name}', 'gztar', root_dir=path, base_dir=file)
+        
 
     def compress_folders(self, save_folder_base,folders_to_compress, compressed_file):
         print('compressing folder')
@@ -55,9 +54,9 @@ class Sync_helper():
 
     def transfer(self, ssh, local_path, file):
         #send file to server root
-        print('transfering', f'{local_path}{file}')
+        print('transfering', f'{local_path}/{file}')
         ftp_client=ssh.open_sftp()
-        ftp_client.put(f'{local_path}{file}', file)
+        ftp_client.put(f'{local_path}/{file}', file)
         ftp_client.close()  
         print('transfer complete') 
 
@@ -101,7 +100,7 @@ class Sync_helper():
         """
         
         print('synching: ', local_table)
-        self.dump(local_table, f'{local_path}{dumpfile}')
+        self.dump(local_table, f'{local_path}/{dumpfile}')
 
         self.compress(local_path, dumpfile, compressed_dumpfile)
 
