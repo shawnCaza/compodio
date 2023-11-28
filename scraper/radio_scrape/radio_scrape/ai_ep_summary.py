@@ -30,7 +30,8 @@ def main():
 
     # Get episodes without a description
     mySQL = scraper_MySQL.MySQL() 
-    eps = mySQL.get_query("""
+
+    query = """
         SELECT `episodes`.`id`, show_id, mp3, showName, source, `host`, lang, source
         FROM episodes  
         LEFT JOIN shows ON `shows`.`id` = `episodes`.`show_id`               
@@ -38,9 +39,22 @@ def main():
         AND (lang is null OR lang = 'en')
         ORDER BY `episodes`.`id` DESC
         LIMIT 1
-    """)
+    """
+
+    # query = """
+    #     SELECT `episodes`.`id`, show_id, mp3, showName, source, `host`, lang, source
+    #     FROM episodes  
+    #     LEFT JOIN shows ON `shows`.`id` = `episodes`.`show_id`               
+    #     WHERE episodes.id = 66843
+    #     AND (lang is null OR lang = 'en')
+    #     ORDER BY `episodes`.`id` DESC
+    #     LIMIT 1
+    # """
+
+    eps = mySQL.get_query(query)
     removed_eps = []
     for ep in eps:
+        print("ep", ep)
         voice_only_file = f"{audio_directory}temp_voice_only_file.wav" # reset voice only file, as it may have been trimmed in previous loop
 
         print("\n*****", ep['id'])
@@ -54,22 +68,31 @@ def main():
             if ep['lang'] == None:
                 # detect language by first saving an exceprt than running whisper transcribe
                 lang = detect_lang(download_file)
+                mySQL.set_show_lang(ep['show_id'], lang)
             else:
                 lang = ep['lang']
 
             # Only supporting english for now
             if lang == 'en':
 
-                voice_only_file = reduce_audio_to_voice_only_using_silero(download_file, voice_only_file)
+                voice_only_file, show_type_guess = reduce_audio_to_voice_only_using_silero(download_file, voice_only_file)
 
                 if voice_only_file != False:
-                    speech_found = reduce_audio_to_speech_only_using_whisper(voice_only_file, speech_only_file, ep)
+                    speech_found, key_phrase = reduce_audio_to_speech_only_using_whisper(voice_only_file, speech_only_file, ep)
 
                     if speech_found:
+                        
+                        length_of_speech_only_file = get_audio_length_in_minutes(speech_only_file)
+                        
+                        if show_type_guess == "talk" and length_of_speech_only_file > 1 and key_phrase:
+                            # Idea is show with lots of talking may introduce all topics at begining. If not transcribing whole show, the first topic may drown out the others in summary if we don't trim it.
+                            save_portion_of_audio_file(speech_only_file, speech_only_file_trimmed, length="00:01:00")
 
-                        save_portion_of_audio_file(speech_only_file, speech_only_file_trimmed, length="00:10:00")
+                        else:
+                            # trim to reduce transcription time
+                            save_portion_of_audio_file(speech_only_file, speech_only_file_trimmed, length="00:10:00")
 
-                        transcription = transcribe_audio(speech_only_file_trimmed, ep)
+                        transcription = transcribe_audio(speech_only_file_trimmed, ep, show_type_guess)
 
                         if transcription:
                             # summarizer = pipeline("summarization", model="facebook/bart-large-cnn") #limited length ~1024 tokens. Short and sweet, but often misses the point. https://huggingface.co/facebook/bart-large-cnn
@@ -107,9 +130,9 @@ def main():
 
                 mySQL.insert_ep_ai_details(ep['id'], summary_txt_paragraphed)
             
-            mySQL.set_show_lang(ep['show_id'], lang)
         else:
             print("mp3 not found")
+            # TODO: hand level 500 errors, so summatization isn't blocked when one server goes down temporarily.
             if r.status_code in [400, 401, 402, 403, 404, 405, 406, 407, 409, 410]:
                 print("removing episode from db")
                 removed_eps.append(ep['show_id'])
@@ -153,14 +176,15 @@ def reduce_audio_to_speech_only_using_whisper(orig_file, speech_only_file, ep):
     Returns True if speech only file was created, False if not.
     """
     
-    print("**** Finding speech only timestamps")
+    print("**** Finding speech only timestamps (whisper_at)")
     print(datetime.datetime.utcnow())
     model = whisper_at.load_model("tiny.en")
     prompts = define_prompts(ep)
     audio_tagging_time_resolution = 6
     result = model.transcribe(orig_file, at_time_res=audio_tagging_time_resolution, no_speech_threshold=.75, fp16=False)
+    print("result", result["text"])
+
     key_phrase_idx, key_phrase = find_key_phrase_idx(result["text"], ep)
-    print("segments", result['segments'])
     
     if key_phrase:
         print("key phrase", key_phrase)
@@ -188,15 +212,15 @@ def reduce_audio_to_speech_only_using_whisper(orig_file, speech_only_file, ep):
 
         save_audio(speech_only_file, collect_chunks(speech_timestamp_samples, wav), sampling_rate=16000)
 
-        return True
+        return True, key_phrase
     else:
-        return False
+        return False, key_phrase
     
 
 def reduce_audio_to_voice_only_using_silero(orig_file, voice_only_file):
     global audio_directory
     # Reduce to voice parts only
-    print("**** Finding voice only timestamps")
+    print("**** Finding voice only timestamps (silero_vad)")
     print(datetime.datetime.utcnow())
     torch.set_num_threads(1)
     model, utils = torch.hub.load(repo_or_dir='snakers4/silero-vad',
@@ -222,16 +246,12 @@ def reduce_audio_to_voice_only_using_silero(orig_file, voice_only_file):
         print(datetime.datetime.utcnow())
         save_audio(voice_only_file, collect_chunks(speech_timestamps, mp3), sampling_rate=SAMPLING_RATE) 
     else:
-        return False
+        return False, None
 
     # get the length of the voice only file
 
-    process = subprocess.Popen(['ffmpeg',  '-i', voice_only_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout, stderr = process.communicate()
-    matches = re.search(r"Duration:\s{1}(?P<hours>\d+?):(?P<minutes>\d+?):(?P<seconds>\d+\.\d+?),", stdout.decode(), re.DOTALL).groupdict()
-    
-    wav_total_minutes = int(matches['hours']) * 60 + int(matches['minutes'])
-    print("voice only file length:", wav_total_minutes, "minutes")
+    wav_total_minutes = get_audio_length_in_minutes(voice_only_file)
+   
 
     if wav_total_minutes > 20:
         print('**** trimming voice only file')
@@ -242,47 +262,46 @@ def reduce_audio_to_voice_only_using_silero(orig_file, voice_only_file):
         # so we can cut more now from longer files
         if wav_total_minutes > 40:
             new_length = "00:06:00"
+            show_type_guess = "talk"
         elif wav_total_minutes > 33:
             new_length = "00:16:30"
+            show_type_guess = "mix"
         else:
+            show_type_guess = "music"
             new_length = "00:20:00"
 
 
         save_portion_of_audio_file(orig_audio_file=voice_only_file, new_file=trimmed_voice_file, start_time="00:00:00", length = new_length)
 
-        return trimmed_voice_file
+        return trimmed_voice_file, show_type_guess
     else:
-        return voice_only_file
+        return voice_only_file, "much music"
    
 
 
-def transcribe_audio(audio_file, ep):
+def transcribe_audio(audio_file, ep, show_type_guess):
 
     # transcribe the audio
     print('**** transcribing audio')
     print(datetime.datetime.utcnow())
+    audio_file_length_in_minutes = int(get_audio_length_in_minutes(audio_file))
+    print("audio_file_length_in_minutes", audio_file_length_in_minutes)
 
-    model = whisper.load_model("small.en")
+    if show_type_guess == "talk" and audio_file_length_in_minutes == 1:
+        print("using large model for short talk show excerpt")
+        model = whisper.load_model("large-v3")
+    else:
+        print("using small model")
+        model = whisper.load_model("small.en")
+
     prompts = define_prompts(ep)
     result = model.transcribe(audio_file, no_speech_threshold=.6, fp16=False, initial_prompt = prompts)
 
     txt = result["text"]
+    print('segments', result['segments'])
     print('transcription raw',txt)
 
-    key_phrase_idx, key_phrase = find_key_phrase_idx(txt, ep)
-
-    if key_phrase:
-        print("key phrase found at index", key_phrase_idx)
-        cleaned_txt = txt[key_phrase_idx:]
-    else:
-        # If no key phrase found, just recklessly chop 800 characters + a percentage of length
-        if len(txt) > 3000:
-            cut_length = int(800 + len(txt)*.1)
-            cleaned_txt = txt[cut_length:]
-        else:
-            cleaned_txt = txt
-
-    # Can also be ads/messages at the end of the show. Try and locate end of show indicators to guess where the show actually ends
+    # Can  be ads/messages at the end of the show. Try and locate end of show indicators to guess where the show actually ends
     
     # define phrases often used by station after a show
     station_boilerplate = None
@@ -290,17 +309,19 @@ def transcribe_audio(audio_file, ep):
         station_boilerplate = "You're listening to CFRU 93.3 FM."
 
     if station_boilerplate:
-        last_station_boilerplate_idx = cleaned_txt.rfind(station_boilerplate)
+        last_station_boilerplate_idx = txt.rfind(station_boilerplate)
     
     # find last index of station reference
-    last_station_idx = cleaned_txt.lower().rfind(ep['source'])
+    last_station_idx = txt.lower().rfind(ep['source'])
     
-    if station_boilerplate and last_station_boilerplate_idx > len(cleaned_txt)*.4:
+    if station_boilerplate and last_station_boilerplate_idx > len(txt)*.4:
         print("found station boilerplate. Cutting")
-        cleaned_txt = cleaned_txt[:last_station_boilerplate_idx]
-    elif last_station_idx > len(cleaned_txt)*.75:
+        cleaned_txt = txt[:last_station_boilerplate_idx]
+    elif last_station_idx > len(txt)*.75:
         print("found station name near end. Cutting")
-        cleaned_txt = cleaned_txt[:last_station_idx]
+        cleaned_txt = txt[:last_station_idx]
+    else:
+        cleaned_txt = txt
 
     # Really short descriptions may not be useful and could contain lots of irrelevant info from ads / station messages.
     if len(cleaned_txt) < 900:
@@ -322,7 +343,14 @@ def create_summary(txt, summarizer,  max_characters=3250):
     # Limit text used for summary to max_characters as the model has limit on token numbers
     print("transcript length:", len(txt))
     txt_for_summary = txt[:max_characters]
-    summary = summarizer(txt_for_summary, max_length=250, min_length=50, do_sample=True)
+
+    # set max token length relative to length of text + based on assumption 1 token ~= 4 characters.
+    # could use tiktokenizer(https://github.com/openai/tiktoken/blob/main/README.md) to get more exact token length, but maybe this is close enough.
+    approx_tokens_expected = len(txt_for_summary)/4
+    max_length = int(approx_tokens_expected/2 if approx_tokens_expected/2 < 300 else 300)
+    min_length = int(max_length/3 if max_length/3 > 50 else 50)
+
+    summary = summarizer(txt_for_summary, max_length=max_length, min_length=min_length, do_sample=True)
     return summary[0]['summary_text']
 
 def create_title(txt, summarizer):
@@ -349,9 +377,11 @@ def find_key_phrase_idx(txt, ep):
     key_phrase_search_limit = 5000
 
     show_name_punctuation_removed = ep['showName'].lower().translate(str.maketrans('', '', string.punctuation))
+    print("show_name_punctuation_removed", show_name_punctuation_removed)
 
     # Often times show names are shortened when spoken. Creates a reduced version of the show name to search for.
     show_name_parts = show_name_punctuation_removed.split()
+
     if len(show_name_parts) > 2:
         show_name_shortened = f"{show_name_parts[0]} {show_name_parts[1]}"
 
@@ -436,6 +466,14 @@ def add_paragraphs(summary_txt:str):
 
     return summary_txt_paragraphed
 
+def get_audio_length_in_minutes(audio_file):
+    """Returns length of audio file in minutes"""
+    print("**** Getting audio length")
+    print(datetime.datetime.utcnow())
+    command = shlex.split(f'ffprobe -i "{audio_file}" -show_entries format=duration -v quiet -of csv="p=0"')
+    result = subprocess.check_output(command)
+    return float(result)/60
+
 ###### From silero_vad
 def read_audio(path: str,
                sampling_rate: int = 16000):
@@ -471,6 +509,8 @@ def save_audio(path: str,
 
 if __name__ == '__main__':
     main()
+    # ep = {'id': 66843, 'show_id': 30061, 'mp3': 'https://archive.cfru.ca/archive/2023/10/10/Power Up! with Electrified Voltage - October 10, 2023 at 14:00 - CFRU 93.3.mp3', 'showName': 'IF 2023', 'source': 'cfru', 'host': 'various', 'lang': 'en'}
 
+    # reduce_audio_to_speech_only_using_whisper("/Users/scaza/Sites/community-podcast/scraper/radio_scrape/radio_scrape/temp_audio/temp_voice_only_file.wav", "/Users/scaza/Sites/community-podcast/scraper/radio_scrape/radio_scrape/temp_audio/temp_speech_only_file.wav", ep)
 
-
+    # transcribe_audio("/Users/scaza/Sites/community-podcast/scraper/radio_scrape/radio_scrape/temp_audio/temp_speech_only_file_trimmed.wav", ep, "talk")

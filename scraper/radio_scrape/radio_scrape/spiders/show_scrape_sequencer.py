@@ -37,4 +37,6 @@ crawl_seq2()
 
 process.start() # the script will block here until the crawling is finished
 
+# sync_db()
+
 print("done")

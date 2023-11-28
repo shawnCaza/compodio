@@ -39,9 +39,9 @@ class CfruEps(scrapy.Spider):
 
             # cfru playist is sometimes mashed into other shows (title will contain a '+'). They all show up in the ordinary cfru archive page. Don't want to duplicate episodes across shows.
 
-            if not (response.meta['show_name'] == 'CFRU Playlist' and '+' in title) and not 'Rebroadcast' in title:
+            if response.meta['show_name'] in title and not (response.meta['show_name'] == 'CFRU Playlist' and '+' in title) and not 'Rebroadcast' in title:
 
-                # example full_desc "Tiempo de Mujeres – November 19, 2022 at 20:00"
+                # example title "Tiempo de Mujeres – November 19, 2022 at 20:00"
                 date_str = title.rsplit(" – ",1)[1]
                 print(date_str)
                 ep_date = datetime.strptime(date_str, "%B %d, %Y at %H:%M")

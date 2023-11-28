@@ -1,6 +1,8 @@
 import scrapy
 from radio_scrape.radio_scrape.items import show_item
 from radio_scrape.radio_scrape.pipeline_definitions import show_pipelines
+from lxml import etree
+import lxml.html  
 
 class CfruShowsSpider(scrapy.Spider):
     name = 'cfru_shows'
@@ -20,7 +22,8 @@ class CfruShowsSpider(scrapy.Spider):
 
                 # print(show.xpath(".//div[@class='links']/a[text()='archives']/@href").get())
                 current_show['showName'] = show.xpath(".//a[@class='showTitle']/text()").get()
-
+                    
+            
                 if all(skip_show not in current_show['showName'] for skip_show in shows_to_skip) and current_show['showName'] not in existing_show_names:
                     existing_show_names.add(current_show['showName'])
                     current_show['img'] = show.xpath(".//div[@class='show_image']/img/@src").get()
@@ -28,15 +31,20 @@ class CfruShowsSpider(scrapy.Spider):
 
                     # loop through each paragraph in the div with the description class
                     desc_paragraphs = show.xpath(".//div[@class='description']/p")
-
-
                     desc = ''
                     for p in desc_paragraphs:
                         if p.xpath("./text()") and len(p.xpath("./text()").get().strip()):
-                            desc += f"<p>{p.xpath('./text()').get().strip()}</p>"
-                        
-                        
-                    
+                            
+                            # br tags could be in the middle of a paragraph, which is hard to extract with xpath, to lets use lxml to parse the html and get the text
+                            full_p_txt = lxml.html.fromstring(p.extract()).text_content()
+                            # conver line breads in description in to html line breaks
+
+                            # Add p to description as long it doesn't contain a link
+                            if 'http' not in full_p_txt:
+                                desc += f"<p>{full_p_txt}</p>"
+                            else:
+                                # AT Present one show includes external podcast links in the description. We can extract them and add them to the external links field, but I'm not making that change now for one show.
+                                pass
 
 
 
