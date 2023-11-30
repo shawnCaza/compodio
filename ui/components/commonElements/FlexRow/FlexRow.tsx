@@ -1,5 +1,5 @@
 import { Show } from '../../../hooks/queries/shows';
-import styles from './FlexRow.module.scss'
+import styles from './flexRow.module.scss';
 import ExtLink from '../../show/rssLink/ExtLink';
 import RssLink from '../../show/rssLink/RssLink';
 interface FlexRowProps{
