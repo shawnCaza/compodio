@@ -19,7 +19,8 @@ function get_all_shows(){
     `show_images`.`sizes`,
     `eps`.`mp3`, 
     `eps`.`newestEpDate`, 
-    `show_tags`.`tagIds` 
+    `show_tags`.`tagIds`,
+    `ext_feed_links`.`extFeeds`
 
     FROM `shows`
 
@@ -31,6 +32,14 @@ function get_all_shows(){
     FROM show_tags GROUP BY show_id
     ) show_tags
     ON `show_tags`.`show_id` = `shows`.`id`
+
+    /* Add array of external podcast feed objects */
+    LEFT JOIN (
+        SELECT show_id, JSON_ARRAYAGG(JSON_OBJECT('link', link, 'feedType', feedType)) AS extFeeds
+        FROM ext_feed_links GROUP BY show_id
+    ) ext_feed_links
+    ON `ext_feed_links`.`show_id` = `shows`.`id`
+
 
     /* Join most recent episode */
     INNER JOIN (

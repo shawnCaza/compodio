@@ -1,7 +1,7 @@
 button,
 input[type="button"],
 input[type="reset"],
-input[type="submit"] {
+input[type="submit"], .button {
     border: 0;
     font-weight: 700;
     background-color: var(--header-background-high-contrast-colour);

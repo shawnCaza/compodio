@@ -437,7 +437,7 @@ button {
 button,
 input[type=button],
 input[type=reset],
-input[type=submit] {
+input[type=submit], .button {
   border: 0;
   font-weight: 700;
   background-color: var(--header-background-high-contrast-colour);
@@ -450,7 +450,7 @@ input[type=submit] {
 button:hover,
 input[type=button]:hover,
 input[type=reset]:hover,
-input[type=submit]:hover {
+input[type=submit]:hover, .button:hover {
   cursor: pointer;
   background-color: var(--header-background-colour);
   color: var(--brand-colour);
@@ -459,7 +459,7 @@ input[type=submit]:hover {
 button svg,
 input[type=button] svg,
 input[type=reset] svg,
-input[type=submit] svg {
+input[type=submit] svg, .button svg {
   fill: inherit;
 }
 

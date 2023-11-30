@@ -28,6 +28,7 @@ interface Show {
   slug: string | null,
   source: string,
   tagIds: string | null,
+  extFeeds: string | null,
 }
 
 export type {Show};
