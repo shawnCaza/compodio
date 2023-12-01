@@ -2,7 +2,7 @@ interface extFeed{
     extFeed: {link: string, feedType: string}
 }
 
-import styles from '../subscribeOptionButton.module.scss'
+import styles from '../SubscribeOptionButton.module.scss'
 import { PiSpotifyLogoFill } from "react-icons/pi";
 import { PiApplePodcastsLogoFill } from "react-icons/pi";
 import { PiGooglePodcastsLogo } from "react-icons/pi";
