@@ -10,7 +10,7 @@ import {IoTimeSharp} from 'react-icons/io5';
 
 import GradientBg from '../../components/commonElements/GradientBg';
 import ShowImgContainer from '../../components/show/showPage/ImgContainer/ShowImgContainer';
-import RssLink from '../../components/show/feedLinks/rssLink/RssLink';
+import RssLink from '../../components/show/podcastFeedLinks/rssLink/RssLink';
 import EpDate from '../../components/show/epDate/EpDate';
 import { useShowLength } from '../../components/show/hooks/useShowLength';
 import ShowCards from '../../components/show/showCards/ShowCards';
