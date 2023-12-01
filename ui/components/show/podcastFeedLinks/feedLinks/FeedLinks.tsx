@@ -1,7 +1,7 @@
-import { Show } from '../../../hooks/queries/shows';
-import styles from './flexRow.module.scss';
-import ExtLink from '../../show/rssLink/ExtLink';
-import RssLink from '../../show/rssLink/RssLink';
+import { Show } from '../../../../hooks/queries/shows';
+import styles from './FeedLinks.module.scss';
+import ExtLink from '../extLink/ExtLink';
+import RssLink from '../rssLink/RssLink';
 interface FlexRowProps{
     showId: string,
     slug: string | null,
@@ -10,7 +10,7 @@ interface FlexRowProps{
 }
 
 
-function FlexRow({showId, slug, showName, extFeeds}:FlexRowProps) {
+function FeedLinks({showId, slug, showName, extFeeds}:FlexRowProps) {
     return ( 
         <>
            <div className={styles.flexRow}>
@@ -25,4 +25,4 @@ function FlexRow({showId, slug, showName, extFeeds}:FlexRowProps) {
     )
 } 
 
-export default FlexRow;
+export default FeedLinks;

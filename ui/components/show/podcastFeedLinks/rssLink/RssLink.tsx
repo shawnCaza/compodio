@@ -5,10 +5,11 @@ interface showFeedUrl{
 }
 
 import { IoLogoRss } from "react-icons/io";
-import CopyButton from "../../commonElements/CopyButton/CopyButton";
+import CopyButton from "../../../commonElements/CopyButton/CopyButton";
 import styles from './RssLink.module.scss'
+import optionButtonStyles from '../SubscribeOptionButton.module.scss'
 import Modal from "react-modal";
-import FeedUrl from "../showFeed/ShowFeed";
+import FeedUrl from "../../showFeed/ShowFeed";
 
 import {  useEffect, useState } from "react";
 
@@ -20,7 +21,7 @@ function RssLink({showId, slug, showName}:showFeedUrl) {
 
     return (
         <>  
-                <span className={styles.subscribeOptionButtonContainer}>
+                <span className={optionButtonStyles.subscribeOptionButtonContainer}>
 
                     <span className="screen-reader-text">Copy RSS Podcast Subscription link:</span>
 

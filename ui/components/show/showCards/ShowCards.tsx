@@ -5,9 +5,7 @@ import Card from '../../layout/cardElements/card/Card';
 import Heading from '../../layout/cardElements/heading/Heading';
 import EpDate from '../epDate/EpDate';
 import Desc from '../../layout/cardElements/desc/Desc';
-import FlexRow from '../../commonElements/FlexRow/FlexRow';
-import ExtLink from '../rssLink/ExtLink';
-import RssLink from '../rssLink/RssLink';
+import FeedLinks from '../podcastFeedLinks/feedLinks/FeedLinks';
 import ShowLink from '../ShowLink';
 import GradientBg from '../../commonElements/GradientBg';
 import CardImgContainer from './ImgContainer/CardImgContainer';
@@ -60,7 +58,7 @@ function ShowCards({shows}:ShowCardsProps) {
               Your browser does not support the audio element.
               </audio>  */}
               <ContentSection heading='Subscribe:' tag='h5' centered={true} spacing='tight'>
-                <FlexRow showId={show.id} slug={show.slug} showName={show.showName} extFeeds={show.extFeeds}/>
+                <FeedLinks showId={show.id} slug={show.slug} showName={show.showName} extFeeds={show.extFeeds}/>
               </ContentSection>
 
 
