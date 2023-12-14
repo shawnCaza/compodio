@@ -16,7 +16,10 @@ function FeedLinks({showId, slug, showName, extFeeds}:FlexRowProps) {
            <div className={styles.flexRow}>
                 {/* map over show.extFeeds */ 
                   extFeeds && JSON.parse(extFeeds).map((extFeed:{link: string, feedType: string}) =>
-                  <ExtLink key={extFeed.link} extFeed={extFeed} />
+                    // display extFeed only if it is not 'rss'
+                    extFeed.feedType !== 'rss' && extFeed.feedType !== 'apple_video' &&
+                        <ExtLink key={extFeed.link} extFeed={extFeed} />
+
                 )}
 
                 <RssLink showId={showId} slug={slug} showName={showName} />

@@ -45,7 +45,7 @@ def main():
     #     SELECT `episodes`.`id`, show_id, mp3, showName, source, `host`, lang, source
     #     FROM episodes  
     #     LEFT JOIN shows ON `shows`.`id` = `episodes`.`show_id`               
-    #     WHERE episodes.id = 66843
+    #     WHERE episodes.id = 69770
     #     AND (lang is null OR lang = 'en')
     #     ORDER BY `episodes`.`id` DESC
     #     LIMIT 1
@@ -86,7 +86,7 @@ def main():
                         
                         if show_type_guess == "talk" and length_of_speech_only_file > 1 and key_phrase:
                             # Idea is show with lots of talking may introduce all topics at begining. If not transcribing whole show, the first topic may drown out the others in summary if we don't trim it.
-                            save_portion_of_audio_file(speech_only_file, speech_only_file_trimmed, length="00:01:00")
+                            save_portion_of_audio_file(speech_only_file, speech_only_file_trimmed, length="00:01:30")
 
                         else:
                             # trim to reduce transcription time
@@ -298,7 +298,7 @@ def transcribe_audio(audio_file, ep, show_type_guess):
     result = model.transcribe(audio_file, no_speech_threshold=.6, fp16=False, initial_prompt = prompts)
 
     txt = result["text"]
-    print('segments', result['segments'])
+    # print('segments', result['segments'])
     print('transcription raw',txt)
 
     # Can  be ads/messages at the end of the show. Try and locate end of show indicators to guess where the show actually ends
@@ -324,7 +324,7 @@ def transcribe_audio(audio_file, ep, show_type_guess):
         cleaned_txt = txt
 
     # Really short descriptions may not be useful and could contain lots of irrelevant info from ads / station messages.
-    if len(cleaned_txt) < 900:
+    if len(cleaned_txt) < 900 and not(show_type_guess == "talk" and audio_file_length_in_minutes == 1):
         cleaned_txt = None
 
     print('cleaned transcription',cleaned_txt)

@@ -244,7 +244,6 @@ class MySQL():    #------------------------------------------------------
         conn, cursor = self.connect()
         self.use_compodio_DB(cursor)
 
-        
         query = f"""delete from show_tags where show_id = {show_id} and `tag_id` not in ({','.join(str(id) for id in tag_ids)})"""
         print('query', query)
         
@@ -323,3 +322,11 @@ class MySQL():    #------------------------------------------------------
         except:
             print(cursor.statement,)
         self.close(cursor, conn)
+
+    def get_shows_without_ext_feed_link_by_feedType(self, feedType):
+        conn, cursor = self.connect()
+        self.use_compodio_DB(cursor)
+
+        cursor.execute(f"""select * from shows where id not in (select show_id from ext_feed_links where feedType = %s)""", (feedType))
+
+        return cursor.fetchall()
