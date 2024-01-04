@@ -1,6 +1,7 @@
 // Elements that wrap around the #everything div need to be 100% height
 html, body, #__next{
 	height: 100%;
+	overflow: hidden;
 }
 
 // a div containing header, content, and footer. All visible content.
