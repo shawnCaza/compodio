@@ -327,6 +327,6 @@ class MySQL():    #------------------------------------------------------
         conn, cursor = self.connect()
         self.use_compodio_DB(cursor)
 
-        cursor.execute(f"""select * from shows where id not in (select show_id from ext_feed_links where feedType = %s)""", (feedType))
+        cursor.execute(f"""select * from shows where id not in (select show_id from ext_feed_links where feedType = '{feedType}')""", )
 
         return cursor.fetchall()

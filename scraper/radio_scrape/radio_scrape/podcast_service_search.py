@@ -3,8 +3,15 @@ from scraper_MySQL import MySQL
 import requests
 from xml.dom.minidom import parseString
 import time
+import os
+
+from dotenv import load_dotenv
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+
 
 mySQL = MySQL()
+
 
 
 
@@ -63,13 +70,37 @@ def add_feed_link_2_db(show_id, link , feed_type):
 shows = mySQL.get_shows_without_ext_feed_link_by_feedType('apple')
 for show in shows:
 
-    apple_link, rss_link = search_itunes_api(show)
-    if apple_link:
-        print(apple_link, rss_link)
-        add_feed_link_2_db(show['id'], apple_link, 'apple')
+    # apple_link, rss_link = search_itunes_api(show)
+    # if apple_link:
+    #     print(apple_link, rss_link)
+    #     add_feed_link_2_db(show['id'], apple_link, 'apple')
 
-    if rss_link:
-        add_feed_link_2_db(show['id'], rss_link, 'rss')
+    # if rss_link:
+    #     add_feed_link_2_db(show['id'], rss_link, 'rss')
 
-    time.sleep(2)
     
+    load_dotenv()
+    spotify_client_id = os.getenv("spotify_client_id")
+    spotify_client_secret = os.getenv("spotify_client_secret")
+
+    sp = spotipy.Spotify(auth_manager=SpotifyClientCredentials(client_id=spotify_client_id,client_secret=spotify_client_secret))
+
+    results = sp.search(q=show['showName'], type='show', market='CA', limit=20)
+
+    shows_with_exact_title_match = [result for result in results['shows']['items'] if show['showName'].lower()in result['name'].lower()]
+
+    if len(shows_with_exact_title_match) == 1:
+        
+        print("\n\n***", show['showName'])
+        for result in shows_with_exact_title_match:
+            print("\n\n-")
+            print(result['name'])
+            print(result["external_urls"]['spotify'])
+            print(result["images"][0]['url'])
+
+
+    # results = sp.search(q='weezer', limit=20)
+    # print(results['tracks']['items'][0]['name'])
+
+    
+    time.sleep(2)
