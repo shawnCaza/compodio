@@ -10,7 +10,7 @@ interface fuseResult{
   refIndex: number;
 }
 
-export default function SearchContainer() {
+export default function Search() {
 
   const shows = useShowsQuery() ?? [];
   

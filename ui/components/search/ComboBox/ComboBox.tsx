@@ -66,7 +66,10 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
     onSelectedItemChange: ({ selectedItem }) => {
       
         if(selectedItem){ 
-
+              // blur the input field so that the keyboard pop up on mobile dissapears as soon as a selection is made
+              const input = document.getElementById('search-input');
+              input?.blur();
+              
               handleSelection(selectedItem)
             };
       },
@@ -91,6 +94,7 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
           </button>
 
           <input
+            type='search'
             className={styles.input}
             {...getInputProps()}
             data-testid="combobox-input"

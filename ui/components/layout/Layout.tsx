@@ -1,7 +1,7 @@
 import {  ReactNode } from "react";
 import Header from "./header/Container/Container";
 import Branding from "./header/Branding/Branding";
-import SearchContainer from "../search/SearchContainer";
+import SearchContainer from "../search/Search";
 import MainMenu from "./header/MainMenu/MainMenu";
 
 interface layoutProps {
