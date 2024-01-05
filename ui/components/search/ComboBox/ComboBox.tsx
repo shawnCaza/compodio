@@ -63,13 +63,17 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
         handleSearch(inputValue)
       )
     },
+    onIsOpenChange: ({ selectedItem }) => {
+      if (isOpen) {
+        // If menu is closing,blur the input field,
+        // so that the keyboard pop up on mobile dissapears
+        const input = document.getElementById('search-input');
+        input?.blur();
+      }
+    },
     onSelectedItemChange: ({ selectedItem }) => {
-      
+
         if(selectedItem){ 
-              // blur the input field so that the keyboard pop up on mobile dissapears as soon as a selection is made
-              const input = document.getElementById('search-input');
-              input?.blur();
-              
               handleSelection(selectedItem)
             };
       },
@@ -94,7 +98,6 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
           </button>
 
           <input
-            type='search'
             className={styles.input}
             {...getInputProps()}
             data-testid="combobox-input"
@@ -141,7 +144,7 @@ function ComboBox ({handleSearch, handleSelection}:comboBoxProps) {
                 //otherwise, it's a show, so we want to link to the show page
 
                   result.item.showName
-
+                
               }
               </ResultListItem>
             ))}

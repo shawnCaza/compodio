@@ -519,6 +519,7 @@ input[type=submit] svg, .button svg {
 html, body, #__next {
   height: 100%;
   overflow: hidden;
+  position: relative;
 }
 
 #everything {
@@ -530,6 +531,14 @@ html, body, #__next {
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
           flex-direction: column;
+  position: relative;
+}
+
+header {
+  position: relative;
+  -webkit-transform: translate3d(0, 0, 200px);
+          transform: translate3d(0, 0, 200px);
+  z-index: 2;
 }
 
 #content {
@@ -537,6 +546,8 @@ html, body, #__next {
       -ms-flex: 1;
           flex: 1;
   overflow: auto;
+  position: relative;
+  z-index: 1;
 }
 
 html,
