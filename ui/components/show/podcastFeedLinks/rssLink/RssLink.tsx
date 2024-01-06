@@ -34,7 +34,7 @@ function RssLink({showId, slug, showName}:showFeedUrl) {
                 <Modal 
                     isOpen={displayCopiedMessage}
                     onRequestClose={()=>setDisplayCopiedMessage(false)}
-                    parentSelector={() => document.getElementById('content') as HTMLElement}
+                    parentSelector={() => document.getElementById('everything') as HTMLElement}
                     aria={{
                         labelledby: "main-menu-label"
                     }} 
