@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import Modal from "react-modal";
 import { IoMenuSharp, IoCloseSharp } from "react-icons/io5";
 import styles from './MainMenu.module.scss'
-
+import { useRouter } from 'next/router'
 
 function MainMenu() {
 
@@ -13,7 +13,11 @@ function MainMenu() {
         isOpen ? setIsOpen(false) : setIsOpen(true);
     }   
 
-
+    const router = useRouter()
+    const menuItemClicked = (page:string) => {
+        toggleMainMenu();
+        router.push(`/${page}`)
+    }
 
         return (
             <>
@@ -40,12 +44,12 @@ function MainMenu() {
                     <h2 id='main-menu-label' className='screen-reader-text'>Site Menu</h2>
                     <div>
                         <ul className="main-menu-option-list">
-                            <li className="main-menu-item">
-                                <a href='' >About</a>
+                            <li className="main-menu-item" onClick={() => menuItemClicked('about')}>
+                                <a href='#' >About</a>
                             </li>
-                            <li className="main-menu-item">
-                                <a href='' >Contact</a>
-                            </li>
+                            {/* <li className="main-menu-item">
+                                <a href='#' >Contact</a>
+                            </li> */}
                         </ul>
                     </div>
                 </Modal>
