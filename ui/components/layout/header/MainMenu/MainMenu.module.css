@@ -24,7 +24,7 @@
 }
 
 .mainMenuModalOverlay {
-  position: absolute;
+  position: fixed;
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
@@ -38,6 +38,7 @@
   font-size: 2em;
   line-height: 2;
   z-index: 1;
+  top: 0;
 }
 
 .mainMenuModalContent {
@@ -46,7 +47,7 @@
   height: -webkit-fit-content;
   height: -moz-fit-content;
   height: fit-content;
-  overflow: auto;
+  outline: none;
 }
 .mainMenuModalContent div {
   display: inline;

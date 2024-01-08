@@ -44,8 +44,8 @@ function MainMenu() {
                     <h2 id='main-menu-label' className='screen-reader-text'>Site Menu</h2>
                     <div>
                         <ul className="main-menu-option-list">
-                            <li className="main-menu-item" onClick={() => menuItemClicked('about')}>
-                                <a href='#' >About</a>
+                            <li className="main-menu-item" onClick={() => menuItemClicked('about')} >
+                                <a href='#' tabIndex={1}>About</a>
                             </li>
                             {/* <li className="main-menu-item">
                                 <a href='#' >Contact</a>
