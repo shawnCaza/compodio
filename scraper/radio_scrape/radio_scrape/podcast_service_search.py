@@ -53,7 +53,7 @@ def search_itunes_api(show):
             raw_description_txt = feed.getElementsByTagName('description')[0].firstChild.nodeValue
             # reduce to one paragraph if description contains markup
             clean_description_txt = raw_description_txt.split('</p>')[0].replace('<p>','')
-            if len(show['desc']) and show['desc'] in clean_description_txt:
+            if len(show['desc']) and show['desc'] in clean_description_txt: #seems like the values should be swithed around the 'in' operator
                 print("- show description found in feedUrl")
                 return exact_title_matches[0]["collectionViewUrl"], exact_title_matches[0]['feedUrl']
 
@@ -65,9 +65,41 @@ def search_itunes_api(show):
 def add_feed_link_2_db(show_id, link , feed_type):
     mySQL.insert_ext_feed_link({'show_id': show_id, 'link':link, 'feed_type':feed_type})
 
+def verified_show_match(show, text_to_search, artist, description):
+    # Lets look for clues that will help us determine if this is the correct podcast    
+
+    # Define city associated with show, so we can search for it in the description later
+    if(show['source'] == 'cfru'):
+        city = 'guelph'
+    elif(show['source'] == 'ciut'):
+        city = 'toronto'
+    else:
+        city = None
+
+    if show['source'].upper() in text_to_search:
+        print("- show source reference found")
+        return True
+    
+    elif show['host'] and len(show['host'].split()) > 1 and show['host'] in artist:
+        print("- show host found in artistName")
+        return True
+    
+    elif artist in show['desc']:
+        print("- show artist found in podcast description")
+        return True
+    
+    elif len(show['desc']) and show['desc'].split('</p>')[0].replace('<p>','') in description: 
+            print("- show description found in podcast description")
+            return True
+    
+    elif city and city in description.lower():
+        print(f"- Station city '{city}' found in podcast description")
+        return True
+    
+
 
 # get all shows without external links
-shows = mySQL.get_shows_without_ext_feed_link_by_feedType('apple')
+shows = mySQL.get_shows_without_ext_feed_link_by_feedType('spotify')
 for show in shows:
 
     # apple_link, rss_link = search_itunes_api(show)
@@ -97,10 +129,15 @@ for show in shows:
             print(result['name'])
             print(result["external_urls"]['spotify'])
             print(result["images"][0]['url'])
+            # print(result['description'])
+            # print(f"*{result['publisher']}*")
+            # print(result['languages'])
+            # print(result['href'])
+            # print(result['external_urls'])
 
-
-    # results = sp.search(q='weezer', limit=20)
-    # print(results['tracks']['items'][0]['name'])
-
-    
-    time.sleep(2)
+            if verified_show_match(show, result['description'], result['publisher'].strip(), result['description']):
+                print("verified show match")
+                add_feed_link_2_db(show['id'], result["external_urls"]['spotify'], 'spotify')
+                break
+            
+    time.sleep(2) # to avoid rate limiting
