@@ -19,4 +19,5 @@ ui/.gitignore
 temp_lang_detect_excerpt_file.wav
 temp_voice_only_file_trimmed.wav
 scraper/test.py
-scraper/test.py
+
+.cache

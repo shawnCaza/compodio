@@ -2,7 +2,7 @@ import scrapy
 
 from datetime import datetime, timezone
 import requests
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, unquote
 
 from radio_scrape.radio_scrape.items import episode_item
 from radio_scrape.radio_scrape.pipeline_definitions import episode_pipelines
@@ -60,9 +60,9 @@ class CiutEps(scrapy.Spider):
             query_string = parse_qs(parsed_url.query)
             podbean_show_id = query_string['i'][0]
 
-            podbean_feed_link = f"https://www.podbean.com/player/{podbean_show_id}-pbblog-playlist?scode=&pfauth=&referrer=&order=episodic&limit=10&filter=all&publish_start=&publish_end=&season=&tag=&ss=a713390a017602015775e868a2cf26b0&touchable=false&type=playlist"
+            podbean_player_feed_link = f"https://www.podbean.com/player/{podbean_show_id}-pbblog-playlist"
 
-            yield scrapy.Request(url=podbean_feed_link, callback=self.parse_podbean_info, meta={'show_id': show_id, 'most_recent_ep_date': most_recent_ep_date, 'most_recent_mp3': most_recent_mp3})
+            yield scrapy.Request(url=podbean_player_feed_link, callback=self.parse_podbean_info, meta={'show_id': show_id, 'most_recent_ep_date': most_recent_ep_date, 'most_recent_mp3': most_recent_mp3})
 
         
         else:
@@ -88,20 +88,23 @@ class CiutEps(scrapy.Spider):
                     yield current_episode
 
     def parse_podbean_info(self, response):
-            
+            """
+                Parse the podbean player to get the feed link
+            """
             show_id = response.meta['show_id']
             most_recent_ep_date = response.meta['most_recent_ep_date']
+ 
+            podbean_feed_url = response.xpath("//setting/subscribeLink/text()").get()
 
-            
-            url_title = response.xpath("//setting/author/text()").get()
-            podbean_feed_link = f"https://feed.podbean.com/{url_title}/feed.xml"
+            clean_podcast_feed = unquote(unquote(podbean_feed_url.split('/')[-1])) # get the last part of the url, split by /, and double unquote it
 
-            yield scrapy.Request(url=podbean_feed_link, callback=self.parse_podbean_feed, meta={'show_id': show_id, 'most_recent_ep_date': most_recent_ep_date})
+            yield scrapy.Request(url=clean_podcast_feed, callback=self.parse_podbean_feed, meta={'show_id': show_id, 'most_recent_ep_date': most_recent_ep_date})
 
 
     def parse_podbean_feed(self, response):
 
         show_id = response.meta['show_id']
+        print("\n\nshow_id:", show_id)  
         most_recent_ep_date = response.meta['most_recent_ep_date']
         # select all episodes
         episodes = response.xpath("//item")

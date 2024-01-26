@@ -2,6 +2,7 @@ import time
 import json, requests
 import pathlib
 import math
+from datetime import datetime
 
 from PIL import Image
 
@@ -113,10 +114,17 @@ def scrape_images():
 
             src_last_updt = util.sever_file_last_update(show['img'])
 
-            if show['last_updt']:
+            if show['last_updt'] and src_last_updt:
                 needs_updt = True if show['last_updt'] < src_last_updt else False
+            elif src_last_updt is None and show['last_updt']: 
+                #To handle cases where the server doesn't return a last-modified header
+                #todo: add a check to see if the file has changed by comparing file size
+                needs_updt = False
             else:
                 needs_updt = True
+                if not src_last_updt:
+                    src_last_updt = datetime.now()
+
 
             if needs_updt:
 
