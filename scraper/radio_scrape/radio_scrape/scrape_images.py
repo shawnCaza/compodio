@@ -9,12 +9,13 @@ from PIL import Image
 import util
 import image_colour
 import scraper_MySQL
+from server_sync.sync_compodio_data_to_server import synch_image_files
 
 
 def setup_save_folder(save_folder_base, slug):
-    image_folder_path = pathlib.Path(save_folder_base + slug)
+    image_folder_path = pathlib.Path(f"{save_folder_base}/{slug}")
     image_folder_path.mkdir(parents=True, exist_ok=True)
-    save_base = f"{save_folder_base}{slug}/{slug}"
+    save_base = f"{save_folder_base}/{slug}/{slug}"
 
     return save_base
 
@@ -97,7 +98,7 @@ def generate_sizes(image, save_base, sizes=[250,350,500,750,1000,1250,1500,1750,
 
 def scrape_images():
                           
-    save_folder_base ='/Users/scaza/Sites/compodio_images/shows/'
+    save_folder_base ='/Users/scaza/Sites/compodio_images/shows'
 
     mySQL = scraper_MySQL.MySQL() 
     shows = mySQL.get_query("""
@@ -143,8 +144,8 @@ def scrape_images():
             else:
                 time.sleep(1.5)
     
-    
-    # TODO synch new files to remote server
+    # Send new images to remote server
+    synch_image_files(save_folder_base, folders_to_sync_list)
 
     
 # TODO 

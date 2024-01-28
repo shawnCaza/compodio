@@ -3,6 +3,7 @@ from dotenv import load_dotenv
 
 import os
 import sys
+import tarfile
 from shutil import make_archive
 
 load_dotenv()
@@ -37,10 +38,12 @@ class Sync_helper():
         make_archive(f'{path}/{compressed_file_base_name}', 'gztar', root_dir=path, base_dir=file)
         
 
-    def compress_folders(self, save_folder_base,folders_to_compress, compressed_file):
+    def compress_folders(self, save_folder_base, folders_to_compress, compressed_file):
         print('compressing folder')
-        compresscmd = f"tar -C {save_folder_base} -czvf {compressed_file} {folders_to_compress}"
-        os.system(compresscmd)
+        with tarfile.open(f"{save_folder_base}/{compressed_file}", "w:gz") as tar:
+            for source_dir in folders_to_compress:
+                tar.add(f'{save_folder_base}/{source_dir}', arcname=os.path.basename(source_dir))
+
 
     def connect(self):
         private_key = paramiko.RSAKey.from_private_key_file(private_key_path, password=private_key_passphrase)
