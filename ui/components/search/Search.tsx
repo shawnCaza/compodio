@@ -3,6 +3,7 @@ import Fuse from 'fuse.js'
 import { Show, useShowsQuery } from '../../hooks/queries/shows';
 import ComboBoxSearch from './ComboBox/ComboBox';
 import { useFuseOptions } from './fuse/hooks/useFuseOptions';
+import useMenuStore from '../../stores/menuStore';
 
 interface fuseResult{
   item: Show;
@@ -36,6 +37,10 @@ export default function Search() {
     // Called from useComboBox, to handle the selection of a show
     // from the search results.
    
+    // close the menu in case it's open. Othewise, the menu will
+    // hide the content of the new page.
+    useMenuStore.getState().closeMenu();
+
     // if string, then it's the search input value, so we need to
     // navigate to the search page.
     if(typeof selectedItem === 'string'){
