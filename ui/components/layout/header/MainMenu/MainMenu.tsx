@@ -3,14 +3,14 @@ import Modal from "react-modal";
 import { IoMenuSharp, IoCloseSharp } from "react-icons/io5";
 import styles from './MainMenu.module.scss'
 import { useRouter } from 'next/router'
-import useMenuStore from "../../../../stores/menuStore";
+import {useMenuStore, MenuState} from "../../../../stores/menuStore";
 
 function MainMenu() {
 
     Modal.setAppElement('#everything');
-    const isOpen = useMenuStore(state => state.menuOpen);
-    const toggleMainMenu = useMenuStore(state => state.toggleMenu);
-    const closeMainMenu = useMenuStore(state => state.closeMenu);
+    const isOpen = useMenuStore((state: MenuState) => state.menuOpen);
+    const toggleMainMenu = useMenuStore((state: MenuState) => state.toggleMenu);
+    const closeMainMenu = useMenuStore((state: MenuState) => state.closeMenu);
 
     const router = useRouter()
     const menuItemClicked = (page:string) => {

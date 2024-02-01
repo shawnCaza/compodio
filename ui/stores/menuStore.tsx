@@ -1,12 +1,12 @@
 import { create } from 'zustand'
 
-interface MenuState {
+export interface MenuState {
   menuOpen: boolean
   toggleMenu: () => void
   closeMenu: () => void
 }
 
-const useMenuStore = create<MenuState>()((set) => ({
+export const useMenuStore = create<MenuState>()((set) => ({
     menuOpen: false,
 
     closeMenu: () => set({ menuOpen: false }),
@@ -14,5 +14,3 @@ const useMenuStore = create<MenuState>()((set) => ({
     toggleMenu: () => set((state) => ({ menuOpen: !state.menuOpen })),
 
 }))
-
-export default useMenuStore

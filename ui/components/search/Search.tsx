@@ -3,7 +3,7 @@ import Fuse from 'fuse.js'
 import { Show, useShowsQuery } from '../../hooks/queries/shows';
 import ComboBoxSearch from './ComboBox/ComboBox';
 import { useFuseOptions } from './fuse/hooks/useFuseOptions';
-import useMenuStore from '../../stores/menuStore';
+import {useMenuStore} from '../../stores/menuStore';
 
 interface fuseResult{
   item: Show;

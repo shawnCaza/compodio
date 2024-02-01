@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import styles from './Branding.module.scss'
-import useMenuStore from '../../../../stores/menuStore';
+import { useMenuStore, MenuState } from '../../../../stores/menuStore';
 
 
 
 function Branding() {
 
-    const closeMenu = useMenuStore(state => state.closeMenu)
+    const closeMenu = useMenuStore((state: MenuState) => state.closeMenu)
 
     return(
         <>
