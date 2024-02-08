@@ -23,7 +23,7 @@ def synch_image_files(save_folder_base, folders_to_compress):
 
 
 if __name__ == '__main__':
-    # sync_db()
-    save_folder_base ='/Users/scaza/Sites/compodio_images/shows'
-    folders_to_sync = ["cfru-storied-lives"]
-    synch_image_files(save_folder_base, folders_to_sync)
+    sync_db()
+    # save_folder_base ='/Users/scaza/Sites/compodio_images/shows'
+    # folders_to_sync = ["cfru-storied-lives"]
+    # synch_image_files(save_folder_base, folders_to_sync)
