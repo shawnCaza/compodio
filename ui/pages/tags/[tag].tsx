@@ -27,8 +27,6 @@ export default function TagPage() {
   const allShows = useShowsQuery();
   const allTags = useTagsQuery() ?? {};
 
-  if(!allTags && !allShows){return null}
-
   //Need to find ID for `queryTag` in the url.
   const pageTag = Object.values(allTags).find(tag => tag['tag'] === queryTag);
   

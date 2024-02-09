@@ -12,29 +12,27 @@ interface TagsContainerProps {
 }
 
 
-export async function getServerSideProps() {
-    const queryClient = new QueryClient();
+// export async function getServerSideProps() {
+//     const queryClient = new QueryClient();
   
-    await queryClient.prefetchQuery('tags', getTags);
+//     await queryClient.prefetchQuery('tags', getTags);
   
-    return {
-      props: {
-        dehydratedState: dehydrate(queryClient),
-      },
-    }
-  }
+//     return {
+//       props: {
+//         dehydratedState: dehydrate(queryClient),
+//       },
+//     }
+//   }
 
 
 function TagsContainer ({currentTagIds, maxTags=null}:TagsContainerProps) {
 
-    const allTags =  useTagsQuery() ?? {};
-    
-    const currentTags = useMappedShowTags(allTags, currentTagIds, maxTags)
-
+    const currentTags = useMappedShowTags( currentTagIds, maxTags)
+        
     return (
         <>
           <div className={styles.tagContainer}>
-                {currentTags.map((currentTag) =>
+                {currentTags && currentTags.map((currentTag) =>
                     <Link href={`/tags/${currentTag.tag}`} className={styles.tag} key={currentTag.id}>
                       
                           #{currentTag.tag}

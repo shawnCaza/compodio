@@ -44,6 +44,9 @@ export const getShows = async () => {
   };
   
   export function useShowsQuery() {
-    const { data } = useQuery<Show[]| undefined>( "shows");
+    const { data, isLoading } = useQuery<Show[]| undefined>( "shows");
+    if (isLoading) {
+      return;
+    }
     return data;
   }

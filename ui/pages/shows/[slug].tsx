@@ -72,10 +72,7 @@ export default function ShowPage() {
   // wrap show.desc in paragraph tags if not already present
   const htmlDesc = show?.desc && show.desc.match(/^<p>/) ? show.desc : `<p>${show?.desc}</p>`;
   
-  const {recShowsSuffled, serverRecShows}:randomShowResults = useRecommendedShows();
-
-  if (!recShowsSuffled || !serverRecShows|| !show){return null}; 
-
+  const {recShowsShuffled}:randomShowResults = useRecommendedShows();
 
   return (
     <>
@@ -120,12 +117,9 @@ export default function ShowPage() {
 
     </div>
     <ContentSection heading='Recommended' tag='h2'>
-      <Server>
-        {/* TODO: these should should placeholder content rather than actual content the flashes away on switch to client content*/}
-        <ShowCards shows={serverRecShows} />         
-      </Server>
+
       <Client>
-        <ShowCards shows={recShowsSuffled} />         
+        <ShowCards shows={recShowsShuffled} />         
       </Client>
     </ContentSection>
     </>

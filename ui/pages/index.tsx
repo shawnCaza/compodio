@@ -32,11 +32,9 @@ export default function Home() {
   //   return;
   // }
 
-  const {recShowsSuffled, serverRecShows}:randomShowResults = useRecommendedShows();
+  const {recShowsShuffled}:randomShowResults = useRecommendedShows();
   
-  if (!recShowsSuffled || !serverRecShows ){
-    return;
-  }
+ 
   
   return (
     <>
@@ -56,13 +54,7 @@ export default function Home() {
         </ContentSection> 
         
         <ContentSection heading={'Recommended'} tag='h2'>
-          <Server>
-            {/* TODO: these should should placeholder content rather than actual content the flashes away on switch to client content*/}
-            <ShowCards shows={serverRecShows} />         
-          </Server>
-          <Client>
-            <ShowCards shows={recShowsSuffled} />         
-          </Client>
+            <ShowCards shows={recShowsShuffled} />         
         </ContentSection> 
 
         <ContentSection heading={'Recently Updated'} tag='h2'>
