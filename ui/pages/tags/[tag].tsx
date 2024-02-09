@@ -8,20 +8,20 @@ import { useTagsQuery, getTags } from '../../hooks/queries/tags';
 
 
 
-export async function getServerSideProps() {
-    const queryClient = new QueryClient();
+// export async function getServerSideProps() {
+//     const queryClient = new QueryClient();
   
-    await queryClient.prefetchQuery('shows', getShows);
-    await queryClient.prefetchQuery('tags', getTags);
+//     await queryClient.prefetchQuery('shows', getShows);
+//     await queryClient.prefetchQuery('tags', getTags);
   
-    return {
-      props: {
-        dehydratedState: dehydrate(queryClient),
-      },
-    }
-  }
+//     return {
+//       props: {
+//         dehydratedState: dehydrate(queryClient),
+//       },
+//     }
+//   }
 
-export default function CommentPage() {
+export default function TagPage() {
   const router = useRouter()
   const queryTag = router.query.tag as string
   const allShows = useShowsQuery();

@@ -28,20 +28,20 @@ import styles from './showsPage.module.scss'
 
 
 
-export async function getServerSideProps() {
-    const queryClient = new QueryClient();
+// export async function getServerSideProps() {
+//     const queryClient = new QueryClient();
 
-    await Promise.all([
-      queryClient.prefetchQuery('tags', getTags),
-      queryClient.prefetchQuery('shows', getShows)
-    ]);
+//     await Promise.all([
+//       queryClient.prefetchQuery('tags', getTags),
+//       queryClient.prefetchQuery('shows', getShows)
+//     ]);
   
-    return {
-      props: {
-        dehydratedState: dehydrate(queryClient),
-      },
-    }
-  }
+//     return {
+//       props: {
+//         dehydratedState: dehydrate(queryClient),
+//       },
+//     }
+//   }
 
 interface LinkIconProps {
   icon: React.ReactNode;
