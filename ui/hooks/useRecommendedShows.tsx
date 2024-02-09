@@ -2,16 +2,16 @@ import { useShowsQuery } from '../hooks/queries/shows';
 import { shuffleArray } from '../functions/utility/shuffleArray';
 import { Show } from '../hooks/queries/shows'
 
-interface randomShowResults{
-  recShowsShuffled?:Show[],
+
+export interface randomShowResults {
+  recShowsShuffled: Show[];
 }
-export type {randomShowResults}
 
 export function useRecommendedShows() {
     const shows = useShowsQuery();
 
     if (!shows ){
-      return [];
+      return;
     }
 
     const recIds = ['1608','99', '146', '200', '83', '100', '112', '175', '164', '135', '206', '94', '219', '166', '79', '118', '132', '150']
@@ -22,5 +22,5 @@ export function useRecommendedShows() {
     // const serverRecShows = shows.filter(show => {return recIds.slice(0,10).includes(show.id)})
 
 
-    return {recShowsShuffled};
+    return recShowsShuffled;
   }

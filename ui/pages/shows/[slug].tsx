@@ -18,11 +18,9 @@ import { useRecommendedShows } from '../../hooks/useRecommendedShows';
 import ContentSection from '../../components/layout/ContentSection/contentSection';
 
 
-import { useShowsQuery, getShows } from '../../hooks/queries/shows';
+import { useShowsQuery, Show } from '../../hooks/queries/shows';
 import { getTags } from '../../hooks/queries/tags';
 import TagsContainer from '../../components/layout/cardElements/TagsContainer/TagsContainer';
-
-import { randomShowResults } from '../../hooks/useRecommendedShows';
 
 import styles from './showsPage.module.scss'
 
@@ -72,7 +70,10 @@ export default function ShowPage() {
   // wrap show.desc in paragraph tags if not already present
   const htmlDesc = show?.desc && show.desc.match(/^<p>/) ? show.desc : `<p>${show?.desc}</p>`;
   
-  const {recShowsShuffled}:randomShowResults = useRecommendedShows();
+  const recShowsShuffled:Show[]|undefined = useRecommendedShows();
+  if (!show){
+    return null;
+  }
 
   return (
     <>
