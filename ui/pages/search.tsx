@@ -13,28 +13,30 @@ interface searchProps {
   searchTerm: string
 }
 
-export async function getServerSideProps(context: GetServerSidePropsContext) {
+// export async function getServerSideProps(context: GetServerSidePropsContext) {
   
-  const searchTerm = context.query.s;
+//   const searchTerm = context.query.s;
 
-  const queryClient = new QueryClient();
-  await Promise.all([
-    queryClient.prefetchQuery('tags', getTags),
-    queryClient.prefetchQuery('shows', getShows)
-  ]);
+//   const queryClient = new QueryClient();
+//   await Promise.all([
+//     queryClient.prefetchQuery('tags', getTags),
+//     queryClient.prefetchQuery('shows', getShows)
+//   ]);
   
 
-    return {props: {
-      dehydratedState: dehydrate(queryClient),
-      searchTerm: searchTerm}
-    }
-    // will be passed to the page component as props
-  }
+//     return {props: {
+//       dehydratedState: dehydrate(queryClient),
+//       searchTerm: searchTerm}
+//     }
+//     // will be passed to the page component as props
+//   }
 
   export default function Search({searchTerm}:searchProps){
 
-    const shows = useShowsQuery() ?? [];
-
+    const shows = useShowsQuery();
+    if (!shows) {
+      return;
+    }
     const fuse = new Fuse(shows, useFuseOptions());
     const searchResults = Object.values(fuse.search(searchTerm));
     //create array using only the item prop from each object in the searchResults array

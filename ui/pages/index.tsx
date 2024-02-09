@@ -30,9 +30,7 @@ export default function Home() {
   //   return;
   // }
 
-  const recShowsShuffled:Show[]|undefined = useRecommendedShows();
-  console.log('recShowsShuffled', recShowsShuffled);
- 
+  const recShowsShuffled:Show[]|undefined = useRecommendedShows(); 
   
   return (
     <>
