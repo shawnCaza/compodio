@@ -119,9 +119,9 @@ export default function ShowPage() {
     </div>
     <ContentSection heading='Recommended' tag='h2'>
 
-      <Client>
-        <ShowCards shows={recShowsShuffled} />         
-      </Client>
+        {recShowsShuffled &&
+          <ShowCards shows={recShowsShuffled} />         
+        }
     </ContentSection>
     </>
   )
