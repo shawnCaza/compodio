@@ -6,12 +6,10 @@ import ShowCards from "../components/show/showCards/ShowCards";
 import { useShowsQuery, Show } from "../hooks/queries/shows";
 import { getTags } from "../hooks/queries/tags";
 import { useFuseOptions } from "../components/search/fuse/hooks/useFuseOptions";
-
+import { useSearchParams } from 'next/navigation'
 import { GetServerSidePropsContext } from 'next';
 
-interface searchProps {
-  searchTerm: string
-}
+
 
 // export async function getServerSideProps(context: GetServerSidePropsContext) {
   
@@ -31,28 +29,39 @@ interface searchProps {
 //     // will be passed to the page component as props
 //   }
 
-function useFuse(shows:Show[]|undefined, searchTerm: string) {
-  if (!shows) {
-    return;
-  }
-  const fuse = new Fuse(shows, useFuseOptions());
-  return Object.values(fuse.search(searchTerm));
+
+interface HandleFuseSearchProps {
+  shows: Show[],
+  searchTerm: string
 }
 
-  export default function Search({searchTerm}:searchProps){
 
+function HandleFuseSearch({shows, searchTerm}:HandleFuseSearchProps) {
+
+  const fuse = new Fuse(shows, useFuseOptions());
+  const searchResults = Object.values(fuse.search(searchTerm));
+  //create array using only the item prop from each object in the searchResults array
+  const searchItems = searchResults.map((result) => result.item);
+
+  return (
+    <ShowCards shows={searchItems} />
+  )
+}
+
+  export default function SearchPage(){
+
+    const searchParams = useSearchParams();
+    const searchTerm = searchParams.get('s');
     const shows = useShowsQuery();
-    const searchResults = useFuse(shows, searchTerm);
-    
-    if (!searchResults) {
-      return null;
+    if (!shows || !searchTerm ){
+      return;
     }
-    //create array using only the item prop from each object in the searchResults array
-    const searchItems = searchResults.map((result) => result.item);
 
-    return (
+    console.log('searchTerm', searchTerm)
+    return (      
         <ContentSection heading={`Searching for: ${searchTerm}`} tag='h1'>
-          <ShowCards shows={searchItems} />
+          <HandleFuseSearch shows={shows} searchTerm={searchTerm} />
+
         </ContentSection>
       );
 }
