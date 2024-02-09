@@ -3,7 +3,7 @@ import Fuse from "fuse.js";
 import { dehydrate, QueryClient} from 'react-query';
 import ContentSection from "../components/layout/ContentSection/contentSection";
 import ShowCards from "../components/show/showCards/ShowCards";
-import { useShowsQuery, getShows } from "../hooks/queries/shows";
+import { useShowsQuery, Show } from "../hooks/queries/shows";
 import { getTags } from "../hooks/queries/tags";
 import { useFuseOptions } from "../components/search/fuse/hooks/useFuseOptions";
 
@@ -31,14 +31,22 @@ interface searchProps {
 //     // will be passed to the page component as props
 //   }
 
+function useFuse(shows:Show[]|undefined, searchTerm: string) {
+  if (!shows) {
+    return;
+  }
+  const fuse = new Fuse(shows, useFuseOptions());
+  return Object.values(fuse.search(searchTerm));
+}
+
   export default function Search({searchTerm}:searchProps){
 
     const shows = useShowsQuery();
-    if (!shows) {
-      return;
+    const searchResults = useFuse(shows, searchTerm);
+    
+    if (!searchResults) {
+      return null;
     }
-    const fuse = new Fuse(shows, useFuseOptions());
-    const searchResults = Object.values(fuse.search(searchTerm));
     //create array using only the item prop from each object in the searchResults array
     const searchItems = searchResults.map((result) => result.item);
 
