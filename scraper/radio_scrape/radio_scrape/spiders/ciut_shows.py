@@ -15,7 +15,7 @@ class CiutShowsSpider(scrapy.spiders.SitemapSpider):
     }
     allowed_domains = ['ciut.fm']
     sitemap_urls = ['https://ciut.fm/page-sitemap.xml']
-    sitemap_rules = [('/shows/', 'parse_show')]
+    sitemap_rules = [('/shows-by-day/', 'parse_show')]
 
 
 
@@ -28,7 +28,14 @@ class CiutShowsSpider(scrapy.spiders.SitemapSpider):
             current_show = show_item()
 
             # print(show.xpath(".//div[@class='links']/a[text()='archives']/@href").get())
-            current_show['showName'] = response.xpath("//h1/text()").get()
+
+            # Usually the show title is in the H1 tag
+            if response.xpath("//h1/text()").get():
+                current_show['showName'] = response.xpath("//h1/text()").get()
+            else:
+                # if no H1 tag, then let's try the title tag
+                current_show['showName'] = response.xpath("//title/text()").get().split(' - ')[0]
+                
             print(current_show['showName'])
             if all(skip_show not in current_show['showName'] for skip_show in shows_to_skip):
 
@@ -68,8 +75,27 @@ class CiutShowsSpider(scrapy.spiders.SitemapSpider):
                 if not description or not description_verified:
                     # can we assume the first p tag with lots of text, in the same block as the heading, is the description?
                     header_description = description # either unverified on none
-                    description = response.xpath("//h1/../p[string-length(text())>100][1]/text()").get()
+
+                    if response.xpath("//h1/../p[string-length(text())>100][1]/text()").get():
+                        # Usually the first p tag after the header with lots of text. Want to skip any p tags that are just a few characters
+                        description = response.xpath("string(//h1/../p[string-length(text())>100][1])").extract()[0]
+
+                    elif response.xpath("//h1/../div[string-length(text())>100][1]/text()").get():
+                        # if no p tag, then the first div with lots of text using text() approach
+                        description = response.xpath("string(//h1/../div[string-length(text())>100][1])").extract()[0]
+                    
+                    elif len(response.xpath("string(//h1/../p[1])").extract()[0]) > 100:
+                        # If above failed, a sub tag may make the text seem short. So we can use string() to get all text in the p tag.
+                        # This just checks the first p tag, so it can be tripped up by empty p tags.
+                        description = response.xpath("string(//h1/../p[1])").extract()[0]
+
+                    elif len(response.xpath("string(//h1/../div[1])").extract()[0]) > 100:
+                        # if no p tag, then the first div with lots of text using string approach
+                        description = response.xpath("string(//h1/../div[1])").extract()[0]
+
                     if not description:
+                        # would be nice if the header descrition was reliable but sometimes it's copied from another show wihout being updated
+                        # TODO: could make sure header desc does not match any other show's description.
                         description = header_description
                         
 

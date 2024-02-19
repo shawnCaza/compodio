@@ -26,34 +26,38 @@ export default function TagPage() {
   const queryTag = router.query.tag as string
   const allShows = useShowsQuery();
   const allTags = useTagsQuery() ?? {};
-
+  let tagShows = undefined;
   //Need to find ID for `queryTag` in the url.
   const pageTag = Object.values(allTags).find(tag => tag['tag'] === queryTag);
   
-  if(!pageTag){return null} // TODO should throw a 404
+  if(pageTag) { 
 
-  const tagShows = allShows?.filter(
-    (show) => {
-      if(show.tagIds){
-        return JSON.parse(show.tagIds).includes(pageTag?.id)
+    tagShows = allShows?.filter(
+      (show) => {
+        if(show.tagIds){
+          return JSON.parse(show.tagIds).includes(pageTag?.id)
+        }
       }
-    }
-  );
+    )
+  }
 
   
   return (
     <>
       <Head>
-        <title>#{pageTag.tag} - compodio</title>
+        <title>#{queryTag} - compodio</title>
         <meta name="description" content="Community Radio Podcasts tagged with {pageTag.tag}" />
-        <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <link rel="icon" href="/favicon.ico" />
+
       </Head>
       <main>
-        <ContentSection heading={`Tag: #${pageTag.tag}`} tag='h1'>
+        <ContentSection heading={`Tag: #${queryTag}`} tag='h1'>
             {tagShows &&
               <ShowCards shows={tagShows} />         
             }
+             {!tagShows &&
+              <p>No shows found for this tag</p>
+            }
+
         </ContentSection>    
       </main>
     </>

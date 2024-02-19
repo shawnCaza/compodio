@@ -6,8 +6,11 @@ export function useMappedShowTags( showTagIds: Array<number>, maxTags:number|nul
     const allTags =  useTagsQuery() ?? null;
     if(allTags){
         const showTags= showTagIds.reduce((tags:Tag[], tagId, idx) => {
-
-                tags.push(allTags[tagId])
+                // if tagId is not in allTags, return tags
+            if(!allTags[tagId]){
+                return tags;
+            }
+            tags.push(allTags[tagId])
             
             return tags;
         },[])

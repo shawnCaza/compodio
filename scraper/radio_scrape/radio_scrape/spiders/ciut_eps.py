@@ -22,7 +22,7 @@ class CiutEps(scrapy.Spider):
 
     newest_ep_map = {ep['show_id']:{'id': ep['id'], 'ep_date': ep['ep_date'], 'ep_mp3': ep['mp3']} for ep in newest_eps}
 
-    start_urls = [show['internal_link'] for show in show_results]
+    start_urls = [show['internal_link'] for show in show_results if show['id']]
     allowed_domains = ['ciut.fm', 'podbean.com']
 
 
@@ -43,8 +43,9 @@ class CiutEps(scrapy.Spider):
             most_recent_mp3 = None
 
         podbean_info_link = response.xpath("//iframe/@data-src").extract_first()
-
-        if podbean_info_link:
+        # Some shows have iframe to other services, so we need to check if it's a podbean player
+        # TODO: add support for other services such as soundcloud etc.
+        if podbean_info_link and 'podbean' in podbean_info_link:
             print('has podbean player:', podbean_info_link)
 
             if most_recent_mp3 and 'ciut.fm' in most_recent_mp3:
