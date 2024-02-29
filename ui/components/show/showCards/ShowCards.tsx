@@ -38,7 +38,7 @@ function ShowCards({shows}:ShowCardsProps) {
                     <EpDate dtStr={show.newestEpDate} />
                   </div>
                   <ShowLink slug={show.slug} >
-                    <h4 className={styles.title}>{show.showName}</h4>
+                    <h3 className={styles.title}>{show.showName}</h3>
                   </ShowLink>
                 </Heading>
 

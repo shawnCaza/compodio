@@ -93,7 +93,8 @@ class TagShows:
     def process_corpus_item(self, txt):
         # normalize hip hop, spoken word, and r&b to show up as a single keyword 
         # corpus = [result['desc'].lower().replace("r&b","rhythmAndBlues").replace("r & b","rhythmAndBlues").replace("hip hop","hipHop").replace("hip-hop","hipHop").replace("spoken word","spokenWord") for result in results if result['desc']]
-        return txt.lower().replace("r&b","rhythmAndBlues").replace("r & b","rhythmAndBlues").replace("hip hop","hipHop").replace("hip-hop","hipHop").replace("spoken word","spokenWord").replace("deep dive","deepDive").replace("-","").replace("free form","freeForm")
+        return txt.lower().replace("r&b","rhythmAndBlues").replace("r & b","rhythmAndBlues").replace("hip hop","hipHop").replace("hip-hop","hipHop").replace("spoken word","spokenWord").replace("deep dive","deepDive").replace("-","").replace("free form","freeForm").replace("’","").replace("'","")
+
 
 # def identify_tags_across_all_shows():
 #     mySQL = MySQL()

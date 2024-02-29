@@ -20,6 +20,7 @@ function get_eps_by_show_id($show_id){
     global $db;
     $sql = "select * from `episodes`
     where show_id = {$show_id}
+    order by `ep_date` desc
     limit 100";
     $result = mysqli_query($db, $sql);
     confirm_result_set($result);
