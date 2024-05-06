@@ -18,6 +18,9 @@ import torchaudio
 from nltk.tokenize.texttiling import TextTilingTokenizer
 
 import scraper_MySQL
+
+
+
 os.environ["TOKENIZERS_PARALLELISM"] = "false"
 audio_directory = f"{os.path.dirname(os.path.realpath(__file__))}/temp_audio/"
 

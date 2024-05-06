@@ -14,7 +14,7 @@ NEWSPIDER_MODULE = 'radio_scrape.spiders'
 
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
-USER_AGENT = 'compodio (+http://www.compodio.com)'
+USER_AGENT = 'compodio (https://www.compodio.com)'
 
 # Obey robots.txt rules
 ROBOTSTXT_OBEY = True

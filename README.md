@@ -8,13 +8,17 @@ Some community radio stations post audio recordings of their shows online, but d
 
 ### UI folder
 
-Contains a [next.js](https://nextjs.org/) project using SSR, [react-query](https://react-query.tanstack.com/) for server state, CSS modules for styling, and [fuse.js](https://fusejs.io/) for search.
+Contains a [next.js](https://nextjs.org/) project using [react-query](https://react-query.tanstack.com/) for server state, CSS modules for styling, and [fuse.js](https://fusejs.io/) for search.
 
 ### scraper folder
 
 Contains a python [Scrapy](https://scrapy.org/) project that scrapes show data from radio station websites.
 
-In addition [Sci-kit learn](https://scikit-learn.org/stable/) is used to:
+In addition:
+
+OpenAI Whisper is used to transcribe audio files, identify language, and Open source summarization models are used to create episode summaries in [ai_ep_summary.py](scraper/radio_scrape/radio_scrape/ai_ep_summary.py)
+
+[Sci-kit learn](https://scikit-learn.org/stable/) is used to:
 <!-- add bullets -->
 - Generate tags for shows based on their descriptions in `show_keywords.py`
 - Perform k-means clustering on show image colours in `image_colour.py` in order to generate the show specific CSS gradients used in the UI.

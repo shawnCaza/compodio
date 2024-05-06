@@ -1,6 +1,6 @@
 import scrapy
-from radio_scrape.items import ext_feed_item
-from radio_scrape.pipeline_definitions import external_feed_pipelines
+from radio_scrape.radio_scrape.items import ext_feed_item
+from radio_scrape.radio_scrape.pipeline_definitions import external_feed_pipelines
 
 from scrapy.spiders import CrawlSpider, Rule, Request
 from scrapy.linkextractors import LinkExtractor
@@ -8,7 +8,7 @@ from scrapy.linkextractors import LinkExtractor
 from urllib.parse import urlparse
 import requests
 
-from radio_scrape.scraper_MySQL import MySQL
+from radio_scrape.radio_scrape.scraper_MySQL import MySQL
 
 # function to seperate any camel case words in string to seperate words, use full words for variable names
 def camel_case_split(str):
@@ -64,10 +64,9 @@ class ExtSiteSpider(scrapy.Spider):
     
     def start_requests(self):
         
-        # for show in self.show_results:
-        #     yield scrapy.Request(show['ext_link'], meta={'id':show['id'], 'showName':show['showName']})
-        # for show in self.show_results:
-        yield scrapy.Request('https://www.democracynow.org/pages/help/podcasting', meta={'id':1437, 'showName':'Democracy Now'})
+        for show in self.show_results:
+            yield scrapy.Request(show['ext_link'], meta={'id':show['id'], 'showName':show['showName']})
+        # yield scrapy.Request('https://www.democracynow.org/pages/help/podcasting', meta={'id':1437, 'showName':'Democracy Now'})
 
 
     def parse(self, response):
