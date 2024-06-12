@@ -15,7 +15,7 @@ from colormath.color_conversions import convert_color
 
 
 def get_colour_frequencies(cluster, centroids):
-    """Returns tuple containing (frequency, LAB)"""
+    """Returns tuple containing ('Colour', ('frequency', 'lab'))"""
 
     # Get the number of different clusters, create histogram, and normalize
     labels = np.arange(0, len(np.unique(cluster.labels_)) + 1)
@@ -25,7 +25,7 @@ def get_colour_frequencies(cluster, centroids):
 
     # Group cluster's (percentage, rgb, hex), 
     colours = []
-    # define named tuple with fields for percent, rgb, and hex
+    # define named tuple with fields for percent, and lab
     ColourDetails = namedtuple('Colour', ('frequency', 'lab'))
     for (percent, color) in zip(hist, centroids):
 
@@ -42,15 +42,12 @@ def get_colour_frequencies(cluster, centroids):
         # add named tuple to colours list with percent, rgb, and hex
         colours.append(ColourDetails(percent,labProcessed))
 
-
-    
-
     return colours
 
 
 def desaturate(lab):
     """
-        Desaturates a colour by converting it to hls and then back to rgb.
+        Desaturates a colour by converting it to hls and then back to lab.
     """
 
     # convert lab to hsl 
@@ -66,8 +63,11 @@ def desaturate(lab):
 
 def decontrast(lab):
     """
-       redduce contrast of a lab colour
+        redduces contrast of a lab colour.
+        param lab: lab colour
+        returns: lab colour
     """
+
     if lab.lab_l > 60:
         # Too bright, reduce brightness. The brighter the more we reduce
         lab.lab_l = 60 + ((lab.lab_l - 60) * 0.4 )
@@ -82,17 +82,11 @@ def decontrast(lab):
 
 def find_avg_dominant_colours(image_path, quantity = 3):
     """
-        Returns object with list of objects: 
-        {
-        'freq': decimal reqpresenting frequency at which colour is present in image, 
-        'hex': string hex code of colour
-        }.
-        `image_path` specifies the path to a local image.
-        `quantity` specifies the number of colours to return.
-        The colour are an average of the dominant clusters of colours. For example, an image with equal amount of red and yellow might return orange.
+        Returns list hex colours sorted from darkest to lightest. 
+
+        param image_path: string path to image
+        param quantity: int number of colours to return
     """
-
-
     # Load image and convert to a list of pixels
     image = cv2.imread(image_path)
     image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
@@ -114,7 +108,6 @@ if __name__ == '__main__':
 
 
     import scraper_MySQL
-    import time
     import json
 
     save_folder_base ='/Users/scaza/Sites/compodio_images/shows/'
