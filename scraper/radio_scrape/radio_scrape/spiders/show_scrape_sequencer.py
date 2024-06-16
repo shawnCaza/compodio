@@ -7,6 +7,7 @@ from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
 from ciut_shows import CiutShowsSpider
 from cfru_shows import CfruShowsSpider
+from ckut_shows import CkutShowsSpider
 from ciut_eps import CiutEps
 from cfru_eps import CfruEps
 from radio_scrape.radio_scrape.server_sync.sync_compodio_data_to_server import sync_db
@@ -18,6 +19,7 @@ process = CrawlerProcess(setting)
 def crawl_seq():
     global process
 
+    # yield process.crawl(CkutShowsSpider)
     yield process.crawl(CiutShowsSpider)
     yield process.crawl(CfruShowsSpider)
     #reactor.stop()

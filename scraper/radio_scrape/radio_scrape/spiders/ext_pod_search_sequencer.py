@@ -7,6 +7,7 @@ from scrapy.utils.log import configure_logging
 from scrapy.utils.project import get_project_settings
 from ext_site import ExtSiteSpider
 from radio_scrape.radio_scrape.server_sync.sync_compodio_data_to_server import sync_db
+
 setting = get_project_settings()
 
 process = CrawlerProcess(setting)
