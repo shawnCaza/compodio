@@ -3,6 +3,7 @@ from scrapy.crawler import CrawlerProcess
 
 from datetime import datetime
 import requests
+import time
 
 from radio_scrape.radio_scrape.items import episode_item
 from radio_scrape.radio_scrape.pipeline_definitions import episode_pipelines
@@ -54,14 +55,27 @@ class CkutEps(scrapy.Spider):
                 current_episode = episode_item()
 
                 current_episode['show_id'] = show_id
-                current_episode['ep_date'] = ep_date
+                
 
-                # the url on the download link is redirected to the actual mp3 file (status 302)
+                # the url on the download link is redirected(status 302), multiple times, to the actual mp3 file
+                # so we need to allow redirects to get the final url
                 download_link = ep_element.xpath('./a[text()="Download"]/@href').get()
-                r = requests.head(f"https://ckut.ca{download_link}", stream=True)
-                header = r.headers
-                if 'location' in header.keys(): 
-                    current_episode['mp3'] = header['location']
+                time.sleep(2)
+                r = requests.head(f"https://ckut.ca{download_link}", stream=True, allow_redirects=True)
+                if r.status_code == 200:
+                
+                    current_episode['mp3'] = r.url
+                    # mp3 file name contains date and time of show. website doesn't list time.
+                    # So lets get the time from the mp3 file.
+                    # Since mp3 file time will be newer than the ep_date above, we still need to use that to check for newness. After fresh episodes have been added we could switch to using the mp3 file time if desired.
+                    # But do we care about preserving the 'air' date, why not use the modified date of the mp3 file?
+
+                    # mp3 file name format: "https://archives.ckut.ca/archives/128/20240617.23.00.00-00.00.00.mp3"
+                    ep_date_with_time = current_episode['mp3'].split('/')[-1].split('-')[0]
+                    current_episode['ep_date'] = datetime.strptime(ep_date_with_time, "%Y%m%d.%H.%M.%S")
+
+                    current_episode['file_size'] = r.headers['Content-length']
+
                     yield current_episode
                 
             else:
@@ -77,6 +91,7 @@ class CkutEps(scrapy.Spider):
                     next_page = response.urljoin(potential_next_page)
                     yield scrapy.Request(next_page, callback=self.parse)
                     break
+        time.sleep(2)
 
 if __name__ == '__main__':
     
