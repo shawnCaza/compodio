@@ -11,11 +11,11 @@ import { useRouter } from "next/router";
 
 // check localStorage for userId
 // if not present, create a new one
- var userId = localStorage.getItem('userId');
-  if (!userId) {
-    userId = Math.random().toString(36).substring(7);
-    localStorage.setItem('userId', userId);
-  }
+//  var userId = localStorage.getItem('userId');
+//   if (!userId) {
+//     userId = Math.random().toString(36).substring(7);
+//     localStorage.setItem('userId', userId);
+//   }
 
 
 

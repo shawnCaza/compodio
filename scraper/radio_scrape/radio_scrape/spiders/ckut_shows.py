@@ -15,7 +15,7 @@ class CkutShowsSpider(scrapy.Spider):
     start_urls = ['https://ckut.ca/programming/']
 
     def parse(self, response):
-        shows_to_skip = ['Democracy Now!', 'BBC News']
+        shows_to_skip = ['Democracy Now!', 'BBC News', 'A Multilingual Affair']
         existing_show_names = set()
 
         for show in response.css("div.grid-item"):

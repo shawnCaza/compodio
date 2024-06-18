@@ -10,6 +10,7 @@ from cfru_shows import CfruShowsSpider
 from ckut_shows import CkutShowsSpider
 from ciut_eps import CiutEps
 from cfru_eps import CfruEps
+from ckut_eps import CkutEps
 from radio_scrape.radio_scrape.server_sync.sync_compodio_data_to_server import sync_db
 setting = get_project_settings()
 
@@ -19,9 +20,9 @@ process = CrawlerProcess(setting)
 def crawl_seq():
     global process
 
-    # yield process.crawl(CkutShowsSpider)
     yield process.crawl(CiutShowsSpider)
     yield process.crawl(CfruShowsSpider)
+    yield process.crawl(CkutShowsSpider)
     #reactor.stop()
 
 crawl_seq()
@@ -32,6 +33,7 @@ def crawl_seq2():
     global process
 
     yield process.crawl(CiutEps)
+    yield process.crawl(CkutEps)
     yield process.crawl(CfruEps)
     # reactor.stop()
 

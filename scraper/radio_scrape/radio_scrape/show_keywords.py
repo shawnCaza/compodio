@@ -2,6 +2,7 @@ from time import time
 from pprint import pprint
 
 from sklearn.feature_extraction.text import TfidfVectorizer, CountVectorizer, ENGLISH_STOP_WORDS
+from spacy.lang.fr.stop_words import STOP_WORDS as FRENCH_STOP_WORDS
 from sklearn.decomposition import NMF, MiniBatchNMF, LatentDirichletAllocation
 
 from scraper_MySQL import MySQL
@@ -32,11 +33,12 @@ class TagShows:
         """creates a countVectorizer from the corpus"""
 
         # We don't want common english words or others from our curated list to be used as keywords
-        curated_unwanted_keywords = ['focus','light','deep','city','tracks','air','experience','releases','friday','sets','past','share','tunes','saturday','help','just','john','collection','hours','listeners','happening','broadcast','special', 'room', 'sonic', 'good', 'years', '89','introduction', 'reintroduction', 'context','forever', 'la', 'hear', 'hottest', 'guaranteed', 'produced', 'longest', 'running', 'left', 'make', 'merrier', 'pot', 'scene', 'culture', 'featuring', 'll', 'content', 'dreaming', 'middle', 'host', 'sounds', 'people', 'tune', 'play', 'features', 'playing', 'audio', 'come', 'favourite', 'welcome', 'art', 'sources', 'roll', 'round', 'hour', 'including', 'start', 'right', 'breakfast', 'interspersed', 've', 'bring', 'present', 'plays',  'ears', 'showcasing', 'tuesday', 'concept', 'podcast',  'genre', 'takes', 'let', 'know', 'point','culture''featuring','movie','shows','journey','hosted','global','open','history','hits','happen','theme','sound','explore','program','join','love','cfru','ciut','late','fm','description','new','music','day','today','morning','today',"radio","weekly","best","artists","night","canada","week","soon","time","musical","coming","listen","early", 'like', 'recorded', 'monday', 'wednesday', 'thursday', 'friday', 'sunday', 'saturday', 'tuesday', 'host', 'hosts', 'show', 'shows', 'broadcast', 'broadcasts', 'broadcasting', 'broadcasted', 'broadcasters', '93', '85', 'better', 'en', 'bought', 'recorded', 'look', 'goal', 'rich', 'featured', 'campus', 'related', 'released', 'episode', 'established', 'involved', 'sorts', 'self', 'com', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'noon', 'format', 'prime', 'brought', 'year', 'days', 'place', 'pm','am', 'weekend', 'daily', 'wide', 'heard', 'youll', 'ill', 'dedicated', 'decades', 'artist', 'downtown', 'home', 'performers', 'stations','talent', 'school']
+        curated_unwanted_keywords = ['focus','light','deep','city','tracks','air','experience','releases','friday','sets','past','share','tunes','saturday','help','just','john','collection','hours','listeners','happening','broadcast','special', 'room', 'sonic', 'good', 'years', '89','introduction', 'reintroduction', 'context','forever', 'la', 'hear', 'hottest', 'guaranteed', 'produced', 'longest', 'running', 'left', 'make', 'merrier', 'pot', 'scene', 'culture', 'featuring', 'll', 'content', 'dreaming', 'middle', 'host', 'sounds', 'people', 'tune', 'play', 'features', 'playing', 'audio', 'come', 'favourite', 'welcome', 'art', 'sources', 'roll', 'round', 'hour', 'including', 'start', 'right', 'breakfast', 'interspersed', 've', 'bring', 'present', 'plays',  'ears', 'showcasing', 'tuesday', 'concept', 'podcast',  'genre', 'takes', 'let', 'know', 'point','culture''featuring','movie','shows','journey','hosted','global','open','history','hits','happen','theme','sound','explore','program','join','love','cfru','ciut','late','fm','description','new','music','day','today','morning','today',"radio","weekly","best","artists","night","canada","week","soon","time","musical","coming","listen","early", 'like', 'recorded', 'monday', 'wednesday', 'thursday', 'friday', 'sunday', 'saturday', 'tuesday', 'host', 'hosts', 'show', 'shows', 'broadcast', 'broadcasts', 'broadcasting', 'broadcasted', 'broadcasters', '93', '85', 'better', 'en', 'bought', 'recorded', 'look', 'goal', 'rich', 'featured', 'campus', 'related', 'released', 'episode', 'established', 'involved', 'sorts', 'self', 'com', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', 'noon', 'format', 'prime', 'brought', 'year', 'days', 'place', 'pm','am', 'weekend', 'daily', 'wide', 'heard', 'youll', 'ill', 'dedicated', 'decades', 'artist', 'downtown', 'home', 'performers', 'stations','talent', 'school', 'cfrus', 'ckut','ckuts','weve','youve','thing','things','thursdays','working', 'taking', 'todays', 'want', 'whats', 'played', 'month', 'monthly', 'october','midnight','listen','listening','listeners','listener','june','region','brings','station','includes','presenting','onehour','going','fund','20','provides', 'soundtrack', '50', 'covering']
         stop_words = ENGLISH_STOP_WORDS.union(curated_unwanted_keywords)
+        stop_words = FRENCH_STOP_WORDS.union(stop_words)
 
         # vectorize keywords and frequency across all show descriptions
-        self.vec = CountVectorizer(ngram_range = (1, 1), min_df=3, stop_words=stop_words).fit(self.corpus)
+        self.vec = CountVectorizer(ngram_range = (1, 1), min_df=3, stop_words=stop_words, strip_accents='unicode').fit(self.corpus)
 
     def global_tags_2_db(self):
         bag_of_words = self.vec.transform(self.corpus)
@@ -91,9 +93,8 @@ class TagShows:
                 self.show_tags_2_db(db_data, show['id'], matched_tag_ids)
 
     def process_corpus_item(self, txt):
-        # normalize hip hop, spoken word, and r&b to show up as a single keyword 
-        # corpus = [result['desc'].lower().replace("r&b","rhythmAndBlues").replace("r & b","rhythmAndBlues").replace("hip hop","hipHop").replace("hip-hop","hipHop").replace("spoken word","spokenWord") for result in results if result['desc']]
-        return txt.lower().replace("r&b","rhythmAndBlues").replace("r & b","rhythmAndBlues").replace("hip hop","hipHop").replace("hip-hop","hipHop").replace("spoken word","spokenWord").replace("deep dive","deepDive").replace("-","").replace("free form","freeForm").replace("’","").replace("'","").replace("guelphs","guelph")
+        # normalize common word pairs, minor variations, and remove special characters
+        return txt.lower().replace("r&b","rhythmAndBlues").replace("r & b","rhythmAndBlues").replace("free-jazz","freeJazz jazz").replace("hip hop","hipHop").replace("hip-hop","hipHop").replace("spoken word","spokenWord").replace("deep dive","deepDive").replace("!","").replace("-","").replace("free form","freeForm").replace("’","").replace("'","").replace("guelphs","guelph").replace("womens","women").replace("montreals","montreal").replace("the environment", "environmental").replace("activists", "activism").replace("activist", "activism").replace("take action", "activism")
 
 
 # def identify_tags_across_all_shows():

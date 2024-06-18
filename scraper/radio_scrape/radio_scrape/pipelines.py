@@ -41,7 +41,7 @@ class GetFileSize:
                     episode['file_size'] = 0
             else:
                 # File may not exist. Don't want to add it to DB
-                espisode = None
+                episode = None
         
         return episode
 
