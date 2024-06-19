@@ -1,6 +1,7 @@
 import scrapy
 from radio_scrape.radio_scrape.items import ext_feed_item
 from radio_scrape.radio_scrape.pipeline_definitions import external_feed_pipelines
+from scrapy.crawler import CrawlerProcess
 
 from scrapy.spiders import CrawlSpider, Rule, Request
 from scrapy.linkextractors import LinkExtractor
@@ -43,7 +44,7 @@ def generate_key_from_link(link):
     return domain_key
 
 # Don't want to crawl all of twitter
-do_not_crawl = ['twitter','facebook','podomatic', 'mixcloud', 'soundcloud', 'linktr.ee', 'anchor.fm', 'tumblr', 'instagram', 'youtube', 'itunes', 'podbay', 'blogspot', 'tripod.com', 'wordpress.com', 'stitcher', 'tunein', 'overcast', 'player.fm', 'podbean', 'pca.st', 'podcastaddict', 'podcastrepublic', 'podcasts.apple.com', 'spotify.com', 'google.com', 'podcastone.com', 'podcastindex.org', 'podcastland.com', 'podcastpedia.org', 'podcastalley.com', 'podcast411.com', 'podcastdirectory.com', 'podcast.net', 'podcast.com']
+do_not_crawl = ['twitter','facebook','podomatic', 'mixcloud', 'soundcloud', 'linktr.ee', 'anchor.fm', 'tumblr', 'instagram', 'youtube', 'itunes', 'podbay', 'blogspot', 'tripod.com', 'wordpress.com', 'stitcher', 'tunein', 'overcast', 'player.fm', 'podbean', 'pca.st', 'podcastaddict', 'podcastrepublic', 'podcasts.apple.com', 'spotify.com', 'google.com', 'podcastone.com', 'podcastindex.org', 'podcastland.com', 'podcastpedia.org', 'podcastalley.com', 'podcast411.com', 'podcastdirectory.com', 'podcast.net', 'podcast.com', 'ckut.ca']
 
 class ExtSiteSpider(scrapy.Spider):
     name = 'ext_site'
@@ -65,8 +66,8 @@ class ExtSiteSpider(scrapy.Spider):
     def start_requests(self):
         
         for show in self.show_results:
+           
             yield scrapy.Request(show['ext_link'], meta={'id':show['id'], 'showName':show['showName']})
-        # yield scrapy.Request('https://www.democracynow.org/pages/help/podcasting', meta={'id':1437, 'showName':'Democracy Now'})
 
 
     def parse(self, response):
@@ -80,7 +81,7 @@ class ExtSiteSpider(scrapy.Spider):
 
         # Create list of podcast domains
         # itunes is outdated, but links currently redirect to apple
-        podcast_domains = ['podcasts.apple.com', 'itunes.apple.com/us/podcast/', 'spotify.com/show', 'podcasts.google.com', 'google.com/podcasts']
+        podcast_domains = ['podcasts.apple.com', 'itunes.apple.com', 'spotify.com/show', 'podcasts.google.com', 'google.com/podcasts']
 
         feed_types = ['apple', 'apple', 'spotify', 'google', 'google']
 
@@ -141,4 +142,12 @@ class ExtSiteSpider(scrapy.Spider):
                 yield Request(link.url, meta={'id':response.meta['id'], 'showName':show_name}, callback=self.parse)
 
 
+
+if __name__ == '__main__':
     
+    process = CrawlerProcess({
+        'USER_AGENT': 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)'
+    })
+
+    process.crawl(ExtSiteSpider)
+    process.start()

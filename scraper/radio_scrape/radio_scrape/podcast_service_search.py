@@ -13,7 +13,7 @@ from spotipy.oauth2 import SpotifyClientCredentials
 mySQL = MySQL()
 
 def search_external_podcast_services():
-    # find_apple_feeds()
+    find_apple_feeds()
     find_spotify_feeds()
 
 def find_apple_feeds():
@@ -51,23 +51,29 @@ def search_itunes_api(show):
         print("\n\n***", show['showName'])
         print("- exact match:", potential_show_match["collectionName"])
         # parse as xml to check if show['source'] is in feedUrl
-        feed_text = requests.get(potential_show_match["feedUrl"]).text
         try:
-            feed = parseString(feed_text)
+            feed_request = requests.get(potential_show_match["feedUrl"], allow_redirects=True)
+            feed_text = feed_request.text
+            potential_show_match["feedUrl"] = feed_request.url
+            try:
+                feed = parseString(feed_text)
+            except:
+                print("Error parsing feed")
+                feed = None
+                continue
+            if feed:
+                raw_description_txt = feed.getElementsByTagName('description')[0].firstChild.nodeValue
+                # reduce to one paragraph if description contains markup
+                clean_description_txt = raw_description_txt.split('</p>')[0].replace('<p>','')
+
+                if verified_show_match(show, feed_text, potential_show_match['artistName'], clean_description_txt):
+                    print("verified show match")
+                    return potential_show_match["collectionViewUrl"], potential_show_match['feedUrl']
         except:
-            print("Error parsing feed")
-            feed = None
+            print("Error getting feed")
             continue
-        if feed:
-            raw_description_txt = feed.getElementsByTagName('description')[0].firstChild.nodeValue
-            # reduce to one paragraph if description contains markup
-            clean_description_txt = raw_description_txt.split('</p>')[0].replace('<p>','')
 
-        if verified_show_match(show, feed_text, potential_show_match['artistName'], clean_description_txt):
-            print("verified show match")
-            return potential_show_match["collectionViewUrl"], potential_show_match['feedUrl']
-
-
+    time.sleep(2) # to avoid rate limiting
     # for result in results:
     #     if show_name.lower().replace(' ','') in result["collectionName"].lower().replace(' ',''):
     #         print("- potential match:", result["collectionName"])
@@ -119,6 +125,8 @@ def verified_show_match(show, text_to_search, artist, description):
         city = 'guelph'
     elif(show['source'] == 'ciut'):
         city = 'toronto'
+    elif(show['source'] == 'ckut'):
+        city = 'montreal'
     else:
         city = None
 
