@@ -39,9 +39,9 @@ class GetFileSize:
                 else:
                     # 0 recomended when file size unknown (https://validator.w3.org/feed/docs/error/UseZeroForUnknown.html) 
                     episode['file_size'] = 0
-            else:
+            elif r.status_code >= 400:
                 # File may not exist. Don't want to add it to DB
-                espisode = None
+                episode = None
         
         return episode
 

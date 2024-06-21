@@ -30,7 +30,7 @@ const itemToString = (result:fuseResult | string | null) => {
 
 const defineItemKey = (result:fuseResult | string | null) => {
   if(!result){return ''}
-  return typeof result === 'string' ? 'search-all' : result.item.showName
+  return typeof result === 'string' ? 'search-all' : result.item.id
 }
 
 

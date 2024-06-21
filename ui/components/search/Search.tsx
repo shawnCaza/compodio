@@ -14,16 +14,14 @@ interface fuseResult{
 export default function Search() {
 
   const shows = useShowsQuery() ?? [];
-  
   const router = useRouter()
-  
   const fuse = new Fuse(shows, useFuseOptions());
 
   
   function handleSearch(inputValue:string) {
     // Called from useComboBox, to filter shows based on input,
     // Then slice just the top results.
-    let searchResults: Array<Fuse.FuseResult<Show> | String>  = Object.values(fuse.search(inputValue)).slice(0,7);
+    let searchResults: Array<Fuse.FuseResult<Show> | String>  = Object.values(fuse.search(inputValue)).slice(0,5);
     
     //add inputValue to the end of the array if not empty
     if(inputValue !== ''){

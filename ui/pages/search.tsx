@@ -57,7 +57,6 @@ function HandleFuseSearch({shows, searchTerm}:HandleFuseSearchProps) {
       return;
     }
 
-    console.log('searchTerm', searchTerm)
     return (      
         <ContentSection heading={`Searching for: ${searchTerm}`} tag='h1'>
           <HandleFuseSearch shows={shows} searchTerm={searchTerm} />

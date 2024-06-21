@@ -111,7 +111,7 @@ def scrape_images():
     
     for show in shows:
 
-        if len(show['img']) and show['slug']:
+        if show['img'] and len(show['img']) and show['slug']:
 
             src_last_updt = util.sever_file_last_update(show['img'])
 
@@ -134,8 +134,9 @@ def scrape_images():
                 save_file_base = setup_save_folder(save_folder_base, show['slug'])
 
                 sizes = download_img(save_file_base, show['img'], "jpg")
-
-                dom_colours = image_colour.find_avg_dominant_colours(f"{save_file_base}.jpg")
+                # use the saved largest image for colour analysis, because the original image might not be an appropriate format or match the extension(ex. gif).
+                img_path_for_colours = f"{save_file_base}_{sizes[-1]['w']}.jpg"
+                dom_colours = image_colour.find_avg_dominant_colours(img_path_for_colours)
                 
                 print(show['id'], src_last_updt, sizes, json.dumps(dom_colours))
                 
