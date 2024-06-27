@@ -14,7 +14,7 @@ export function useRecommendedShows() {
       return;
     }
 
-    const recIds = ['99', '146', '200', '83', '112', '175', '206', '94', '166', '79', '118', '132', '150','270053','270105', '270056', '102180', '270042', '270114', '269984', '270097', '270100', '269938', '159']
+    const recIds = ['99', '146', '200', '83', '112', '175', '206', '94', '166', '79', '118', '132', '150','270053','270105', '270056', '102180', '270042', '270114', '269984', '270097', '270100', '269938', '159', '90', '193', '1344', '3033', '270094', '126']
 
     // select 10 random shows from the list of recommended shows in random order
     const recShowsShuffled = shuffleArray(shows.filter(show => {return recIds.includes(show.id)})).slice(0,10)
