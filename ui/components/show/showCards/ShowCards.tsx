@@ -63,6 +63,8 @@ function ShowCards({ shows, singleRow = false }: ShowCardsProps) {
     <>
       {singleRow ? (
         <Swiper
+          modules={[Pagination, A11y]}
+          pagination={{ clickable: true }}
           spaceBetween={10}
           slidesPerView={'auto'}
           freeMode={true}
