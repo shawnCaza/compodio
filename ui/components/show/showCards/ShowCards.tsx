@@ -12,6 +12,7 @@ import TagsContainer from '../../layout/cardElements/TagsContainer/TagsContainer
 import ContentSection from '../../layout/ContentSection/contentSection';
 
 import { Swiper, SwiperSlide } from 'swiper/react';
+import { Pagination, A11y } from 'swiper/modules';
 import 'swiper/swiper-bundle.min.css';
 
 import styles from "./ShowCards.module.scss";
