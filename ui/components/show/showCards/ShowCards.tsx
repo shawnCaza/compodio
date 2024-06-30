@@ -19,7 +19,7 @@ import styles from "./ShowCards.module.scss";
 
 interface ShowCardsProps {
   shows: Show[];
-  singleRow?: boolean;  // New prop to control single row display
+  singleRow?: boolean;  // Should the collection of cards be displayed on a single horizontally scrolling row? 
 }
 
 function ShowCards({ shows, singleRow = false }: ShowCardsProps) {
