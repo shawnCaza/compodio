@@ -31,7 +31,7 @@ function ShowCards({ shows, singleRow = false }: ShowCardsProps) {
     <Card key={show.id}>
       <div>
         <Heading>
-          <div className={styles.eperDate}>
+          <div className={styles.epDate}>
             <EpDate dtStr={show.newestEpDate} />
           </div>
           <ShowLink slug={show.slug}>
