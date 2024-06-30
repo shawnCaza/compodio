@@ -4,7 +4,7 @@ import pathlib
 import math
 from datetime import datetime
 
-from PIL import Image
+from PIL import Image, ImageOps
 
 import util
 import image_colour
@@ -29,11 +29,11 @@ def download_img(save_base, img, ext):
         f.write(requests.get(img).content)
 
     image = Image.open(f"{save_base}.{ext}")
+    image = ImageOps.exif_transpose(image)
     image = image.convert('RGB')
     image.save(f"{save_base}.webp", 'webp', lossless=0, quality=50)            
     sizes = determine_sizes(orig_w=image.size[0], orig_h=image.size[1])
     sizes_used = generate_sizes(image, save_base, sizes)
-
 
     return sizes_used
 
