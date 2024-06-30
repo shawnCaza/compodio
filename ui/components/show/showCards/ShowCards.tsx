@@ -66,7 +66,10 @@ function ShowCards({ shows, singleRow = false }: ShowCardsProps) {
           modules={[Pagination, A11y]}
           pagination={{ clickable: true }}
           spaceBetween={10}
-          slidesPerView={'auto'}
+          slidesPerView={1.1}
+          breakpoints={{
+            400: {slidesPerView: 'auto'}
+          }}
           freeMode={true}
         >
           {shows.map(show => (
