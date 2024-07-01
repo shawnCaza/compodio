@@ -73,7 +73,7 @@ function ShowCards({ shows, singleRow = false }: ShowCardsProps) {
           freeMode={true}
         >
           {shows.map(show => (
-            <SwiperSlide key={show.id} className={styles.swiperSlide}>
+            <SwiperSlide key={show.id}>
               {cardContent(show)}
             </SwiperSlide>
           ))}
