@@ -70,7 +70,6 @@ function ShowCards({ shows, singleRow = false }: ShowCardsProps) {
           breakpoints={{
             400: {slidesPerView: 'auto'}
           }}
-          freeMode={true}
         >
           {shows.map(show => (
             <SwiperSlide key={show.id}>
