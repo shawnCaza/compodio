@@ -11,9 +11,14 @@ import CardImgContainer from './ImgContainer/CardImgContainer';
 import TagsContainer from '../../layout/cardElements/TagsContainer/TagsContainer';
 import ContentSection from '../../layout/ContentSection/contentSection';
 
-import { Swiper, SwiperSlide } from 'swiper/react';
-import 'swiper/swiper-bundle.min.css';
+// import Swiper core and required modules
 import { Pagination, A11y } from 'swiper/modules';
+
+import { Swiper, SwiperSlide } from 'swiper/react';
+
+// Import Swiper styles
+import 'swiper/css';
+import 'swiper/css/pagination';
 
 interface ShowCardsProps {
   shows: Show[];
