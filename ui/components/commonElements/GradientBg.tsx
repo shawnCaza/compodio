@@ -53,7 +53,6 @@ function GradientBg({colours, children}:gradientBgProps) {
     return (
         <>  
             <div className="gradientBG" style={{background:bg_colour}}>
-
                 {children}
             </div>
         </>
