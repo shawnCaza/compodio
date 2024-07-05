@@ -1,26 +1,32 @@
+import { useEffect, useState, useCallback } from "react";
 import { Show } from "../../../hooks/queries/shows"
 
+
 export function useShowImgParams(show:Show) {
-        // TODO length > 3 required for image not resized as it has empty sizes array
-    // Should we have a way to know the size of super small images?
+  // TODO length > 3 required for image not resized as it has empty sizes array
+  // Should we have a way to know the size of super small images?
 
-      if(!show.sizes ){return {baseUrl:null, defaultImage:null, imageSizes:null, w2HRatio:null, needsPadding:null}}
+  const [pending, setPending] = useState(true)
+  const [error, setError] = useState()
+  const [value, setValue] = useState()
 
-      const baseUrl:string = `${process.env.NEXT_PUBLIC_image_server_URI}shows/${show.slug}/${show.slug}`
+if(!show.sizes ){return {baseUrl:null, defaultImage:null, imageSizes:null, w2HRatio:null, needsPadding:null}}
 
-      //For the sizes attribute in img tag with srcset
-      //https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-sizes
-        
+  const baseUrl:string = `${process.env.NEXT_PUBLIC_image_server_URI}shows/${show.slug}/${show.slug}`
 
-      const defaultImage:string = `${process.env.NEXT_PUBLIC_image_server_URI}shows/${show.slug}/${show.slug}.jpg`
+  //For the sizes attribute in img tag with srcset
+  //https://developer.mozilla.org/en-US/docs/Web/HTML/Element/img#attr-sizes
+    
 
-      const imageSizes:Array<{'w':number,'h':number}> = JSON.parse(show.sizes ?? '[{"w":0,"h":0}]')
-      
-      //Pad if height is greater than width in a 16:9 ratio
-      const w2HRatio:number = imageSizes[0]['w']/imageSizes[0]['h'];
+  const defaultImage:string = `${process.env.NEXT_PUBLIC_image_server_URI}shows/${show.slug}/${show.slug}.jpg`
 
-      const needsPadding:Boolean = w2HRatio < 16/9 ? true : false;
+  const imageSizes:Array<{'w':number,'h':number}> = JSON.parse(show.sizes ?? '[{"w":0,"h":0}]')
+  
+  //Pad if height is greater than width in a 16:9 ratio
+  const w2HRatio:number = imageSizes[0]['w']/imageSizes[0]['h'];
 
-      return {baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding};
+  const needsPadding:Boolean = w2HRatio < 16/9 ? true : false;
+
+  return {baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding};
     
   }
