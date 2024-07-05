@@ -52,7 +52,7 @@ export default function Home() {
         <ContentSection heading={'Recommended'} tag='h2'>
           {/* only display component if shows is defined */}
           {recShowsShuffled &&
-            <ShowCards shows={recShowsShuffled} />         
+            <ShowCards shows={recShowsShuffled} singleRow={true}/>         
           }
         </ContentSection> 
 

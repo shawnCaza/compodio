@@ -10,6 +10,7 @@ import GradientBg from '../../commonElements/GradientBg';
 import CardImgContainer from './ImgContainer/CardImgContainer';
 import TagsContainer from '../../layout/cardElements/TagsContainer/TagsContainer';
 import ContentSection from '../../layout/ContentSection/contentSection';
+import styles from './ShowCards.module.scss';
 
 // import Swiper core and required modules
 import { Pagination, A11y } from 'swiper/modules';
