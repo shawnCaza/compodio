@@ -5,14 +5,14 @@
 # Variables
 --------------------------------------------------------------*/
 .card {
-  width: var(--card-size-rem);
+  width: var(--card-size-rem) !important;
   margin: 0 auto;
   border: 1px solid var(--foreground-contrast-colour);
   border-radius: 0.5em;
   overflow: hidden;
-  display: -webkit-box;
-  display: -ms-flexbox;
-  display: flex;
+  display: -webkit-box !important;
+  display: -ms-flexbox !important;
+  display: flex !important;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
       -ms-flex-direction: column;
@@ -20,6 +20,7 @@
   -webkit-box-pack: justify;
       -ms-flex-pack: justify;
           justify-content: space-between;
+  height: auto !important;
 }
 @media only screen and (min-width: 85.375rem) {
   .card {

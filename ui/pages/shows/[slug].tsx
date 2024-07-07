@@ -13,7 +13,7 @@ import ShowImgContainer from '../../components/show/showPage/ImgContainer/ShowIm
 import RssLink from '../../components/show/podcastFeedLinks/rssLink/RssLink';
 import EpDate from '../../components/show/epDate/EpDate';
 import { useShowLength } from '../../components/show/hooks/useShowLength';
-import ShowCards from '../../components/show/showCards/ShowCards';
+import ShowCollection from '../../components/show/showCards/ShowCollection';
 import { useRecommendedShows } from '../../hooks/useRecommendedShows';
 import ContentSection from '../../components/layout/ContentSection/contentSection';
 
@@ -120,7 +120,7 @@ export default function ShowPage() {
     <ContentSection heading='Recommended' tag='h2'>
 
         {recShowsShuffled &&
-          <ShowCards shows={recShowsShuffled} />         
+          <ShowCollection shows={recShowsShuffled} singleRow={true} />         
         }
     </ContentSection>
     </>

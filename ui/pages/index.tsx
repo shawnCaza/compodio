@@ -2,11 +2,11 @@ import Head from 'next/head'
 import styles from '../styles/Home.module.css'
 import { useShowsQuery, getShows, Show } from '../hooks/queries/shows';
 import { useRecommendedShows } from '../hooks/useRecommendedShows';
-import { getTags } from '../hooks/queries/tags';
+import { getTags } from '../hooks/queries/tags'; 
 import { dehydrate, QueryClient} from 'react-query';
 import { Server, Client } from "react-hydration-provider";
 import ContentSection from '../components/layout/ContentSection/contentSection';
-import ShowCards from '../components/show/showCards/ShowCards';
+import ShowCollection from '../components/show/showCards/ShowCollection';
  
 // export async function getServerSideProps() {
 //   const queryClient = new QueryClient();
@@ -52,14 +52,14 @@ export default function Home() {
         <ContentSection heading={'Recommended'} tag='h2'>
           {/* only display component if shows is defined */}
           {recShowsShuffled &&
-            <ShowCards shows={recShowsShuffled} singleRow={true}/>         
+            <ShowCollection shows={recShowsShuffled} singleRow={true} />
           }
         </ContentSection> 
 
         <ContentSection heading={'Recently Updated'} tag='h2'>
             <>
               {shows && 
-                <ShowCards shows={shows.slice(0,10)} />         
+                <ShowCollection shows={shows.slice(0,10)} singleRow={true}/>         
               }
             </>
         </ContentSection>    

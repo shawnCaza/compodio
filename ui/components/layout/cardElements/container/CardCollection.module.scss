@@ -1,0 +1,27 @@
+@import "../../../../styles/abstracts/abstracts"; 
+
+ .cardContainer {
+
+ 
+  --card-size: #{$card-width};
+  --xl-card-size: #{$xl-card-width};
+  --xxl-card-size: #{$xxl-card-width};
+
+  --card-size-rem: #{px2em($card-width, 'rem')};
+  --xl-card-size-rem: #{px2em($xl-card-width, 'rem')};
+  --xxl-card-size-rem: #{px2em($xxl-card-width, 'rem')};
+
+
+    height: auto;
+    width: auto;
+    display: grid;
+    grid-template-columns: repeat( auto-fill, minmax(var(--card-size-rem), 1fr) );
+    column-gap: 1.5em;
+    row-gap: 3.5em;
+    @include mq('xl'){
+        grid-template-columns: repeat( auto-fill, minmax(var(--xl-card-size-rem), 1fr) );
+    }
+    @include mq('xxl'){
+        grid-template-columns: repeat( auto-fill, minmax(var(--xxl-card-size-rem), 1fr) );
+    }
+}
