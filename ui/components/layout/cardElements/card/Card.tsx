@@ -1,21 +1,20 @@
 import {  ReactNode } from "react";
-import styles from './Card.module.scss'
 
 interface cardProps {
-
+    cardStyles: {readonly [key: string]: string };
     children: ReactNode
 }
 
-function Card({children}:cardProps) {
+function Card({cardStyles, children}:cardProps) {
     
 
     return (
         <>
-            <div className={styles.card}>
+            <div className={cardStyles.card}>
                 {children}
             </div>
         </>
     )
-} 
+}
 
 export default Card;

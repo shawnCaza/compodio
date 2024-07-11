@@ -33,6 +33,13 @@
  
     // card styles
     --card-padding: .63em;
+    --card-size: #{$card-width};
+    --xl-card-size: #{$xl-card-width};
+    --xxl-card-size: #{$xxl-card-width};
+  
+    --card-size-rem: #{px2em($card-width, 'rem')};
+    --xl-card-size-rem: #{px2em($xl-card-width, 'rem')};
+    --xxl-card-size-rem: #{px2em($xxl-card-width, 'rem')};
    
     //button styles
     --button-padding:5px;
