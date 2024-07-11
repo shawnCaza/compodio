@@ -59,7 +59,7 @@ export default function Home() {
         <ContentSection heading={'Recently Updated'} tag='h2'>
             <>
               {shows && 
-                <ShowCollection shows={shows.slice(0,10)} singleRow={true}/>         
+                <ShowCollection shows={shows.slice(0,15)} singleRow={true}/>         
               }
             </>
         </ContentSection>    

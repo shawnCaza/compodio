@@ -1,14 +1,14 @@
 @import "../../../../styles/abstracts/abstracts"; 
-
-.card{
-
  
-    width: var(--card-size-rem) !important; //correspons with grid size in Container.module.scss. !important to override swiper styles
 
+.card{ 
+    
+    width: var(--card-size-rem); //corresponds with grid size in Container.module.scss. !important to override swiper styles
+ 
     @include mq('xl'){
         width: var(--xl-card-size-rem);
     }
-
+ 
     @include mq('xxl'){
         width: var(--xxl-card-size-rem);
     }
@@ -18,8 +18,8 @@
     border: 1px solid var(--foreground-contrast-colour);
     border-radius: .5em;
     overflow: hidden; //So children don't spill outside the border-radius
-    display: flex !important; // Important to override swiper styles
+    display: flex; 
     flex-direction: column; 
     justify-content: space-between;
-    height: auto !important; // Only needed for swiper
+    height: auto; // Only needed for swiper
 }
