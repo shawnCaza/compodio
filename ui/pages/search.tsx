@@ -2,7 +2,8 @@ import React from "react";
 import Fuse from "fuse.js";
 import { dehydrate, QueryClient} from 'react-query';
 import ContentSection from "../components/layout/ContentSection/contentSection";
-import ShowCollection from "../components/show/showCards/ShowCollection";
+import CardCollection from "../components/layout/cardElements/cardCollection/CardCollection";
+import CardContent from "../components/show/showCards/cardContent/CardContent";
 import { useShowsQuery, Show } from "../hooks/queries/shows";
 import { getTags } from "../hooks/queries/tags";
 import { useFuseOptions } from "../components/search/fuse/hooks/useFuseOptions";
@@ -43,7 +44,7 @@ function HandleFuseSearch({shows, searchTerm}:HandleFuseSearchProps) {
   const searchItems = searchResults.map((result) => result.item);
 
   return (
-    <ShowCollection shows={searchItems} />
+    <CardCollection cardDataCollection={searchItems} CardContent={CardContent} />
   )
 }
 
@@ -59,7 +60,6 @@ function HandleFuseSearch({shows, searchTerm}:HandleFuseSearchProps) {
     return (      
         <ContentSection heading={`Searching for: ${searchTerm}`} tag='h1'>
           <HandleFuseSearch shows={shows} searchTerm={searchTerm} />
-
         </ContentSection>
       );
 }

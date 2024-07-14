@@ -6,7 +6,8 @@ import { getTags } from '../hooks/queries/tags';
 import { dehydrate, QueryClient} from 'react-query';
 import { Server, Client } from "react-hydration-provider";
 import ContentSection from '../components/layout/ContentSection/contentSection';
-import ShowCollection from '../components/show/showCards/ShowCollection';
+import CardContent from '../components/show/showCards/cardContent/CardContent';
+import CardCollection from '../components/layout/cardElements/cardCollection/CardCollection';
  
 // export async function getServerSideProps() {
 //   const queryClient = new QueryClient();
@@ -52,14 +53,14 @@ export default function Home() {
         <ContentSection heading={'Recommended'} tag='h2'>
           {/* only display component if shows is defined */}
           {recShowsShuffled &&
-            <ShowCollection shows={recShowsShuffled} singleRow={true} />
+            <CardCollection cardDataCollection={recShowsShuffled} CardContent={CardContent} singleRow={true} />
           }
         </ContentSection> 
 
         <ContentSection heading={'Recently Updated'} tag='h2'>
             <>
               {shows && 
-                <ShowCollection shows={shows.slice(0,15)} singleRow={true}/>         
+                <CardCollection cardDataCollection={shows.slice(0,15)}  CardContent={CardContent}  singleRow={true}/>         
               }
             </>
         </ContentSection>    

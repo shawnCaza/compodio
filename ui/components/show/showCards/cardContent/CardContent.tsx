@@ -12,40 +12,40 @@ import styles from './CardContent.module.scss';
 import { Show } from '../../../../hooks/queries/shows';
   
 interface cardContentProps {
-    currentShow: Show;
+    currentCard: Show;
 }
 
-  function CardContent({currentShow}:cardContentProps){
-    
+  function CardContent({currentCard}:cardContentProps){
+    console.log(currentCard);
     return(
     <>
       <div> 
         <Heading>
           <div className={styles.epDate}>
-            <EpDate dtStr={currentShow.newestEpDate} />
+            <EpDate dtStr={currentCard.newestEpDate} />
           </div>
-          <ShowLink slug={currentShow.slug}>
-            <h3 className={styles.title}>{currentShow.showName}</h3>
+          <ShowLink slug={currentCard.slug}>
+            <h3 className={styles.title}>{currentCard.showName}</h3>
           </ShowLink>
         </Heading>
-        <GradientBg colours={currentShow.dom_colours}>
-          <ShowLink slug={currentShow.slug}>
-            <CardImgContainer show={currentShow} />
+        <GradientBg colours={currentCard.dom_colours}>
+          <ShowLink slug={currentCard.slug}>
+            <CardImgContainer show={currentCard} />
           </ShowLink>
         </GradientBg>
       </div>
       <ContentSection heading='Subscribe:' tag='h5' centered={true} spacing='tight'>
-        <FeedLinks showId={currentShow.id} slug={currentShow.slug} showName={currentShow.showName} extFeeds={currentShow.extFeeds} />
+        <FeedLinks showId={currentCard.id} slug={currentCard.slug} showName={currentCard.showName} extFeeds={currentCard.extFeeds} />
       </ContentSection>
       <div className={styles.desc}>
-        <Desc desc={currentShow.desc} approxLength={125} />
+        <Desc desc={currentCard.desc} approxLength={125} />
         <span>
-          <ShowLink slug={currentShow.slug}>
+          <ShowLink slug={currentCard.slug}>
             &nbsp;More.
           </ShowLink>
         </span>
       </div>
-      {currentShow.tagIds && <TagsContainer currentTagIds={JSON.parse(currentShow.tagIds)} maxTags={3} />}
+      {currentCard.tagIds && <TagsContainer currentTagIds={JSON.parse(currentCard.tagIds)} maxTags={3} />}
     </>
     )
   };
