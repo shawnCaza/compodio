@@ -1,5 +1,5 @@
 @import "../../../../styles/abstracts/abstracts"; 
-
+@import "../../cardElements/card/Card.module.scss";
 
 
  .cardContainer {
@@ -127,3 +127,9 @@
     }
 }
 
+  
+.swiperSlide {
+    // composes: test;
+    composes: card; 
+    height: auto;
+}

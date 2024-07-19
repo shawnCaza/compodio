@@ -3,8 +3,7 @@ import { A11y, Navigation } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/a11y';
-import cardCollectionStyles from './CardCollection.module.scss';
-import cardStyles from '../card/Card.module.scss';
+import styles from './CardCollection.module.scss';
  
 interface cardCollectionProps {
     cardDataCollection: any[];
@@ -15,7 +14,7 @@ interface cardCollectionProps {
 function CardCollection({cardDataCollection, CardContent, singleRow=false}:cardCollectionProps) {
     if (singleRow) {
         return (
-            <div className={cardCollectionStyles.swiperContainer}>
+            <div className={styles.swiperContainer}>
                 <Swiper
                     cssMode={true}
                     mousewheel={true}
@@ -31,10 +30,10 @@ function CardCollection({cardDataCollection, CardContent, singleRow=false}:cardC
                             slidesPerGroup: 3
                         }
                     }}
-                    className={cardCollectionStyles.swiper}
+                    className={styles.swiper}
                 >
                     {cardDataCollection.map(currentCard => (
-                        <SwiperSlide key={currentCard.id} className={cardStyles.card}>
+                        <SwiperSlide key={currentCard.id} className={styles.swiperSlide}>
                             <CardContent currentCard={currentCard} />
                         </SwiperSlide>
                     ))}
@@ -43,9 +42,9 @@ function CardCollection({cardDataCollection, CardContent, singleRow=false}:cardC
         )
     } 
     return (
-        <div className={cardCollectionStyles.cardContainer} >
+        <div className={styles.cardContainer} >
             {cardDataCollection.map(currentCard => (
-                <Card key={currentCard.id} cardStyles={cardStyles} >
+                <Card key={currentCard.id} >
                     <CardContent currentCard={currentCard} />
                 </Card>
             ))}

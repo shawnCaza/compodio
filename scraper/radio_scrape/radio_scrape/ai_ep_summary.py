@@ -26,7 +26,7 @@ audio_directory = f"{os.path.dirname(os.path.realpath(__file__))}/temp_audio/"
 
 def main():
     global audio_directory
-    print('audio directory', audio_directory)
+    
     download_file = f'{audio_directory}temp_audio_for_ai_summary.mp3'
     speech_only_file = f"{audio_directory}temp_speech_only_file.wav"
     speech_only_file_trimmed = f"{audio_directory}temp_speech_only_file_trimmed.wav"
