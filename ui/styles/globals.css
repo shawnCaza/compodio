@@ -30,6 +30,12 @@
     "Roboto Mono", "Oxygen Mono", "Ubuntu Monospace", "Source Code Pro",
     "Fira Mono", "Droid Sans Mono", "Courier New", monospace;
   --card-padding: .63em;
+  --card-size: 336;
+  --xl-card-size: 388;
+  --xxl-card-size: 400;
+  --card-size-rem: 21rem;
+  --xl-card-size-rem: 24.25rem;
+  --xxl-card-size-rem: 25rem;
   --button-padding:5px;
 }
 

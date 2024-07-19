@@ -2,7 +2,8 @@ import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { dehydrate, QueryClient} from 'react-query';
 import ContentSection from '../../components/layout/ContentSection/contentSection';
-import ShowCards from '../../components/show/showCards/ShowCards';
+import CardCollection from '../../components/layout/cardElements/cardCollection/CardCollection';
+import CardContent from '../../components/show/showCards/cardContent/CardContent';
 import { useShowsQuery, getShows } from '../../hooks/queries/shows';
 import { useTagsQuery, getTags } from '../../hooks/queries/tags';
 
@@ -52,7 +53,7 @@ export default function TagPage() {
       <main>
         <ContentSection heading={`Tag: #${queryTag}`} tag='h1'>
             {tagShows &&
-              <ShowCards shows={tagShows} />         
+              <CardCollection cardDataCollection={tagShows} CardContent={CardContent} />         
             }
              {!tagShows &&
               <p>No shows found for this tag</p>
