@@ -34,19 +34,7 @@
     
 }
 
-.cardImgPadded{
-    // margin:12px auto; // This value needs to match up to the calculation for `displaySizes` in the component.
-    padding:12px 0; // This value needs to match up to the calculation for `displaySizes` in the component.
-    img{
-        box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75); 
-    }       
-}
-
-.cardImgFullWidth{
-    width: 100%;
-}
-
-.cardImgParamsPending{
+.minPaddedHeight{
     // Since we don't know how much space the image will take yet, we need to set a min-height to minimize CLS
     min-height: var(--max-height); 
     
@@ -55,5 +43,23 @@
     }
     @include mq('xxl'){
         min-height: var(--xxl-height); 
-    }   
+    }  
+}
+
+
+.cardImgPadded{
+    // margin:12px auto; // This value needs to match up to the calculation for `displaySizes` in the component.
+    padding:12px 0; // This value needs to match up to the calculation for `displaySizes` in the component.
+    img{
+        box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75); 
+    }       
+    composes: minPaddedHeight;
+}
+
+.cardImgFullWidth{
+    width: 100%;
+}
+
+.cardImgParamsPending{
+   composes: minPaddedHeight;
 }
