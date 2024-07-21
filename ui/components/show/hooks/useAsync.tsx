@@ -10,7 +10,6 @@ export default function useAsync(callback, dependencies = []) {
     const [pending, setPending] = useState(true)
     const [error, setError] = useState()
     const [value, setValue] = useState()
-    console.log('useAsync')
     const callbackMemoized = useCallback(() => {
         setPending(true)
         setError(undefined)
