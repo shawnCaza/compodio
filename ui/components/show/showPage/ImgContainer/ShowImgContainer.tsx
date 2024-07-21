@@ -2,7 +2,7 @@ import { Show } from "../../../../hooks/queries/shows";
 import PictureTag from "../../../commonElements/PictureTag/PictureTag";
 import showImgParams from "../../../../functions/showImgParams";
 import { ImgParams } from "../../../../functions/showImgParams";
-import useAsync from "../../hooks/useAsync";
+import useAsync from "../../../../hooks/useAsync";
 import styles from './ShowImgContainer.module.scss'
 
 interface imgContainerProps {

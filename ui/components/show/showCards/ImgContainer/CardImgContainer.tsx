@@ -1,6 +1,6 @@
 import { Show } from "../../../../hooks/queries/shows";
 import PictureTag from "../../../commonElements/PictureTag/PictureTag";
-import useAsync from "../../hooks/useAsync";
+import useAsync from "../../../../hooks/useAsync";
 import showImgParams from "../../../../functions/showImgParams";
 import { ImgParams } from "../../../../functions/showImgParams";
 import styles from './CardImgContainer.module.scss'

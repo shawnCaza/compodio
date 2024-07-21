@@ -28,8 +28,6 @@ export default function showImgParams(show: Show) {
 
     const needsPadding: boolean = w2HRatio < 16 / 9 ? true : false;
 
-
-
     resolve({ baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding});
   });
 }
