@@ -1,12 +1,7 @@
 import { useCallback, useEffect, useState } from "react"
 
-interface useAsyncProps {
-    callback: () => Promise<any>,
-    dependencies: []
-}
 
-
-export default function useAsync(callback, dependencies = []) {
+export default function useAsync(callback: () => Promise<any>, dependencies: []) {
     const [pending, setPending] = useState(true)
     const [error, setError] = useState()
     const [value, setValue] = useState()
