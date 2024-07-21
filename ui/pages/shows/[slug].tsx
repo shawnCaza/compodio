@@ -10,13 +10,13 @@ import {IoTimeSharp} from 'react-icons/io5';
 
 import GradientBg from '../../components/commonElements/GradientBg';
 import ShowImgContainer from '../../components/show/showPage/ImgContainer/ShowImgContainer';
-import RssLink from '../../components/show/podcastFeedLinks/rssLink/RssLink';
 import EpDate from '../../components/show/epDate/EpDate';
 import { useShowLength } from '../../components/show/hooks/useShowLength';
 import { useRecommendedShows } from '../../hooks/useRecommendedShows';
 import ContentSection from '../../components/layout/ContentSection/contentSection';
 import CardCollection from '../../components/layout/cardElements/cardCollection/CardCollection';
 import CardContent from '../../components/show/showCards/cardContent/CardContent';
+import FeedLinks from '../../components/show/podcastFeedLinks/feedLinks/FeedLinks'
 
 import { useShowsQuery, Show } from '../../hooks/queries/shows';
 import { getTags } from '../../hooks/queries/tags';
@@ -88,7 +88,12 @@ export default function ShowPage() {
         <h1>{show.showName}</h1>
         
         <ContentSection heading='Subscribe:' tag='h5' centered={true} spacing='tight'>
-            <RssLink showId={show.id} slug={show.slug} showName={show.showName} />
+            <FeedLinks
+              showId={show.id}
+              slug={show.slug}
+              showName={show.showName}
+              extFeeds={show.extFeeds}
+            />
         </ContentSection>
         
 
