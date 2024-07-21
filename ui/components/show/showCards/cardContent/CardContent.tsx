@@ -1,4 +1,3 @@
-import Card from '../../../layout/cardElements/card/Card';
 import Heading from '../../../layout/cardElements/heading/Heading';
 import EpDate from '../../epDate/EpDate';
 import Desc from '../../../layout/cardElements/desc/Desc';
@@ -16,7 +15,6 @@ interface cardContentProps {
 }
 
   function CardContent({currentCard}:cardContentProps){
-    console.log(currentCard);
     return(
     <>
       <div> 
