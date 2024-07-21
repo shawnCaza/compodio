@@ -1,11 +1,13 @@
 import { useCallback, useEffect, useState } from "react"
 
+type UseAsyncReturn = [boolean, Error | undefined, any | undefined];
 
-export default function useAsync(callback: () => Promise<any>, dependencies: []) {
+
+export default function useAsync(callback: (...args: any[]) => Promise<any>, dependencies: any[]): UseAsyncReturn {
     const [pending, setPending] = useState(true)
-    const [error, setError] = useState()
-    const [value, setValue] = useState()
-    const callbackMemoized = useCallback(() => {
+    const [error, setError] = useState<Error | undefined>(undefined)
+    const [value, setValue] = useState<any | undefined>(undefined)
+    const callbackMemoized = useCallback(():void => {
         setPending(true)
         setError(undefined)
         setValue(undefined)

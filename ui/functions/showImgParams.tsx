@@ -1,25 +1,11 @@
 import { Show } from "../hooks/queries/shows"
 
-export default function showImgParams(show: Show): Promise<{
-  baseUrl: string | null;
-  defaultImage: string | null;
-  imageSizes: Array<{ w: number; h: number }> | null;
-  w2HRatio: number | null;
-  needsPadding: boolean | null;
-  displaySizes: string | null;
-}> {
+export default function showImgParams(show: Show) {
 
   return new Promise((resolve, reject) => {
 
     if (!show.sizes) {
-      resolve({
-        baseUrl: null,
-        defaultImage: null,
-        imageSizes: null,
-        w2HRatio: null,
-        needsPadding: null,
-        displaySizes: null,
-      });
+      reject(new Error('No image sizes found'));
     }
 
     const baseUrl: string = `${process.env.NEXT_PUBLIC_image_server_URI}shows/${show.slug}/${show.slug}`;
