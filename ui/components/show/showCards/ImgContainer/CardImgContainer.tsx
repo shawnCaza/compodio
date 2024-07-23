@@ -50,7 +50,7 @@ function defineDisplaySizes(imgParams:ImgParams) {
 
 function CardImgContainer ({show}:ImgContainerProps) {
     // baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding, displaySizes
-    const imgParams: ImgParams = showImgParams(show);
+    const imgParams: ImgParams | undefined = showImgParams(show);
     if (!imgParams) return null;
     const displaySizes:string = defineDisplaySizes(imgParams);
     
