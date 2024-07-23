@@ -10,12 +10,10 @@ interface ImgParams {
 
 export type {ImgParams};
 
-export default function showImgParams(show: Show) {
-
-  return new Promise((resolve, reject) => {
+export default function showImgParams(show: Show): ImgParams | undefined {
 
     if (!show.sizes) {
-      reject(new Error('No image sizes found'));
+      return undefined;
     }
 
     const baseUrl: string = `${process.env.NEXT_PUBLIC_image_server_URI}shows/${show.slug}/${show.slug}`;
@@ -28,7 +26,6 @@ export default function showImgParams(show: Show) {
 
     const needsPadding: boolean = w2HRatio < 16 / 9 ? true : false;
 
-    resolve({ baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding});
-  });
-}
+    return{ baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding};
+};
     
