@@ -10,7 +10,7 @@ interface ImgParams {
 
 export type {ImgParams};
 
-export default function showImgParams(show: Show) {
+export default function showImgParams(show: Show): ImgParams | undefined {
 
     if (!show.sizes) {
       return undefined;
@@ -27,6 +27,5 @@ export default function showImgParams(show: Show) {
     const needsPadding: boolean = w2HRatio < 16 / 9 ? true : false;
 
     return{ baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding};
-  
 };
     

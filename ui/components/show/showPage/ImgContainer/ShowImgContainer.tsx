@@ -28,7 +28,7 @@ function defineDisplaySizes(imgParams: ImgParams):string {
 
 function ShowImgContainer ({show}:imgContainerProps) {
 
-    var imgParams: ImgParams | undefined = showImgParams(show);
+    var imgParams = showImgParams(show);
     if (!imgParams) {return null;}
     var displaySizes = defineDisplaySizes(imgParams);
         

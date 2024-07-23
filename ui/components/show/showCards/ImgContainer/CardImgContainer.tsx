@@ -9,8 +9,6 @@ interface ImgContainerProps {
     show:Show,
 }
 
-
-
 function defineDisplaySizes(imgParams:ImgParams) {
 
         const w2HRatio = imgParams.w2HRatio;
@@ -47,10 +45,9 @@ function defineDisplaySizes(imgParams:ImgParams) {
         return displaySizesArr.join(', ');
 };
 
-
 function CardImgContainer ({show}:ImgContainerProps) {
     // baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding, displaySizes
-    const imgParams: ImgParams | undefined = showImgParams(show);
+    const imgParams = showImgParams(show);
     if (!imgParams) return null;
     const displaySizes:string = defineDisplaySizes(imgParams);
     
