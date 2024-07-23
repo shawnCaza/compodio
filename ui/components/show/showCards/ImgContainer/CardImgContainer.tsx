@@ -1,6 +1,5 @@
 import { Show } from "../../../../hooks/queries/shows";
 import PictureTag from "../../../commonElements/PictureTag/PictureTag";
-import useAsync from "../../../../hooks/useAsync";
 import showImgParams from "../../../../functions/showImgParams";
 import { ImgParams } from "../../../../functions/showImgParams";
 import styles from './CardImgContainer.module.scss'
@@ -14,18 +13,12 @@ interface ImgContainerProps {
 
 function defineDisplaySizes(imgParams:ImgParams) {
 
-    return new Promise<string>((resolve, reject) => {
-
-        if (!imgParams) {
-            reject(new Error('No image Parameters available'));
-        }
-
         const w2HRatio = imgParams.w2HRatio;
         const needsPadding = imgParams.needsPadding;
 
         if(!needsPadding){
             const displaySizes = "(min-width: 85.375rem) 24.125rem, (min-width: 96rem) 24.875rem, 21rem"; //based on css values for full width of container
-            resolve(displaySizes);
+            return displaySizes;
         }
         
         // Margin images, that needsPadding will be of different widths and have a different `displaySizes` value. 
@@ -51,21 +44,16 @@ function defineDisplaySizes(imgParams:ImgParams) {
             }
         });
 
-        const displaySizes = displaySizesArr.join(', ');
-        resolve(displaySizes);
-    });
-}
+        return displaySizesArr.join(', ');
+};
+
 
 function CardImgContainer ({show}:ImgContainerProps) {
     // baseUrl, defaultImage, imageSizes, w2HRatio, needsPadding, displaySizes
-    const [pendingImgParams, errorImgParams, imgParams]: [boolean, Error | undefined, ImgParams | undefined] = useAsync(showImgParams, [show]);
-
-    const [pendingDisplaySizes, errorDisplaySizes, displaySizes]: [boolean, Error | undefined, string | undefined] = useAsync(defineDisplaySizes, [imgParams]);
+    const imgParams: ImgParams = showImgParams(show);
+    if (!imgParams) return null;
+    const displaySizes:string = defineDisplaySizes(imgParams);
     
-    if (errorImgParams) return null
-
-    if (pendingImgParams || !imgParams || pendingDisplaySizes || !displaySizes) return (<div className={`${styles.cardImgContainer} ${styles.cardImgParamsPending}`}></div>)
-
     return (
         <div className={`${styles.cardImgContainer} ${imgParams.needsPadding ? styles.cardImgPadded : styles.cardImgFullWidth}`} >
             <PictureTag
