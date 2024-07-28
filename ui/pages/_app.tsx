@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Hydrate, QueryClient, QueryClientProvider } from "react-query";
 import type { AppProps } from "next/app";
 import "../styles/globals.scss";
-import Layout from "../components/layout/Layout";
+import Layout from "../components/generic/layout/Layout";
 import { getShows, showsStaleTime } from "../hooks/queries/shows";
 import { getTags, tagsStaleTime } from "../hooks/queries/tags";
 import { HydrationProvider} from "react-hydration-provider";

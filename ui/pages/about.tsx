@@ -1,5 +1,5 @@
 import React from 'react';
-import ContentSection from "../components/layout/ContentSection/contentSection"
+import ContentSection from '../components/generic/layout/ContentSection/contentSection';
 
   export default function About(){
 

@@ -1,0 +1,45 @@
+@import "../../../../../styles/abstracts/abstracts";
+
+.showFeedContainer{
+    padding: .5em;
+}
+
+.subLabel{
+    text-align: center;
+}
+
+ 
+
+
+
+.url{
+    border: 1px var(--foreground-high-contrast-colour) solid;
+    background: var(--background-contrast-colour);
+    color: inherit;
+    min-width: 33%;
+    flex: auto;
+    text-align: center;
+    border-radius: 5px;
+}
+
+.modalCopiedMessage{
+    
+    color: var(--header-foreground-contrast-colour);
+    text-align: left;
+    max-width: px2em(650);
+}
+
+.rssCopiedMessageModalOverlay{
+    z-index: 90010;
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    inset: 0;
+    padding: 10px;
+    //color: var(--header-foreground-contrast-colour);
+    background: var(--header-background-high-contrast-colour);
+    button{
+        min-width: 33%;
+        margin: 2em auto;
+    }
+  }

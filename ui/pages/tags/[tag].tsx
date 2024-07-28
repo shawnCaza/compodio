@@ -1,9 +1,9 @@
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import { dehydrate, QueryClient} from 'react-query';
-import ContentSection from '../../components/layout/ContentSection/contentSection';
-import CardCollection from '../../components/layout/cardElements/cardCollection/CardCollection';
-import CardContent from '../../components/show/showCards/cardContent/CardContent';
+import ContentSection from '../../components/generic/layout/ContentSection/contentSection';
+import CardCollection from '../../components/generic/layout/cardElements/cardCollection/CardCollection';
+import CardContent from '../../components/compodioSpecific/show/showCards/cardContent/CardContent';
 import { useShowsQuery, getShows } from '../../hooks/queries/shows';
 import { useTagsQuery, getTags } from '../../hooks/queries/tags';
 

@@ -1,12 +1,12 @@
 import React from "react";
 import Fuse from "fuse.js";
 import { dehydrate, QueryClient} from 'react-query';
-import ContentSection from "../components/layout/ContentSection/contentSection";
-import CardCollection from "../components/layout/cardElements/cardCollection/CardCollection";
-import CardContent from "../components/show/showCards/cardContent/CardContent";
+import ContentSection from "../components/generic/layout/ContentSection/contentSection";
+import CardCollection from "../components/generic/layout/cardElements/cardCollection/CardCollection";
+import CardContent from "../components/compodioSpecific/show/showCards/cardContent/CardContent";
 import { useShowsQuery, Show } from "../hooks/queries/shows";
 import { getTags } from "../hooks/queries/tags";
-import { useFuseOptions } from "../components/search/fuse/hooks/useFuseOptions";
+import { useFuseOptions } from "../components/generic/search/fuse/hooks/useFuseOptions";
 import { useSearchParams } from 'next/navigation'
 import { GetServerSidePropsContext } from 'next';
 

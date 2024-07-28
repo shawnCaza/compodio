@@ -5,9 +5,9 @@ import { useRecommendedShows } from '../hooks/useRecommendedShows';
 import { getTags } from '../hooks/queries/tags'; 
 import { dehydrate, QueryClient} from 'react-query';
 import { Server, Client } from "react-hydration-provider";
-import ContentSection from '../components/layout/ContentSection/contentSection';
-import CardContent from '../components/show/showCards/cardContent/CardContent';
-import CardCollection from '../components/layout/cardElements/cardCollection/CardCollection';
+import ContentSection from '../components/generic/layout/ContentSection/contentSection';
+import CardContent from '../components/compodioSpecific/show/showCards/cardContent/CardContent';
+import CardCollection from '../components/generic/layout/cardElements/cardCollection/CardCollection';
  
 // export async function getServerSideProps() {
 //   const queryClient = new QueryClient();
