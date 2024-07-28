@@ -1,11 +1,10 @@
 
 import React, {useState,  ReactNode } from "react";
-import { Show } from "../../../hooks/queries/shows"; 
+import { Show } from "../../../../hooks/queries/shows";
 import { IoSearchSharp, IoCloseSharp } from "react-icons/io5";
 import ResultListItem from "../ResultListItem/ResultListItem";
 import SearchPageLink from "../SearchPageLink/SearchPageLink";
 import { useCombobox } from 'downshift'
-import ShowLink from "../../compodioSpecific/show/ShowLink";
 import styles from './ComboBox.module.scss'
 
 
