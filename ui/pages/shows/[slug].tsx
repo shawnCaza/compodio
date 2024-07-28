@@ -1,5 +1,4 @@
 import { useRouter } from 'next/router'
-import Link from 'next/link';
 import { dehydrate, QueryClient} from 'react-query';
 import { Server, Client } from "react-hydration-provider";
 
@@ -8,18 +7,14 @@ import {CiClock2} from 'react-icons/ci';
 import {IoPeopleSharp} from 'react-icons/io5';
 import {IoTimeSharp} from 'react-icons/io5';
 
-import GradientBg from '../../components/generic/commonElements/GradientBg';
 import ShowImgContainer from '../../components/compodioSpecific/show/showPage/ImgContainer/ShowImgContainer';
-import EpDate from '../../components/compodioSpecific/show/epDate/EpDate';
 import { useShowLength } from '../../components/compodioSpecific/show/hooks/useShowLength';
 import { useRecommendedShows } from '../../hooks/useRecommendedShows';
 import ContentSection from '../../components/generic/layout/ContentSection/contentSection';
 import CardCollection from '../../components/generic/layout/cardElements/cardCollection/CardCollection';
 import CardContent from '../../components/compodioSpecific/show/showCards/cardContent/CardContent';
 import FeedLinks from '../../components/compodioSpecific/show/podcastFeedLinks/feedLinks/FeedLinks'
-
 import { useShowsQuery, Show } from '../../hooks/queries/shows';
-import { getTags } from '../../hooks/queries/tags';
 import TagsContainer from '../../components/generic/layout/cardElements/TagsContainer/TagsContainer';
 
 import styles from './showsPage.module.scss'

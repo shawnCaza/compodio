@@ -7,11 +7,11 @@ interface showFeedUrl{
 import { IoLogoRss } from "react-icons/io";
 import CopyButton from "../../../../generic/commonElements/CopyButton/CopyButton";
 import styles from './RssLink.module.scss'
-import optionButtonStyles from '../SubscribeOptionButton.module.scss'
+import optionButtonStyles from '../subscribeOptionButton.module.scss'
 import Modal from "react-modal";
 import FeedUrl from "../../showFeed/ShowFeed";
 
-import {  useEffect, useState } from "react";
+import {useState } from "react";
 
 function RssLink({showId, slug, showName}:showFeedUrl) {
     Modal.setAppElement('#everything');

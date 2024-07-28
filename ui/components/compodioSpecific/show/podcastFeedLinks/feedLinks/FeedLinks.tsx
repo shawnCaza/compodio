@@ -1,4 +1,3 @@
-import { Show } from '../../../../../hooks/queries/shows';
 import styles from './FeedLinks.module.scss';
 import ExtLink from '../extLink/ExtLink';
 import RssLink from '../rssLink/RssLink';

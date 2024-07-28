@@ -1,6 +1,5 @@
 import Head from 'next/head'
-import styles from '../styles/Home.module.css'
-import { useShowsQuery, getShows, Show } from '../hooks/queries/shows';
+import { useShowsQuery, Show } from '../hooks/queries/shows';
 import { useRecommendedShows } from '../hooks/useRecommendedShows';
 import { getTags } from '../hooks/queries/tags'; 
 import { dehydrate, QueryClient} from 'react-query';

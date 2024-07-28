@@ -30,8 +30,23 @@
   }
 }
 
+.minPaddedHeight {
+  min-height: var(--max-height);
+}
+@media only screen and (min-width: 85.375rem) {
+  .minPaddedHeight {
+    min-height: var(--xl-height);
+  }
+}
+@media only screen and (min-width: 96rem) {
+  .minPaddedHeight {
+    min-height: var(--xxl-height);
+  }
+}
+
 .cardImgPadded {
   padding: 12px 0;
+  composes: minPaddedHeight;
 }
 .cardImgPadded img {
   -webkit-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75);
