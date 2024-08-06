@@ -60,6 +60,9 @@
   }
 }
 
+.swiperContainer {
+  min-height: 25em;
+}
 .swiperContainer :global {
   --swiper-navigation-bg-size: 44px;
   --swiper-navigation-icon-size: 18px;

@@ -40,13 +40,18 @@ Contains database dumps
 ### Prerequisites
 
 - [python 3.11](https://www.python.org/downloads/) 
-- [next.js 13.1.1](https://nextjs.org/docs/getting-started)
+- [next.js ^14.2.4](https://nextjs.org/docs/getting-started)
 - [mysql 8.0.23](https://dev.mysql.com/downloads/mysql/)
 - [php 8.2.3](https://www.php.net/downloads.php)
 
 ### Setup
 
-1. Clone the repo to local server folder (required for the php portion of the project)
+1. **Clone the repo** to local server folder (required for the php portion of the project)
+2. **Insall dependencies** for the portion(s) of the project you want to work with. It's possible to work on each aspect of the project independently.
+    - For the NextJS UI [see the readme in the **ui** folder](ui/README.md)
+    - For the Python scrapy project and scraper related scripts [see the README in the **scraper** folder](scraper/README.md)
+    - For the PHP api and podcast feed generator [see the README in the **data** folder](data/README.md).
+
 2. Install python dependencies: `pip install -r scraper/requirements.txt`
 3. Install next.js dependencies in the UI folder: `npm install`
 4. import database from `db/compodio.sql`

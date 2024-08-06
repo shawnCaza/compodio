@@ -18,6 +18,8 @@
 }
 
 .swiperContainer {
+    min-height: px2em(400);
+
     :global {
   
         --swiper-navigation-bg-size: 44px;
