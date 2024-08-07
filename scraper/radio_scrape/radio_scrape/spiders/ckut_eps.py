@@ -57,26 +57,40 @@ class CkutEps(scrapy.Spider):
                 current_episode['show_id'] = show_id
                 
 
-                # the url on the download link is redirected(status 302), multiple times, to the actual mp3 file
-                # so we need to allow redirects to get the final url
+                # the url on the download link is redirected(status 302), multiple times, to the actual mp3 file.
+                # Unfortunelty, the final url does not appear available without first visiting the intermediary url.
+                # This creates errors in podcachers-ex. in Apple podcasts, the mp3 will only play after hitting play twice, and first getting an error.
+                # There doesn't seem to be a better solution.
+
                 download_link = ep_element.xpath('./a[text()="Download"]/@href').get()
-                time.sleep(2)
-                r = requests.head(f"https://ckut.ca{download_link}", stream=True, allow_redirects=True)
-                if r.status_code == 200:
-                
-                    current_episode['mp3'] = r.url
-                    # mp3 file name contains date and time of show. website doesn't list time.
-                    # So lets get the time from the mp3 file.
-                    # Since mp3 file time will be newer than the ep_date above, we still need to use that to check for newness. After fresh episodes have been added we could switch to using the mp3 file time if desired.
-                    # But do we care about preserving the 'air' date, why not use the modified date of the mp3 file?
 
-                    # mp3 file name format: "https://archives.ckut.ca/archives/128/20240617.23.00.00-00.00.00.mp3"
-                    ep_date_with_time = current_episode['mp3'].split('/')[-1].split('-')[0]
-                    current_episode['ep_date'] = datetime.strptime(ep_date_with_time, "%Y%m%d.%H.%M.%S")
+                if download_link:
 
-                    current_episode['file_size'] = r.headers['Content-length']
+                    time.sleep(2)
+                    #First we'll get the header of the final url using alllow_redirects
+                    actual_mp3_request = requests.head(f"https://ckut.ca{download_link}", stream=True, allow_redirects=True)
+                    
+                    redirection_link_request = requests.head(f"https://ckut.ca{download_link}", stream=True)
+                    redirection_header = redirection_link_request.headers
 
-                    yield current_episode
+                    if 'location' in redirection_header.keys(): 
+                        current_episode['mp3'] = redirection_header['location']
+
+                        # mp3 file name contains date and time of show. website doesn't list time.
+                        # So lets get the time from the mp3 file.
+                        # Since mp3 file time will be newer than the ep_date above, we still need to use that to check for newness. After fresh episodes have been added we could switch to using the mp3 file time if desired.
+                        # But do we care about preserving the 'air' date, why not use the modified date of the mp3 file?
+
+                        # mp3 file name format: "https://archives.ckut.ca/128/20240617.23.00.00-00.00.00.mp3"
+                        ep_date_with_time = current_episode['mp3'].split('/')[-1].split('-')[0]
+                        current_episode['ep_date'] = datetime.strptime(ep_date_with_time, "%Y%m%d.%H.%M.%S")
+
+                        if 'content-length' in actual_mp3_request.headers.keys():
+                            current_episode['file_size'] = actual_mp3_request.headers['Content-length']
+                        else:
+                            current_episode['file_size'] = 0
+
+                        yield current_episode
                 
             else:
                 break
