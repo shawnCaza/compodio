@@ -1,12 +1,13 @@
 from decimal import *
 from collections import namedtuple
-import cv2, numpy as np
+import cv2
+import numpy as np
+from numpy.typing import NDArray
 from PIL import Image, ImageChops
 import colorsys
 from sklearn.cluster import KMeans
 from colormath.color_objects import  LabColor, sRGBColor, HSLColor
 from colormath.color_conversions import convert_color
-
 
 # finding avg dominant colours in image
 # from https://stackoverflow.com/questions/43111029/how-to-find-the-average-colour-of-an-image-in-python-with-opencv
@@ -14,36 +15,84 @@ from colormath.color_conversions import convert_color
 # finding border colour from https://stackoverflow.com/questions/10985550/detect-if-an-image-has-a-border-programmatically-return-boolean
 
 
-def get_colour_frequencies(cluster, centroids):
-    """Returns tuple containing ('Colour', ('frequency', 'lab'))"""
+def find_dominant_img_colours(image_path: str, quantity: int = 3) -> list[str]:
+    """
+        param image_path: string path to image file
+        param quantity: int number of colours to return
+        Returns: list with specified number of hex colours sorted from darkest to lightest. 
+        If the image does not contain enough colouts, the list will be shorter.
 
-    # Get the number of different clusters, create histogram, and normalize
-    labels = np.arange(0, len(np.unique(cluster.labels_)) + 1)
-    (hist, _) = np.histogram(cluster.labels_, bins = labels)
-    hist = hist.astype("float")
-    hist /= hist.sum()
+        k-means clustering is used to cluster n similar colours together, and obtain the mean colour of each group.
+        n is specified by the quantity parameter.
 
-    # Group cluster's (percentage, rgb, hex), 
-    colours = []
-    # define named tuple with fields for percent, and lab
-    ColourDetails = namedtuple('Colour', ('frequency', 'lab'))
-    for (percent, color) in zip(hist, centroids):
+        These colours may then be processed in various ways to obtain results that are more suitable for use as a background gradient behing the image.
+
+        Then sorted from darkest to lightest and returned as a list of hex colours.
+    """
+    # Load image and convert to a list of pixels
+    image_data_RGB_2d = rgb_2d_pixel_array_from_image(image_path)
+
+    # init kmeans - cluster the image data into the specified number of clusters
+    clusters = KMeans(n_clusters=quantity).fit(image_data_RGB_2d)
+
+    # NOTE: We're not making use of the frequency of colours from each cluster, but have captured it here for potential future use.
+    central_cluster_colours_RGB_and_frequencies = group_cluster_colour_and_frequency(clusters)
+    
+    processed_colours_RGB = process_colours(central_cluster_colours_RGB_and_frequencies)
+    
+    # Sort from darkest to lightest
+    # central_rgb_colours_and_frequencies.sort(reverse=False, key=lambda colour: colour.lab.lab_l)
+
+    # dom_hex_colours = [ convert_color(colour.lab, sRGBColor).get_rgb_hex() for colour in central_rgb_colours_and_frequencies]
+
+    return dom_hex_colours
+
+def rgb_2d_pixel_array_from_image(image_path: str) -> NDArray[np.uint8]:
+    
+    # Load image and convert to numpy array of pixels data
+    image_data_BGR_3d = cv2.imread(image_path)
+    image_data_RGB_3d = cv2.cvtColor(image_data_BGR_3d, cv2.COLOR_BGR2RGB)
+    # Reshape to a list of pixels - Flatten the 3D array (pixel rows, pixel columns, RGB pixel data) to 2D (pixels, RGB pixel data)
+    image_data_RGB_2d = image_data_RGB_3d.reshape((image_data_RGB_3d.shape[0] * image_data_RGB_3d.shape[1], 3))
+    return image_data_RGB_2d
+
+def group_cluster_colour_and_frequency(clusters: KMeans) -> list[tuple[float, sRGBColor]]:
+    """Returns list of named tuples containing (frequency, colorMath sRGBColor))"""
+
+    # Generate a range of integers from 0 to the number of unique cluster labels (inclusive). 
+    labels = np.arange(0, len(np.unique(clusters.labels_)) + 1)
+    #histogram will give us the number of pixels for each cluster
+    (cluster_pixel_counts, _) = np.histogram(clusters.labels_, bins = labels)
+     
+    # Normalize the histogram - divide by the total number of pixels to get the percentage of pixels in each cluster
+    cluster_pixel_counts_float = cluster_pixel_counts.astype("float")
+    cluster_frequencies = cluster_pixel_counts_float / cluster_pixel_counts_float.sum()
+
+    # Group frequency of each cluster group, to the central colour of that cluster and then add it to the colours list
+    central_rgb_colours_and_frequencies = []
+    ColourDetails = namedtuple('Colour', ('frequency', 'rgb'))
+    for (frequency, color) in zip(cluster_frequencies, clusters.cluster_centers_):
 
         # convert color to colormath rgb so we can easily perfrom conversions
         rgb = sRGBColor(*color, is_upscaled=True)
-        lab = convert_color(rgb, LabColor)
-        # print('rgb', rgb)
-        # print('lab', lab)
 
+
+        central_rgb_colours_and_frequencies.append(ColourDetails(frequency, rgb))
+
+    return central_rgb_colours_and_frequencies
+
+def process_colours(central_rgb_colours_and_frequencies: list[tuple[float, sRGBColor]]) -> list[sRGBColor]:
+    """
+        Process the colours to make them more suitable for use as a background gradient behind the image.
+        We don't want the background colours to compete with the image, so we desaturate and limit potential dynamic range(very bright colours are dimmed and very dark colours are brightened).
+    """
+    processed_colours = []
+    for colour in central_rgb_colours_and_frequencies:
+        lab = convert_color(colour.rgb, LabColor)
         # desaturate and lower contrast so bg colours don't compete with image
         labProcessed = decontrast(desaturate(lab))
-        # print('labProcessed', labProcessed)
-
-        # add named tuple to colours list with percent, rgb, and hex
-        colours.append(ColourDetails(percent,labProcessed))
-
-    return colours
-
+        processed_colours.append(convert_color(labProcessed, sRGBColor))
+    return processed_colours
 
 def desaturate(lab):
     """
@@ -80,28 +129,7 @@ def decontrast(lab):
         lab.lab_l = 10 + (lab.lab_l * 0.5 ) + 20 / lab.lab_l * .15
     return lab
 
-def find_avg_dominant_colours(image_path, quantity = 3):
-    """
-        Returns list hex colours sorted from darkest to lightest. 
 
-        param image_path: string path to image
-        param quantity: int number of colours to return
-    """
-    # Load image and convert to a list of pixels
-    image = cv2.imread(image_path)
-    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-    reshape = image.reshape((image.shape[0] * image.shape[1], 3))
-
-    # Find most dominant colors
-    cluster = KMeans(n_clusters=quantity).fit(reshape)
-    freq_n_colours = get_colour_frequencies(cluster, cluster.cluster_centers_)
-
-    # Sort from darkest to lightest
-    freq_n_colours.sort(reverse=False, key=lambda colour: colour.lab.lab_l)
-
-    dom_hex_colours = [ convert_color(colour.lab, sRGBColor).get_rgb_hex() for colour in freq_n_colours]
-
-    return dom_hex_colours
 
 
 if __name__ == '__main__':
@@ -123,14 +151,14 @@ if __name__ == '__main__':
     
     for show in shows:
 
-        if len(show['img']) and show['slug'] and show['id'] == 175:
+        if show['img'] and show['slug'] and show['id'] == 175:
         # if len(show['img']) and show['slug']:
 
 
                 save_file_base = f"{save_folder_base}{show['slug']}/{show['slug']}"
 
 
-                dom_colours = find_avg_dominant_colours(f"{save_file_base}.jpg")
+                dom_colours = find_dominant_img_colours(f"{save_file_base}.jpg")
                 
                 
                 mySQL.insert_image(show['id'], show['last_updt'], show['sizes'], json.dumps(dom_colours))
