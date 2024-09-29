@@ -1,18 +1,67 @@
 from decimal import *
-from collections import namedtuple
+from dataclasses import dataclass
+from dataclasses import field
+
 import cv2
 import numpy as np
 from numpy.typing import NDArray
-from PIL import Image, ImageChops
-import colorsys
 from sklearn.cluster import KMeans
 from colormath.color_objects import  LabColor, sRGBColor, HSLColor
 from colormath.color_conversions import convert_color
+from colormath.color_diff import delta_e_cie2000
 
 # finding avg dominant colours in image
 # from https://stackoverflow.com/questions/43111029/how-to-find-the-average-colour-of-an-image-in-python-with-opencv
 
 # finding border colour from https://stackoverflow.com/questions/10985550/detect-if-an-image-has-a-border-programmatically-return-boolean
+
+@dataclass(kw_only=True)
+class CentralClusterColour:
+    frequency: float # percentage of pixels in the cluster
+    orig_rgb: sRGBColor # the original central colour of the cluster
+    proccessed_rgb: sRGBColor = field(init=False) # the original colour after processing (So it competes less with the actual image).
+    processed_lab: LabColor = field(init=False) 
+    processed_hex: str = field(init=False)
+    delta_E_from_white: float = field(init=False) 
+
+    def __post_init__(self):
+        self.processed_rgb = self.decontrast(self.desaturate(self.orig_rgb))
+        self.processed_hex = self.processed_rgb.get_rgb_hex()
+        self.processed_lab = convert_color(self.processed_rgb, LabColor, target_illuminant="d65")
+        self.delta_E_from_white = delta_e_cie2000(self.processed_lab, LabColor(100, 0, 0,illuminant="d65"))
+
+
+    def desaturate(self, rgb:sRGBColor) -> sRGBColor:
+        """
+            Desaturates a colour by converting it to hls and then back to sRGBColor.
+        """
+        # convert sRGB to hsl 
+        hsl = convert_color(rgb, HSLColor)
+        
+        # desaturate a little more the more saturated it is
+        hsl.hsl_s = hsl.hsl_s - ((hsl.hsl_s * 0.25) + (hsl.hsl_s / 65) * 5)
+
+        # convert back to rgb
+        return convert_color(hsl, sRGBColor)
+
+    def decontrast(self, rgb:sRGBColor) -> sRGBColor:
+        """
+            Reduces contrast of a sRGBColor colour by converting it to Lab.
+            Then clamping the lower and upper bounds of the L* value.
+        """
+        lab = convert_color(rgb, LabColor)
+        if lab.lab_l > 60:
+            # Too bright, reduce brightness. The brighter the more we reduce
+            lab.lab_l = 60 + ((lab.lab_l - 60) * 0.4 )
+        elif lab.lab_l < 20:
+            # Too dark, increase brightness. The darker the more we increase
+
+            # Make sure L is not less than 1 or crazy things happen in the next step
+            lab.lab_l = lab.lab_l if lab.lab_l > 1 else 1
+            # Make L at least ten, plus a bit more based on how dark it is
+            lab.lab_l = 10 + (lab.lab_l * 0.5 ) + 20 / lab.lab_l * .15
+
+        return convert_color(lab, sRGBColor)
 
 
 def find_dominant_img_colours(image_path: str, quantity: int = 3) -> list[str]:
@@ -35,17 +84,20 @@ def find_dominant_img_colours(image_path: str, quantity: int = 3) -> list[str]:
     # init kmeans - cluster the image data into the specified number of clusters
     clusters = KMeans(n_clusters=quantity).fit(image_data_RGB_2d)
 
-    # NOTE: We're not making use of the frequency of colours from each cluster, but have captured it here for potential future use.
-    central_cluster_colours_RGB_and_frequencies = group_cluster_colour_and_frequency(clusters)
-    
-    processed_colours_RGB = process_colours(central_cluster_colours_RGB_and_frequencies)
-    
-    # Sort from darkest to lightest
-    # central_rgb_colours_and_frequencies.sort(reverse=False, key=lambda colour: colour.lab.lab_l)
+    central_cluster_colours_and_frequencies_zip = group_cluster_colour_and_frequency(clusters)
 
-    # dom_hex_colours = [ convert_color(colour.lab, sRGBColor).get_rgb_hex() for colour in central_rgb_colours_and_frequencies]
+    central_cluster_colours = []
+    for (frequency, color) in central_cluster_colours_and_frequencies_zip:
+         central_cluster_colours.append(CentralClusterColour(frequency=frequency, orig_rgb = sRGBColor(*color, is_upscaled=True)))
 
-    return dom_hex_colours
+    colours_filtered_for_uniqueness = filter_for_uniqueness(central_cluster_colours)
+ 
+    # Sort from darkest to lightest based on lab L* value
+    colours_filtered_for_uniqueness.sort(reverse=False, key=lambda colour: colour.processed_lab.lab_l)
+    
+    filtered_lab_sorted_hex_colours = [colour.processed_hex for colour in colours_filtered_for_uniqueness]
+
+    return filtered_lab_sorted_hex_colours
 
 def rgb_2d_pixel_array_from_image(image_path: str) -> NDArray[np.uint8]:
     
@@ -56,7 +108,7 @@ def rgb_2d_pixel_array_from_image(image_path: str) -> NDArray[np.uint8]:
     image_data_RGB_2d = image_data_RGB_3d.reshape((image_data_RGB_3d.shape[0] * image_data_RGB_3d.shape[1], 3))
     return image_data_RGB_2d
 
-def group_cluster_colour_and_frequency(clusters: KMeans) -> list[tuple[float, sRGBColor]]:
+def group_cluster_colour_and_frequency(clusters: KMeans) -> list[tuple[float, NDArray[np.uint8]]]:
     """Returns list of named tuples containing (frequency, colorMath sRGBColor))"""
 
     # Generate a range of integers from 0 to the number of unique cluster labels (inclusive). 
@@ -69,67 +121,36 @@ def group_cluster_colour_and_frequency(clusters: KMeans) -> list[tuple[float, sR
     cluster_frequencies = cluster_pixel_counts_float / cluster_pixel_counts_float.sum()
 
     # Group frequency of each cluster group, to the central colour of that cluster and then add it to the colours list
-    central_rgb_colours_and_frequencies = []
-    ColourDetails = namedtuple('Colour', ('frequency', 'rgb'))
-    for (frequency, color) in zip(cluster_frequencies, clusters.cluster_centers_):
-
-        # convert color to colormath rgb so we can easily perfrom conversions
-        rgb = sRGBColor(*color, is_upscaled=True)
-
-
-        central_rgb_colours_and_frequencies.append(ColourDetails(frequency, rgb))
-
-    return central_rgb_colours_and_frequencies
-
-def process_colours(central_rgb_colours_and_frequencies: list[tuple[float, sRGBColor]]) -> list[sRGBColor]:
-    """
-        Process the colours to make them more suitable for use as a background gradient behind the image.
-        We don't want the background colours to compete with the image, so we desaturate and limit potential dynamic range(very bright colours are dimmed and very dark colours are brightened).
-    """
-    processed_colours = []
-    for colour in central_rgb_colours_and_frequencies:
-        lab = convert_color(colour.rgb, LabColor)
-        # desaturate and lower contrast so bg colours don't compete with image
-        labProcessed = decontrast(desaturate(lab))
-        processed_colours.append(convert_color(labProcessed, sRGBColor))
-    return processed_colours
-
-def desaturate(lab):
-    """
-        Desaturates a colour by converting it to hls and then back to lab.
-    """
-
-    # convert lab to hsl 
-    hsl = convert_color(lab, HSLColor)
     
-    # desaturate a little more the more saturated it is
-    hsl.hsl_s = hsl.hsl_s - ((hsl.hsl_s * 0.25) + (hsl.hsl_s / 65) * 5)
+    return zip(cluster_frequencies, clusters.cluster_centers_)
 
-    # convert back to lab
-    lab = convert_color(hsl, LabColor)
-
-    return lab
-
-def decontrast(lab):
+def filter_for_uniqueness(colours: list[CentralClusterColour], min_delta:int=14) -> list[CentralClusterColour]:
     """
-        redduces contrast of a lab colour.
-        param lab: lab colour
-        returns: lab colour
+        Filters out colours that are too similar to each other.
+        Prefering the colour withe a higher frequency level.
+        Colours are considered too similar if the delta E is less than min_delta.
+
+        returns list of filtered CentralClusterColour sorted in descending order by frequency.
     """
+    colours.sort(reverse=True, key=lambda colour: colour.frequency)
+    colours_filtered_for_uniqueness = [colours[0]]
+    for pending_colour in colours[1:]:
+        for existing_colour in colours_filtered_for_uniqueness:
+            if delta_e_cie2000(pending_colour.processed_lab, existing_colour.processed_lab) < min_delta:
+                break
+        else:
+            colours_filtered_for_uniqueness.append(pending_colour)
 
-    if lab.lab_l > 60:
-        # Too bright, reduce brightness. The brighter the more we reduce
-        lab.lab_l = 60 + ((lab.lab_l - 60) * 0.4 )
-    elif lab.lab_l < 20:
-        # Too dark, increase brightness. The darker the more we increase
-
-        # Make sure L is not less than 1 or crazy things happen in the next step
-        lab.lab_l = lab.lab_l if lab.lab_l > 1 else 1
-        # Make L at least ten, plus a bit more based on how dark it is
-        lab.lab_l = 10 + (lab.lab_l * 0.5 ) + 20 / lab.lab_l * .15
-    return lab
+    return colours_filtered_for_uniqueness
 
 
+# colormath is terribly out of date. 
+# It uses numpy.asscalar for the delta_E calculation which is deprecated in numpy 1.20.0
+# This is a hack to patch it. *sigh* (https://stackoverflow.com/a/76904868/1586014)
+def patch_asscalar(a):
+    return a.item()
+
+setattr(np, "asscalar", patch_asscalar)
 
 
 if __name__ == '__main__':
@@ -146,19 +167,13 @@ if __name__ == '__main__':
         FROM shows
         RIGHT JOIN show_images ON show_id = id
     """)
-
-    folders_to_sync_list = [] # scraped images will be synched to remote server after being processed locally
     
     for show in shows:
 
-        if show['img'] and show['slug'] and show['id'] == 175:
-        # if len(show['img']) and show['slug']:
-
-
+        # if show['img'] and show['slug'] and show['id'] == 175:
+        if show['img'] and show['slug'] and '.gif' not in show['img']:
+                sizes = json.loads(show['sizes'])
                 save_file_base = f"{save_folder_base}{show['slug']}/{show['slug']}"
-
-
-                dom_colours = find_dominant_img_colours(f"{save_file_base}.jpg")
-                
-                
+                dom_colours = find_dominant_img_colours(f"{save_file_base}_{sizes[-1]['w']}.jpg")
+            
                 mySQL.insert_image(show['id'], show['last_updt'], show['sizes'], json.dumps(dom_colours))
