@@ -10,10 +10,10 @@ from colormath.color_objects import  LabColor, sRGBColor, HSLColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
 
-# finding avg dominant colours in image
-# from https://stackoverflow.com/questions/43111029/how-to-find-the-average-colour-of-an-image-in-python-with-opencv
+# The goal of this script is to return a list of distinct of hex colours, sorted from darkest to lightest, based on the dominant colours in an image. The intention is to use these colours as a gradient background for the image when displayed on the web page.
 
-# finding border colour from https://stackoverflow.com/questions/10985550/detect-if-an-image-has-a-border-programmatically-return-boolean
+# The entry point for this module is the find_dominant_img_colours function.
+
 
 @dataclass(kw_only=True)
 class CentralClusterColour:
@@ -74,9 +74,9 @@ def find_dominant_img_colours(image_path: str, quantity: int = 3) -> list[str]:
         k-means clustering is used to cluster n similar colours together, and obtain the mean colour of each group.
         n is specified by the quantity parameter.
 
-        These colours may then be processed in various ways to obtain results that are more suitable for use as a background gradient behing the image.
+        These central colours of each cluster are then processed(de-saturated, with reduced dynamic range) to obtain results that are more suitable for use as a background gradient behing the image.
 
-        Then sorted from darkest to lightest and returned as a list of hex colours.
+        Colours are then filtered for uniqueness, sorted from darkest to lightest, and returned as a list of hex colours.
     """
     # Load image and convert to a list of pixels
     image_data_RGB_2d = rgb_2d_pixel_array_from_image(image_path)
@@ -100,8 +100,9 @@ def find_dominant_img_colours(image_path: str, quantity: int = 3) -> list[str]:
     return filtered_lab_sorted_hex_colours
 
 def rgb_2d_pixel_array_from_image(image_path: str) -> NDArray[np.uint8]:
-    
     # Load image and convert to numpy array of pixels data
+    # Largely borrowed from https://stackoverflow.com/a/58177484
+
     image_data_BGR_3d = cv2.imread(image_path)
     image_data_RGB_3d = cv2.cvtColor(image_data_BGR_3d, cv2.COLOR_BGR2RGB)
     # Reshape to a list of pixels - Flatten the 3D array (pixel rows, pixel columns, RGB pixel data) to 2D (pixels, RGB pixel data)
