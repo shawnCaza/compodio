@@ -136,7 +136,7 @@ def scrape_images():
                 sizes = download_img(save_file_base, show['img'], "jpg")
                 # use the saved largest image for colour analysis, because the original image might not be an appropriate format or match the extension(ex. gif).
                 img_path_for_colours = f"{save_file_base}_{sizes[-1]['w']}.jpg"
-                dom_colours = image_colour.find_avg_dominant_colours(img_path_for_colours)
+                dom_colours = image_colour.dominant_colours(img_path_for_colours)
                 
                 print(show['id'], src_last_updt, sizes, json.dumps(dom_colours))
                 
