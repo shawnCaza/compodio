@@ -58,7 +58,6 @@ def dominant_colours(image_path: str, n_clusters: int = 3) -> list[str] | None:
     colours = [_ClusterColour(cluster_size=cluster_size, rgb=colour) 
                 for (cluster_size, colour) in zip(cluster_sizes, processed_cluster_centers)
               ]
-
     colours = _remove_similar_colours(colours)
     # Sort from darkest to lightest based on lab L* value
     colours.sort(reverse=False, key=lambda colour: colour.as_lab.lab_l)
@@ -152,7 +151,7 @@ def _remove_similar_colours(colours: list[_ClusterColour], min_delta:int=14) -> 
     """
         Filters out colours that are too similar to each other.
         Prefering the colour appearing more often in the image (those from a larger cluster size).
-        delta_e_cie2000 is used to calculate the visual difference between two colours. 
+        delta_e_cie2000 is used to calculate the visual difference between two colours. (http://zschuessler.github.io/DeltaE/learn/)
         Delta E values range from 0 to 100. 0 = identical and 100 = opposite colours.
         Colours are considered too similar if the delta E is less than min_delta.
 
@@ -173,3 +172,4 @@ def _patch_asscalar(a):
     return a.item()
 
 setattr(np, "asscalar", _patch_asscalar)
+
