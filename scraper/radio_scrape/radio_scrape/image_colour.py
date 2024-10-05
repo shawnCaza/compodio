@@ -1,8 +1,5 @@
 from decimal import *
 from dataclasses import dataclass
-from dataclasses import field
-import math
-from typing import Any
 
 import cv2
 import numpy as np
@@ -10,7 +7,7 @@ from numpy.typing import NDArray
 from sklearn.cluster import KMeans
 from colormath.color_objects import  LabColor, sRGBColor, HSLColor
 from colormath.color_conversions import convert_color
-from colormath.color_diff import delta_e_cie2000 as visual_difference
+from colormath.color_diff import delta_e_cie2000
 
 # The goal of this script is to return a list of distinct hex colours.
 # Colours are sorted from darkest to lightest, based on the dominant colours in an image. 
@@ -32,11 +29,11 @@ class _ClusterColour:
         return self.rgb.get_rgb_hex()
     
 
-def dominant_colours(image_path: str, n_clusters: int = 3) -> list[str]:
+def dominant_colours(image_path: str, n_clusters: int = 3) -> list[str] | None:
     """
         param image_path: string path to image file
         param n_clusters: int number - number of cluster colours to look for. Default is 3.
-        Returns: list with of hex colours
+        Returns: list with of hex colours, or None if there was an error reading the image.
 
         k-means clustering is used to cluster n similar colours together, and obtain the mean colour of each group.
         n is specified by the quantity parameter.
@@ -49,21 +46,17 @@ def dominant_colours(image_path: str, n_clusters: int = 3) -> list[str]:
     image = _read_rgb_image(image_path)
 
     if image is None:
-        # Error reading image. Return empty list so the caller can continue its work.
-        return []
-    
-    # Reshape to a list of pixels.
-    # Flatten the 3D array (pixel rows, pixel columns, RGB pixel data) 
-    # to 2D (pixels, RGB pixel data)
-    image = image.reshape((image.shape[0] * image.shape[1], 3))
+        return None
+   
+    image = _2d_image_data(image)
 
-    # init kmeans - cluster the image data into the specified number of clusters
+    # init kmeans - cluster the image colours into the specified number of clusters
     clusters = KMeans(n_clusters=n_clusters).fit(image)
     cluster_sizes = _calculate_cluster_sizes(clusters)
-    cluster_centers = [_process_colour(sRGBColor(*color, is_upscaled=True)) for color in clusters.cluster_centers_]
+    processed_cluster_centers = [_process_colour(sRGBColor(*color, is_upscaled=True)) for color in clusters.cluster_centers_]
 
     colours = [_ClusterColour(cluster_size=cluster_size, rgb=colour) 
-                for (cluster_size, colour) in zip(cluster_sizes, cluster_centers)
+                for (cluster_size, colour) in zip(cluster_sizes, processed_cluster_centers)
               ]
 
     colours = _remove_similar_colours(colours)
@@ -72,8 +65,9 @@ def dominant_colours(image_path: str, n_clusters: int = 3) -> list[str]:
 
     return [colour.as_hex() for colour in colours]
 
-def _read_rgb_image(image_path: str) -> NDArray[Any, np.uint8]:
+def _read_rgb_image(image_path: str) -> NDArray[np.uint8] | None:
     # Load image and convert to numpy array of pixels data
+    # Shape of the array is (rows, columns, RGB pixel data)
     # Largely borrowed from https://stackoverflow.com/a/58177484
 
     image_BGR = cv2.imread(image_path)
@@ -85,13 +79,13 @@ def _read_rgb_image(image_path: str) -> NDArray[Any, np.uint8]:
     image_RGB = cv2.cvtColor(image_BGR, cv2.COLOR_BGR2RGB)
     return image_RGB
 
-def _2d_image(image: NDArray[NDArray[np.uint8]]) -> NDArray[np.uint8]:
+def _2d_image_data(image: NDArray[np.uint8]) -> NDArray[np.uint8]:
     """
         Converts a 3D array of image data (pixel rows, pixel columns, RGB pixel data) 
         to 2D (pixels, RGB pixel data)
     """ 
     image = image.reshape((image.shape[0] * image.shape[1], 3))
-    return image.reshape((image.shape[0] * image.shape[1], 3))
+    return image
 
 def _calculate_cluster_sizes(clusters: KMeans) -> list[float]:
     """Returns the size of each cluster as a percentage of the total number of pixels in the image."""
@@ -111,44 +105,43 @@ def _process_colour(rgb:sRGBColor) -> sRGBColor:
     """
         Processes a colour so it competes less with source image when used behind the image.
     """
-
-    def _desaturate():
+    def _desaturate()-> None:
         """
             # Desaturate a little more the higher the original saturation is.
-            # Saturation values can range from 0 to 1
-            # We are curving this range down to sat_limit
+            # HSL colour space saturation values can range from 0 to 1
+            # The range will be curved down to the `limiter` value.
         """
         nonlocal rgb
-        
-        sat_limit = 0.65
-        sat_upper_range = 1
+
+        limiter = 0.50
+        max_upper_range = 1
 
         hsl = convert_color(rgb, HSLColor)
         sat = hsl.hsl_s
-        sat = sat - ((sat * (sat_upper_range - sat_limit)) * (sat / sat_upper_range))
+        sat = sat - ((sat * (max_upper_range - limiter)) * (sat / max_upper_range))
         hsl.hsl_s = sat
 
         rgb = convert_color(hsl, sRGBColor)
 
-
-    def _decontrast():
+    def _decontrast()-> None:
         """
             Converts rgb to lab
-            then remaps the L* values range of 0 to 100 to a linear scale between min_l and max_l
+            The L* value in the Lab colour space represents lightness with a range from 0 to 100.
+            This function remaps that range to a scale between min_l and max_l.
+            
+            A higher min_l value will reduce the potential darkness of a colour.
+            A lower max_l value will reduce the potential lightness of a colour.
         """
-
         nonlocal rgb
+
         lab = convert_color(rgb, LabColor, target_illuminant="d65")
+        min_l:int = 20 # should be between 0 and max_l
+        max_l:int = 75 # should be between min_l and 100 
         
-        min_l = 15
-        max_l = 85
-        
-        # Remap the L* value to a linear scale between min_l and max_l
-        # This will make the colour appear less contrasty when used as a background.
-        # The min_l and max_l values are chosen to give a good result when used as a background gradient.
         lab.lab_l = min_l + lab.lab_l * (max_l - min_l) / 100
-   
+
         rgb = convert_color(lab, sRGBColor)
+
 
     _desaturate()
     _decontrast() 
@@ -158,7 +151,9 @@ def _process_colour(rgb:sRGBColor) -> sRGBColor:
 def _remove_similar_colours(colours: list[_ClusterColour], min_delta:int=14) -> list[_ClusterColour]:
     """
         Filters out colours that are too similar to each other.
-        Prefering the colour appearing more often in the image (from a larger cluster size).
+        Prefering the colour appearing more often in the image (those from a larger cluster size).
+        delta_e_cie2000 is used to calculate the visual difference between two colours. 
+        Delta E values range from 0 to 100. 0 = identical and 100 = opposite colours.
         Colours are considered too similar if the delta E is less than min_delta.
 
         returns list of filtered CentralClusterColour sorted in descending order by cluster size.
@@ -166,41 +161,15 @@ def _remove_similar_colours(colours: list[_ClusterColour], min_delta:int=14) -> 
     filtered:_ClusterColour = []
     colours.sort(reverse=True, key=lambda colour: colour.cluster_size)
     for c in colours:
-        if not any(visual_difference(c.as_lab, f.as_lab) < min_delta for f in filtered):
+        if not any(delta_e_cie2000(c.as_lab, f.as_lab) < min_delta for f in filtered):
             filtered.append(c)
 
     return filtered
 
-
 # colormath is terribly out of date. 
 # It uses numpy.asscalar for the delta_E calculation which is deprecated in numpy 1.20.0
 # This is a hack to patch it. *sigh* (https://stackoverflow.com/a/76904868/1586014)
-def patch_asscalar(a):
+def _patch_asscalar(a):
     return a.item()
 
-setattr(np, "asscalar", patch_asscalar)
-
-
-if __name__ == '__main__':
-
-    import scraper_MySQL
-    import json
-
-    save_folder_base ='/Users/scaza/Sites/compodio_images/shows/'
-
-    mySQL = scraper_MySQL.MySQL() 
-    shows = mySQL.get_query("""
-        SELECT id, slug, img, last_updt, sizes
-        FROM shows
-        RIGHT JOIN show_images ON show_id = id
-    """)
-    
-    for show in shows:
-
-        # if show['img'] and show['slug'] and show['id'] == 146152:
-        if show['img'] and show['slug']:
-            sizes = json.loads(show['sizes'])
-            save_file_base = f"{save_folder_base}{show['slug']}/{show['slug']}"
-            dom_colours = dominant_colours(f"{save_file_base}_{sizes[-1]['w']}.jpg")
-        
-            mySQL.insert_image(show['id'], show['last_updt'], show['sizes'], json.dumps(dom_colours))
+setattr(np, "asscalar", _patch_asscalar)
