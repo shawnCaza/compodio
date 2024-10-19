@@ -42,7 +42,7 @@ mysql-connector-python==8.0.31
 networkx==3.0
 nltk==3.8.1
 numba==0.58.1
-numpy==1.26.1
+numpy
 onnxruntime==1.16.1
 openai-whisper @ git+https://github.com/openai/whisper.git@e58f28804528831904c3b6f2c0e473f346223433
 opencv-python==4.6.0.66
@@ -90,5 +90,4 @@ Twisted==22.10.0
 typing_extensions==4.4.0
 urllib3==1.26.12
 w3lib==2.0.1
-whisper-at==0.5
 zope.interface==5.5.2

@@ -1,6 +1,6 @@
 
 import mysql.connector as mysql
-from radio_scrape.radio_scrape import DBConfig as dbConf
+import radio_scrape.radio_scrape.DBConfig as dbConf
 import time
 import logging
 

@@ -41,7 +41,7 @@ def main():
         WHERE ai_desc is null
         AND (lang is null OR lang = 'en')
         ORDER BY `episodes`.`id` DESC
-        LIMIT 1
+        LIMIT 100
     """
 
     # query = """
@@ -132,14 +132,17 @@ def main():
                 summary_txt_paragraphed = summary_txt_paragraphed.replace('Underground Man', 'host').replace('underground man', 'host')
 
                 mySQL.insert_ep_ai_details(ep['id'], summary_txt_paragraphed)
+                break
             
         else:
             print("mp3 not found")
-            # TODO: hand level 500 errors, so summatization isn't blocked when one server goes down temporarily.
             if r.status_code in [400, 401, 402, 403, 404, 405, 406, 407, 409, 410]:
                 print("removing episode from db")
                 removed_eps.append(ep['show_id'])
                 mySQL.remove_old_eps_by_show(ep['show_id'], f"id = {ep['id']}")
+
+            # TODO: handle level 500 errors, so summatization isn't blocked when one server goes down temporarily.
+            # For now we are selecting many episodes, and breaking the for loop after the first one is processed.
     
     print("removed eps:", removed_eps)
 
