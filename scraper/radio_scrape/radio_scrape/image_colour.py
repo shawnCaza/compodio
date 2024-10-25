@@ -1,12 +1,12 @@
 from dataclasses import dataclass
-from typing import Annotated
+from typing import Annotated, Any
 
 from colormath.color_objects import  LabColor, sRGBColor, HSLColor
 from colormath.color_conversions import convert_color
 from colormath.color_diff import delta_e_cie2000
 import cv2
 import numpy as np
-from numpy.typing import NDArray
+import numpy.typing as npt
 from pydantic import Field
 from sklearn.cluster import KMeans
 
@@ -71,10 +71,9 @@ def dominant_colours(image_path: str, n_clusters: int = 3) -> list[str] | None:
 
     return [colour.as_hex for colour in colours]
 
-def _read_rgb_image(image_path: str) -> NDArray[np.uint8] | None:
+def _read_rgb_image(image_path: str) -> npt.NDArray:
     # Load image and convert to numpy array of pixels data
     # Shape of the array is (rows, columns, RGB pixel data)
-    # Largely borrowed from https://stackoverflow.com/a/58177484
 
     image_BGR = cv2.imread(image_path)
 
@@ -83,7 +82,7 @@ def _read_rgb_image(image_path: str) -> NDArray[np.uint8] | None:
 
     return cv2.cvtColor(image_BGR, cv2.COLOR_BGR2RGB)
 
-def _2d_image_data(image: NDArray[np.uint8]) -> NDArray[np.uint8]:
+def _2d_image_data(image: npt.NDArray[np.uint8]) -> npt.NDArray[np.uint8]:
     """
         Converts a 3D array of image data (pixel rows, pixel columns, RGB pixel data) 
         to 2D (pixels, RGB pixel data)
