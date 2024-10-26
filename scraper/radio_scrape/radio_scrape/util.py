@@ -1,6 +1,9 @@
 import requests
 from datetime import datetime
-def sever_file_last_update(url):
+
+
+
+def sever_file_last_update(url:str) -> datetime|None:
     """
         Attempts to retrieve the 'last-modified' header from the server.
         Returns date as a datetime object 
