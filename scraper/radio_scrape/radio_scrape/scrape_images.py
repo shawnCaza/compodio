@@ -1,12 +1,14 @@
 import time
+import os
 import json, requests
 import pathlib
 import math
 from datetime import datetime
-from typing import TypedDict, Literal
+from typing import TypedDict
 from dataclasses import dataclass, field
 
 from PIL import Image, ImageOps
+from dotenv import load_dotenv
 
 from util import sever_file_last_update
 import image_colour
@@ -16,7 +18,7 @@ from server_sync.sync_compodio_data_to_server import synch_image_files
 class Show(TypedDict):
     id: int
     slug: str
-    img_url: str
+    image_url: str
     last_updt: datetime
 
 class ImageDimensions(TypedDict):
@@ -25,51 +27,62 @@ class ImageDimensions(TypedDict):
 
 @dataclass
 class ImageProps():
+    base_name: str
     folder: str
     remote_url: str
-    remote_modified_dt: datetime | None = None
-    base_name: str | None = None
+    remote_modified: datetime | None
+    local_modified: datetime | None
     image: Image.Image | None = None
     responsive_widths: set[int] = field(default_factory=set)
     responsive_dimensions: set[ImageDimensions] = field(default_factory=set)
 
     @property
     def orig_ext(self) -> str:
-        if self.remote_url and '.' in self.remote_url:
-            return self.remote_url.split('.')[-1]
-        else:
-            raise ValueError("remote_url hasn't been properly defined")
+        return self.remote_url.split('.')[-1]
+    
+    @property
+    def temp_file_path(self) -> str:
+        return f"{self.folder}/{self.base_name}_temp.{self.orig_ext}"
 
     @property
-    def temp_file_path(self) -> str | None:
-        if self.folder and self.base_name and self.orig_ext:
-            return f"{self.folder}/{self.base_name}_temp.{self.orig_ext}"
-        else:
-            raise ValueError("Not all path components have been defined.")
-        
-    @property
-    def modified_for_db_dt(self) -> datetime:
+    def db_modified(self) -> datetime:
         # If server didn't return a last-modified header, 
         # we'll use current date as a refernce point for future comparisons.
-        return self.remote_modified_dt if self.remote_modified_dt else datetime.now()
+        return self.remote_modified if self.remote_modified else datetime.now()
     
 def scrape_images():
-                          
-    save_folder_base ='/Users/scaza/Sites/compodio_images/shows'
+
+    load_dotenv()
+    shows_image_folder = f"{os.getenv('image_folder')}/shows"
     mySQL = scraper_MySQL.MySQL()
     shows = _all_shows(mySQL)
-    folders_to_sync = [] # scraped images will be synched to remote server after being processed locally
+
+    # New images go to remote server after processing all shows
+    # Would prefer to do it after each show, but too many
+    # server co
+    folders_to_sync = [] 
     
     for show in shows:
 
+        if  not _valid_show_data(show):
+            continue
+            
+        req = requests.head(show['image_url'], allow_redirects=True)
+        if req.status_code >= 400:
+            # If the image url is broken, skip the show
+            # TODO: at what point do we stop checking invalid urls?
+            time.sleep(1.5)
+            continue
+
         image_props = ImageProps(
-            folder = f"{save_folder_base}/show['slug']",
-            remote_url = show['img_url']
+            folder = f"{shows_image_folder}/show['slug']",
+            remote_url = show['image_url'],
+            base_name = show['slug'],
+            remote_modified = _modified(req),
+            local_modified = show['last_updt']
         )
 
-        image_props.remote_modified_dt = sever_file_last_update(image_props.remote_url)
-
-        if _show_has_image(show) and _needs_update(show, image_props):
+        if _needs_update(image_props):
 
             _setup_save_folder(image_props)
 
@@ -91,41 +104,54 @@ def scrape_images():
                         
             mySQL.insert_image(
                 show['id'], 
-                image_props.modified_for_db_dt, 
+                image_props.db_modified, 
                 json.dumps(image_props.responsive_dimensions), 
                 json.dumps(dom_colours)
             )
             folders_to_sync.append(show['slug'])
             time.sleep(90) # To avoid overloading the server with requests
+
         else:
             time.sleep(1.5)
     
     # Send new images to remote server
-    synch_image_files(save_folder_base, folders_to_sync)
+    if len(folders_to_sync):
+        synch_image_files(shows_image_folder, folders_to_sync)
 
 def _all_shows(mySQL: scraper_MySQL.MySQL)->list[Show]:
      
     shows = mySQL.get_query("""
-        SELECT id, slug, img as img_url, last_updt
+        SELECT id, slug, img as image_url, last_updt
         FROM shows
         LEFT JOIN show_images ON show_id = id
     """)
     return shows
 
-def _show_has_image(show:Show)-> bool:
-    return bool(show['img'] and len(show['img']) and show['slug'])
+def _valid_show_data(show:Show)-> bool:
+    return bool(show['image_url'] and len(show['image_url']) and show['slug'])
 
-def _needs_update(show:Show, image_props:ImageProps)-> bool:
+def _modified(req: requests.Response) -> datetime | None:
+
+    if 'last-modified' in req.headers:
+        
+        return datetime.strptime(
+            req.headers['last-modified'].replace(" GMT",""),
+              "%a, %d %b %Y %H:%M:%S"
+        )    
+
+def _needs_update(image_props:ImageProps)-> bool:
     
-    remote_modified_dt = image_props.remote_modified_dt
+    # would be nice to use Etags here, but not all servers were returning them
+    remote_modified = image_props.remote_modified
+    local_modified = image_props.local_modified
 
-    if show['last_updt'] and remote_modified_dt:
-        # We can have both remote and local modified dates to compare
-        needs_updt = True if show['last_updt'] < remote_modified_dt else False
+    if local_modified and remote_modified:
+        # We have both remote and local modified dates to compare
+        needs_updt = True if local_modified < remote_modified else False
 
-    elif remote_modified_dt is None and show['last_updt']: 
+    elif remote_modified is None and local_modified: 
         #To handle cases where the server doesn't return a last-modified header
-        #todo: add a check to see if the file has changed by comparing file size
+        #TODO: add a check to see if the file has changed by comparing file size
         needs_updt = False
 
     else:
@@ -137,6 +163,10 @@ def _needs_update(show:Show, image_props:ImageProps)-> bool:
 def _setup_save_folder(image_props:ImageProps):
     image_folder_path = pathlib.Path(image_props.folder)
     image_folder_path.mkdir(parents=True, exist_ok=True)
+    
+    # Clear out any existing files in the folder
+    for file in image_folder_path.iterdir():
+        file.unlink()
 
 def _download_img(image_props:ImageProps) -> None:
     """

@@ -6,7 +6,8 @@ from datetime import datetime
 def sever_file_last_update(url:str) -> datetime|None:
     """
         Attempts to retrieve the 'last-modified' header from the server.
-        Returns date as a datetime object 
+        Returns date as a datetime object.
+        Returns none if there's any trouble getting the last-modified header.
     """
 
     try:
