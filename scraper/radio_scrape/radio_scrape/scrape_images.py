@@ -37,14 +37,6 @@ class ImageProps():
     responsive_dimensions: set[ImageDimensions] = field(default_factory=set)
 
     @property
-    def orig_ext(self) -> str:
-        return self.remote_url.split('.')[-1]
-    
-    @property
-    def temp_file_path(self) -> str:
-        return f"{self.folder}/{self.base_name}_temp.{self.orig_ext}"
-
-    @property
     def db_modified(self) -> datetime:
         # If server didn't return a last-modified header, 
         # we'll use current date as a refernce point for future comparisons.
@@ -85,16 +77,14 @@ def scrape_images():
         if _needs_update(image_props):
 
             _setup_save_folder(image_props)
-
-            _download_img(image_props)
             
             _open_image(image_props)
 
-            _create_standard_image_versions(image_props)
+            _save_standard_image_versions(image_props)
 
             _determine_responsive_sizes(image_props)
             
-            _generate_responsive_sizes(image_props)
+            _save_responsive_sizes(image_props)
 
             try:
                 dom_colours = image_colour.dominant_colours(file_path(image_props,'jpg'))
@@ -168,20 +158,12 @@ def _setup_save_folder(image_props:ImageProps):
     for file in image_folder_path.iterdir():
         file.unlink()
 
-def _download_img(image_props:ImageProps) -> None:
-    """
-        Downloads img from url and saves it to 
-        a temp local folder. 
-    """
-
-    with open(image_props.temp_file_path, 'wb') as f:
-        f.write(requests.get(image_props.remote_url).content)
-
 def _open_image(image_props:ImageProps) -> None:
+    response = requests.get(image_props.remote_url, stream=True)
+    response.raw.decode_content = True
+    image_props.image = Image.open(response.raw)
 
-    image_props.image = Image.open(image_props.temp_file_path)
-
-def _create_standard_image_versions(image_props:ImageProps):
+def _save_standard_image_versions(image_props:ImageProps):
 
     if image_props.image is None:
         raise ValueError("Image not already open.")
@@ -247,13 +229,9 @@ def _determine_responsive_sizes(image_props:ImageProps):
             if width < orig_w:
                 image_props.responsive_widths.add(width)
 
-def _generate_responsive_sizes(image_props: ImageProps):
+def _save_responsive_sizes(image_props: ImageProps):
     """
         Creates multiple size versions of an image.
-        `image` = Pillow Image object
-        'save_base` = Local folder path and base for the file name. Width and format extention will be added to this base when saving individual files.
-        `sizes` = A list containing the file widths to be created.
-        `formats` = The file types to be created for each image width. Values must be compatible with the Pillow Image format parameters.
     """
     if image_props.image is None:
         raise ValueError("Image has not been opened")
@@ -284,10 +262,10 @@ def _generate_responsive_sizes(image_props: ImageProps):
         
         image_props.responsive_dimensions.add({'w': resized_image.size[0], 'h': resized_image.size[1] })
                     
-def file_path(image_props:ImageProps, ext: str, id: str | None = None) -> str:
+def file_path(image_props:ImageProps, ext: str, suffix: str | None = None) -> str:
 
-    if id is not None:
-        return f"{image_props.folder}/{image_props.base_name}_{id}.{ext}"
+    if suffix is not None:
+        return f"{image_props.folder}/{image_props.base_name}_{suffix}.{ext}"
     else:
         return f"{image_props.folder}/{image_props.base_name}.{ext}"
     
