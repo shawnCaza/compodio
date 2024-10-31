@@ -15,6 +15,12 @@ import image_colour
 import scraper_MySQL
 from server_sync.sync_compodio_data_to_server import synch_image_files
 
+"""
+    Iterates through all show image urls in the database.
+    New, or updated images are downloaded, processed for responsive sizes, 
+    their dominant colours are calculated, and the results are saved to the database.
+"""
+
 
 class Show(TypedDict):
     id: int
@@ -37,7 +43,7 @@ class ImageProps:
     local_modified: datetime | None
     image: Image.Image | None = None
     responsive_widths: set[int] = field(default_factory=set)
-    responsive_dimensions: set[ImageDimensions] = field(default_factory=set)
+    responsive_dimensions: list[ImageDimensions] = field(default_factory=list)
 
     @property
     def db_modified(self) -> datetime:
@@ -104,6 +110,7 @@ def scrape_images():
                 image_props.db_modified,
                 json.dumps(image_props.responsive_dimensions),
                 json.dumps(dom_colours),
+                synched=False,
             )
 
             folders_to_sync.append(show["slug"])
@@ -111,10 +118,6 @@ def scrape_images():
 
         else:
             time.sleep(1.5)
-
-    # Send new images to remote server
-    if len(folders_to_sync):
-        synch_image_files(shows_image_folder, folders_to_sync)
 
 
 def _all_shows(mySQL: scraper_MySQL.MySQL) -> list[Show]:
@@ -277,7 +280,7 @@ def _save_responsive_sizes(image_props: ImageProps):
             file_path(image_props, "webp", str(new_w)), "webp", lossless=0, quality=50
         )
 
-        image_props.responsive_dimensions.add(
+        image_props.responsive_dimensions.append(
             {"w": resized_image.size[0], "h": resized_image.size[1]}
         )
 
