@@ -69,7 +69,7 @@ def scrape_images():
             continue
 
         image_props = ImageProps(
-            folder=f"{shows_image_folder}/show['slug']",
+            folder=f"{shows_image_folder}/{show['slug']}",
             remote_url=show["image_url"],
             base_name=show["slug"],
             remote_modified=_modified(req),
@@ -119,6 +119,7 @@ def _all_shows(mySQL: scraper_MySQL.MySQL) -> list[Show]:
         SELECT id, slug, img as image_url, last_updt
         FROM shows
         LEFT JOIN show_images ON show_id = id
+        where id = 1344
     """
     )
     return shows
