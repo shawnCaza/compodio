@@ -10,10 +10,8 @@ from dataclasses import dataclass, field
 from PIL import Image, ImageOps
 from dotenv import load_dotenv
 
-from util import sever_file_last_update
 import image_colour
 import scraper_MySQL
-from server_sync.sync_compodio_data_to_server import synch_image_files
 
 """
     Iterates through all show image urls in the database.
@@ -58,11 +56,6 @@ def scrape_images():
     shows_image_folder = f"{os.getenv('image_folder')}/shows"
     mySQL = scraper_MySQL.MySQL()
     shows = _all_shows(mySQL)
-
-    # New images go to remote server after processing all shows
-    # Would prefer to do it after each show, but too many
-    # server co
-    folders_to_sync = []
 
     for show in shows:
         if not _valid_show_data(show):
@@ -113,7 +106,6 @@ def scrape_images():
                 synched=False,
             )
 
-            folders_to_sync.append(show["slug"])
             time.sleep(90)  # To avoid overloading the server with requests
 
         else:
@@ -295,5 +287,3 @@ def file_path(image_props: ImageProps, ext: str, suffix: str | None = None) -> s
 
 if __name__ == "__main__":
     scrape_images()
-    # print(determine_sizes(924,598))
-    # print(determine_sizes(324,180))
