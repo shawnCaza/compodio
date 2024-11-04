@@ -78,15 +78,7 @@ def scrape_images():
 
         if _needs_update(image_props):
 
-            _setup_save_folder(image_props)
-
-            _open_image(image_props)
-
-            _save_standard_image_versions(image_props)
-
-            _determine_responsive_sizes(image_props)
-
-            _save_responsive_sizes(image_props)
+            _save_image_variations(image_props)
 
             try:
                 dom_colours = image_colour.dominant_colours(
@@ -119,7 +111,6 @@ def _all_shows(mySQL: scraper_MySQL.MySQL) -> list[Show]:
         SELECT id, slug, img as image_url, last_updt
         FROM shows
         LEFT JOIN show_images ON show_id = id
-        where id = 1344
     """
     )
     return shows
@@ -160,14 +151,13 @@ def _needs_update(image_props: ImageProps) -> bool:
     return needs_updt
 
 
-def _setup_save_folder(image_props: ImageProps):
+def _save_image_variations(image_props: ImageProps):
 
-    image_folder_path = pathlib.Path(image_props.folder)
-    image_folder_path.mkdir(parents=True, exist_ok=True)
-
-    # Clear out any existing files in the folder
-    for file in image_folder_path.iterdir():
-        file.unlink()
+    _open_image(image_props)
+    _determine_responsive_sizes(image_props)
+    _setup_save_folder(image_props)
+    _save_standard_images(image_props)
+    _save_responsive_sizes(image_props)
 
 
 def _open_image(image_props: ImageProps) -> None:
@@ -175,22 +165,6 @@ def _open_image(image_props: ImageProps) -> None:
     response = requests.get(image_props.remote_url, stream=True)
     response.raw.decode_content = True
     image_props.image = Image.open(response.raw)
-
-
-def _save_standard_image_versions(image_props: ImageProps):
-
-    if image_props.image is None:
-        raise ValueError("Image not already open.")
-
-    # Correct orientation of image based on exif data
-    image_props.image = ImageOps.exif_transpose(image_props.image)
-    image_props.image = image_props.image.convert("RGB")
-
-    image_props.image.save(
-        file_path(image_props, "webp"), "webp", lossless=0, quality=50
-    )
-
-    image_props.image.save(file_path(image_props, "jpg"), "jpeg", optimize=True)
 
 
 def _determine_responsive_sizes(image_props: ImageProps):
@@ -207,7 +181,6 @@ def _determine_responsive_sizes(image_props: ImageProps):
 
     orig_w = image_props.image.width
     orig_h = image_props.image.height
-
     aspect_ratio = orig_w / orig_h
 
     # potential image margins and max width/height for each breakpoint used in css
@@ -223,14 +196,13 @@ def _determine_responsive_sizes(image_props: ImageProps):
 
         # margin is applied to image area only when
         # height is proportionally larger than a 16:9 aspect ratio
-
         margin = (
             constraints["margin"]
             if aspect_ratio < 16 / 9 or constraints["margin"] == 40
             else 0
         )
 
-        # The available with for the image is constrained by the max height and margin
+        # The available width for the image is constrained by the max height and margin
         available_w = math.ceil((constraints["h"] - margin) * aspect_ratio)
 
         new_w = (
@@ -239,13 +211,37 @@ def _determine_responsive_sizes(image_props: ImageProps):
             else constraints["w"]
         )
 
-        # Add new_w, along with retina sized variations, to responsive_widths
-        # as long as we're not upscaling.
-        widths_to_add = [new_w, new_w * 2, new_w * 3]
-
-        for width in widths_to_add:
+        # zdd new_w, as well as retina sized variations, to responsive_widths.
+        # Only add a width that's smaller than the original. we're not upscaling.
+        for width in [new_w, new_w * 2, new_w * 3]:
             if width < orig_w:
                 image_props.responsive_widths.add(width)
+
+
+def _setup_save_folder(image_props: ImageProps):
+
+    image_folder_path = pathlib.Path(image_props.folder)
+    image_folder_path.mkdir(parents=True, exist_ok=True)
+
+    # Clear out any existing files in the folder
+    for file in image_folder_path.iterdir():
+        file.unlink()
+
+
+def _save_standard_images(image_props: ImageProps):
+
+    if image_props.image is None:
+        raise ValueError("Image not already open.")
+
+    # Correct orientation of image based on exif data
+    image_props.image = ImageOps.exif_transpose(image_props.image)
+    image_props.image = image_props.image.convert("RGB")
+
+    image_props.image.save(
+        file_path(image_props, "webp"), "webp", lossless=0, quality=50
+    )
+
+    image_props.image.save(file_path(image_props, "jpg"), "jpeg", optimize=True)
 
 
 def _save_responsive_sizes(image_props: ImageProps):
