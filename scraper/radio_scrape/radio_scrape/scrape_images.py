@@ -49,7 +49,7 @@ class ImageProps:
     @property
     def db_modified(self) -> datetime:
         # If server didn't return a last-modified header,
-        # we'll use current date as a refernce point for future comparisons.
+        # we'll use current date as a reference point for future comparisons.
         return self.remote_modified if self.remote_modified else datetime.now()
 
 
@@ -62,12 +62,13 @@ def scrape_images():
     shows = _all_shows(mySQL)
 
     for show in shows:
+
         if not _valid_show_data(show):
             continue
 
+        # If the image url is broken, skip the show
         req = requests.head(show["image_url"], allow_redirects=True)
         if req.status_code >= 400:
-            # If the image url is broken, skip the show
             # TODO: at what point do we stop checking repeatedly invalid urls?
             time.sleep(1.5)
             continue
@@ -88,7 +89,6 @@ def scrape_images():
                 dom_colours = image_colour.dominant_colours(
                     file_path(image_props, "jpg")
                 )
-
             except Exception as e:
                 logger.error(
                     f"Error calculating dominant image colours for show {show['id']}: {e}"
@@ -189,7 +189,7 @@ def _determine_responsive_sizes(image_props: ImageProps):
     aspect_ratio = orig_w / orig_h
 
     # potential image margins and max width/height for each breakpoint used in css
-    image_breakpoint_contraints = [
+    image_breakpoint_constraints = [
         {"w": None, "h": 180, "margin": 40},
         {"w": 334, "h": 188, "margin": 24},
         {"w": 386, "h": 218, "margin": 24},
@@ -197,7 +197,7 @@ def _determine_responsive_sizes(image_props: ImageProps):
         {"w": None, "h": 280, "margin": 0},
     ]
 
-    for constraints in image_breakpoint_contraints:
+    for constraints in image_breakpoint_constraints:
 
         # margin is applied to image area only when
         # height is proportionally larger than a 16:9 aspect ratio
@@ -261,8 +261,8 @@ def _save_responsive_sizes(image_props: ImageProps):
         current_w = image_props.image.size[0]
         current_h = image_props.image.size[1]
 
-        decreace_percent = new_w / current_w
-        new_h = int(current_h * decreace_percent)
+        decrease_percent = new_w / current_w
+        new_h = int(current_h * decrease_percent)
 
         resized_image = image_props.image.resize(size=((new_w, new_h)))
 
