@@ -216,7 +216,7 @@ def _determine_responsive_sizes(image_props: ImageProps):
             else constraints["w"]
         )
 
-        # zdd new_w, as well as retina sized variations, to responsive_widths.
+        # add new_w, as well as retina sized variations, to responsive_widths.
         # Only add a width that's smaller than the original. we're not upscaling.
         for width in [new_w, new_w * 2, new_w * 3]:
             if width < orig_w:
