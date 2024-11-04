@@ -9,6 +9,7 @@ from dataclasses import dataclass, field
 
 from PIL import Image, ImageOps
 from dotenv import load_dotenv
+from loguru import logger
 
 import image_colour
 import scraper_MySQL
@@ -18,6 +19,8 @@ import scraper_MySQL
     New, or updated images are downloaded, processed for responsive sizes, 
     their dominant colours are calculated, and the results are saved to the database.
 """
+
+logger.add("logs/radio_scrape.log", format="{time} {level} {message}", level="INFO")
 
 
 class Show(TypedDict):
@@ -50,6 +53,7 @@ class ImageProps:
         return self.remote_modified if self.remote_modified else datetime.now()
 
 
+@logger.catch
 def scrape_images():
 
     load_dotenv()
@@ -84,8 +88,9 @@ def scrape_images():
                 dom_colours = image_colour.dominant_colours(
                     file_path(image_props, "jpg")
                 )
+
             except Exception as e:
-                print(
+                logger.error(
                     f"Error calculating dominant image colours for show {show['id']}: {e}"
                 )
                 dom_colours = None
