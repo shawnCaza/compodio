@@ -299,7 +299,12 @@ class MySQL:  # ------------------------------------------------------
         self.close(cursor, conn)
 
     # ------------------------------------------------------
-    def insert_image(self, show_id, last_updt, sizes, dom_colours, synched):
+    def insert_image(self, image_props):
+
+        # image_props.show_id,
+        # image_props.db_modified,
+        # json.dumps(image_props.responsive_dimensions),
+        # json.dumps(dom_colours),
 
         # connect to MySQL
         conn, cursor = self.connect()
@@ -314,7 +319,7 @@ class MySQL:  # ------------------------------------------------------
                     `dom_colours` = new.`dom_colours`,
                     `synched` = new.`synched`;
             """
-        cursor.execute(query, (show_id, last_updt, sizes, dom_colours, synched))
+        cursor.execute(query, (show_id, last_updt, sizes, dom_colours, False))
         conn.commit()
         # print(cursor.statement,)
 

@@ -25,9 +25,9 @@ logger.add("logs/radio_scrape.log", format="{time} {level} {message}", level="IN
 
 class Show(TypedDict):
     id: int
-    slug: str
     image_url: str
     last_updt: datetime
+    slug: str
 
 
 class ImageDimensions(TypedDict):
@@ -39,12 +39,15 @@ class ImageDimensions(TypedDict):
 class ImageProps:
     base_name: str
     folder: str
-    remote_url: str
-    remote_modified: datetime | None
     local_modified: datetime | None
+    remote_modified: datetime | None
+    remote_url: str
+    show_id: int
+
+    dom_colours: list[str] | None = None
     image: Image.Image | None = None
-    responsive_widths: set[int] = field(default_factory=set)
     responsive_dimensions: list[ImageDimensions] = field(default_factory=list)
+    responsive_widths: set[int] = field(default_factory=set)
 
     @property
     def db_modified(self) -> datetime:
@@ -66,42 +69,24 @@ def scrape_images():
         if not _valid_show_data(show):
             continue
 
-        # If the image url is broken, skip the show
         req = requests.head(show["image_url"], allow_redirects=True)
-        if req.status_code >= 400:
+        if req.status_code >= 400:  # If the image url is broken, skip the show
             # TODO: at what point do we stop checking repeatedly invalid urls?
             time.sleep(1.5)
             continue
 
         image_props = ImageProps(
-            folder=f"{shows_image_folder}/{show['slug']}",
-            remote_url=show["image_url"],
             base_name=show["slug"],
-            remote_modified=_modified(req),
+            folder=f"{shows_image_folder}/{show['slug']}",
             local_modified=show["last_updt"],
+            remote_modified=_modified(req),
+            remote_url=show["image_url"],
+            show_id=show["id"],
         )
 
         if _needs_update(image_props):
 
-            _save_image_variations(image_props)
-
-            try:
-                dom_colours = image_colour.dominant_colours(
-                    file_path(image_props, "jpg")
-                )
-            except Exception as e:
-                logger.error(
-                    f"Error calculating dominant image colours for show {show['id']}: {e}"
-                )
-                dom_colours = None
-
-            mySQL.insert_image(
-                show["id"],
-                image_props.db_modified,
-                json.dumps(image_props.responsive_dimensions),
-                json.dumps(dom_colours),
-                synched=False,
-            )
+            _process_image(image_props, mySQL)
 
             time.sleep(90)  # To avoid overloading the server with requests
 
@@ -154,6 +139,22 @@ def _needs_update(image_props: ImageProps) -> bool:
         needs_updt = True
 
     return needs_updt
+
+
+def _process_image(image_props: ImageProps, mySQL: scraper_MySQL.MySQL):
+
+    _save_image_variations(image_props)
+
+    try:
+        image_props.dom_colours = image_colour.dominant_colours(
+            file_path(image_props, "jpg")
+        )
+    except Exception as e:
+        logger.error(
+            f"Error calculating dominant image colours for show {image_props.show_id}: {e}"
+        )
+
+    mySQL.insert_image(image_props)
 
 
 def _save_image_variations(image_props: ImageProps):
