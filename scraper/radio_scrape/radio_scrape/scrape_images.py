@@ -70,7 +70,8 @@ def scrape_images():
             continue
 
         req = requests.head(show["image_url"], allow_redirects=True)
-        if req.status_code >= 400:  # If the image url is broken, skip the show
+        if req.status_code >= 400:
+            # If the image url is broken, skip the show
             # TODO: at what point do we stop checking repeatedly invalid urls?
             time.sleep(1.5)
             continue
@@ -95,7 +96,9 @@ def scrape_images():
 
 
 def _all_shows(mySQL: scraper_MySQL.MySQL) -> list[Show]:
-
+    """
+    Selects data relavent to the image for all shows in the database.
+    """
     shows = mySQL.get_query(
         """
         SELECT id, slug, img as image_url, last_updt
@@ -107,20 +110,34 @@ def _all_shows(mySQL: scraper_MySQL.MySQL) -> list[Show]:
 
 
 def _valid_show_data(show: Show) -> bool:
+    """
+    Ensure the show has a valid image url and slug.
+    """
+
     return bool(show["image_url"] and len(show["image_url"]) and show["slug"])
 
 
 def _modified(req: requests.Response) -> datetime | None:
-
+    """
+    Returns the last modified header from a request as a datetime object.
+    If the header is present, returns None.
+    """
     if "last-modified" in req.headers:
 
         return datetime.strptime(
             req.headers["last-modified"].replace(" GMT", ""), "%a, %d %b %Y %H:%M:%S"
         )
+    else:
+        return None
 
 
 def _needs_update(image_props: ImageProps) -> bool:
-
+    """
+    If we have a modified date for an existing local image,
+    determine if the remote image is newer.
+    return True if the remote image is newer,
+    or if the image has never been downloaded.
+    """
     # would be nice to use Etags here, but not all servers were returning them
     remote_modified = image_props.remote_modified
     local_modified = image_props.local_modified
@@ -131,7 +148,7 @@ def _needs_update(image_props: ImageProps) -> bool:
 
     elif remote_modified is None and local_modified:
         # To handle cases where the server doesn't return a last-modified header
-        # TODO: add a check to see if the file has changed by comparing file size
+        # TODO: add an alternative check to see if the file has changed. ex. Comparing file size?
         needs_updt = False
 
     else:
@@ -225,7 +242,9 @@ def _determine_responsive_sizes(image_props: ImageProps):
 
 
 def _setup_save_folder(image_props: ImageProps):
-
+    """
+    creates a folder for this show's images, and clears out any existing files.
+    """
     image_folder_path = pathlib.Path(image_props.folder)
     image_folder_path.mkdir(parents=True, exist_ok=True)
 
@@ -235,7 +254,9 @@ def _setup_save_folder(image_props: ImageProps):
 
 
 def _save_standard_images(image_props: ImageProps):
-
+    """
+    Saves a jpg and webp version of the image at the original size.
+    """
     if image_props.image is None:
         raise ValueError("Image not already open.")
 
@@ -281,7 +302,9 @@ def _save_responsive_sizes(image_props: ImageProps):
 
 
 def file_path(image_props: ImageProps, ext: str, suffix: str | None = None) -> str:
-
+    """
+    Returns a file path string for the image based on specified extension and suffix(optional).
+    """
     if suffix is not None:
         return f"{image_props.folder}/{image_props.base_name}_{suffix}.{ext}"
     else:
