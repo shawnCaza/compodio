@@ -1,7 +1,9 @@
+import json
+import logging
+import time
+
 import mysql.connector as mysql
 import radio_scrape.radio_scrape.DBConfig as dbConf
-import time
-import logging
 
 
 class MySQL:  # ------------------------------------------------------
@@ -299,12 +301,7 @@ class MySQL:  # ------------------------------------------------------
         self.close(cursor, conn)
 
     # ------------------------------------------------------
-    def insert_image(self, image_props):
-
-        # image_props.show_id,
-        # image_props.db_modified,
-        # json.dumps(image_props.responsive_dimensions),
-        # json.dumps(dom_colours),
+    def insert_image(self, props):
 
         # connect to MySQL
         conn, cursor = self.connect()
@@ -319,7 +316,16 @@ class MySQL:  # ------------------------------------------------------
                     `dom_colours` = new.`dom_colours`,
                     `synched` = new.`synched`;
             """
-        cursor.execute(query, (show_id, last_updt, sizes, dom_colours, False))
+        cursor.execute(
+            query,
+            (
+                props.show_id,
+                props.db_modified,
+                json.dumps(props.responsive_dimensions),
+                json.dumps(props.dom_colours),
+                False,
+            ),
+        )
         conn.commit()
         # print(cursor.statement,)
 

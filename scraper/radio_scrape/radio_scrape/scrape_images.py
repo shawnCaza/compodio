@@ -1,6 +1,6 @@
 import time
 import os
-import json, requests
+import requests
 import pathlib
 import math
 from datetime import datetime
