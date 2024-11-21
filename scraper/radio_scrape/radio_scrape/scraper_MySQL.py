@@ -301,6 +301,18 @@ class MySQL:  # ------------------------------------------------------
         self.close(cursor, conn)
 
     # ------------------------------------------------------
+    def get_show_images(self):
+
+        show_images = self.get_query(
+            """
+                SELECT id, slug, img as image_url, last_updt
+                FROM shows
+                LEFT JOIN show_images ON show_id = id
+            """
+        )
+
+        return show_images
+
     def insert_image(self, props):
 
         # connect to MySQL

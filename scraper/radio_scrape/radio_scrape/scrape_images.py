@@ -4,8 +4,8 @@ import requests
 import pathlib
 import math
 from datetime import datetime
-from typing import TypedDict
 from dataclasses import dataclass, field
+from collections.abc import Generator
 
 from PIL import Image, ImageOps
 from dotenv import load_dotenv
@@ -23,37 +23,90 @@ import scraper_MySQL
 logger.add("logs/radio_scrape.log", format="{time} {level} {message}", level="INFO")
 
 
-class Show(TypedDict):
+@dataclass
+class Show:
     id: int
     image_url: str
     last_updt: datetime
     slug: str
 
+    @property
+    def valid_data(self) -> bool:
+        """
+        Ensure the show has a valid image url and slug.
+        """
+        return bool(self.image_url and len(self.image_url) and self.slug)
 
-class ImageDimensions(TypedDict):
+
+@dataclass
+class ImageDimensions:
     w: int
     h: int
 
 
 @dataclass
 class ImageProps:
+    req: requests.Response
     base_name: str
     folder: str
     local_modified: datetime | None
-    remote_modified: datetime | None
-    remote_url: str
+    url: str
     show_id: int
 
     dom_colours: list[str] | None = None
-    image: Image.Image | None = None
     responsive_dimensions: list[ImageDimensions] = field(default_factory=list)
-    responsive_widths: set[int] = field(default_factory=set)
+
+    @classmethod
+    def from_url(cls, show: Show, shows_image_folder: str) -> "ImageProps":
+        req = requests.head(show.image_url, allow_redirects=True)
+        return cls(
+            req=req,
+            base_name=show.slug,
+            folder=f"{shows_image_folder}/{show.slug}",
+            local_modified=show.last_updt,
+            url=show.image_url,
+            show_id=show.id,
+        )
 
     @property
-    def db_modified(self) -> datetime:
+    def needs_update(self) -> bool:
+        """
+        If we have a modified date for an existing local image,
+        determine if the remote image is newer.
+        return True if the remote image is newer,
+        or if the image has never been downloaded.
+        """
+        # would be nice to use Etags here, but not all servers were returning them
+        last_modified = self.last_modified
+        local_modified = self.local_modified
+        headers = self.req.headers
+
+        if local_modified and "remote_modified" in headers:
+            # We have both remote and local modified dates to compare
+            needs_updt = True if local_modified < last_modified else False
+
+        elif local_modified and "remote_modified" not in headers:
+            # To handle cases where the server doesn't return a last-modified header
+            # TODO: add an alternative check to see if the file has changed. ex. Comparing file size?
+            needs_updt = False
+
+        else:
+            # Show image has never been downloaded
+            needs_updt = True
+
+        return needs_updt
+
+    @property
+    def last_modified(self) -> datetime:
         # If server didn't return a last-modified header,
         # we'll use current date as a reference point for future comparisons.
-        return self.remote_modified if self.remote_modified else datetime.now()
+        if "last-modified" not in self.req.headers:
+            return datetime.now()
+        else:
+            return datetime.strptime(
+                self.req.headers["last-modified"].replace(" GMT", ""),
+                "%a, %d %b %Y %H:%M:%S",
+            )
 
 
 @logger.catch
@@ -62,135 +115,106 @@ def scrape_images():
     load_dotenv()
     shows_image_folder = f"{os.getenv('image_folder')}/shows"
     mySQL = scraper_MySQL.MySQL()
-    shows = _all_shows(mySQL)
+    shows: list[Show] = _all_shows(mySQL)
 
     for show in shows:
 
-        if not _valid_show_data(show):
+        if not show.valid_data:
             continue
 
-        req = requests.head(show["image_url"], allow_redirects=True)
-        if req.status_code >= 400:
-            # If the image url is broken, skip the show
-            # TODO: at what point do we stop checking repeatedly invalid urls?
+        props = ImageProps.from_url(show, shows_image_folder)
+
+        if not props.needs_update:
             time.sleep(1.5)
             continue
 
-        image_props = ImageProps(
-            base_name=show["slug"],
-            folder=f"{shows_image_folder}/{show['slug']}",
-            local_modified=show["last_updt"],
-            remote_modified=_modified(req),
-            remote_url=show["image_url"],
-            show_id=show["id"],
-        )
-
-        if _needs_update(image_props):
-
-            _process_image(image_props, mySQL)
-
-            time.sleep(90)  # To avoid overloading the server with requests
-
-        else:
-            time.sleep(1.5)
+        _process_image(props, mySQL)
+        time.sleep(90)  # To avoid overloading the server with requests
 
 
 def _all_shows(mySQL: scraper_MySQL.MySQL) -> list[Show]:
     """
     Selects data relavent to the image for all shows in the database.
     """
-    shows = mySQL.get_query(
-        """
-        SELECT id, slug, img as image_url, last_updt
-        FROM shows
-        LEFT JOIN show_images ON show_id = id
-    """
-    )
+    shows = [Show(**row) for row in mySQL.get_show_images()]
     return shows
 
 
-def _valid_show_data(show: Show) -> bool:
-    """
-    Ensure the show has a valid image url and slug.
-    """
+def _process_image(props: ImageProps, mySQL: scraper_MySQL.MySQL):
 
-    return bool(show["image_url"] and len(show["image_url"]) and show["slug"])
-
-
-def _modified(req: requests.Response) -> datetime | None:
-    """
-    Returns the last modified header from a request as a datetime object.
-    If the header is present, returns None.
-    """
-    if "last-modified" in req.headers:
-
-        return datetime.strptime(
-            req.headers["last-modified"].replace(" GMT", ""), "%a, %d %b %Y %H:%M:%S"
-        )
-    else:
-        return None
-
-
-def _needs_update(image_props: ImageProps) -> bool:
-    """
-    If we have a modified date for an existing local image,
-    determine if the remote image is newer.
-    return True if the remote image is newer,
-    or if the image has never been downloaded.
-    """
-    # would be nice to use Etags here, but not all servers were returning them
-    remote_modified = image_props.remote_modified
-    local_modified = image_props.local_modified
-
-    if local_modified and remote_modified:
-        # We have both remote and local modified dates to compare
-        needs_updt = True if local_modified < remote_modified else False
-
-    elif remote_modified is None and local_modified:
-        # To handle cases where the server doesn't return a last-modified header
-        # TODO: add an alternative check to see if the file has changed. ex. Comparing file size?
-        needs_updt = False
-
-    else:
-        # Show image has never been downloaded
-        needs_updt = True
-
-    return needs_updt
-
-
-def _process_image(image_props: ImageProps, mySQL: scraper_MySQL.MySQL):
-
-    _save_image_variations(image_props)
+    _save_image_variations(props)
 
     try:
-        image_props.dom_colours = image_colour.dominant_colours(
-            file_path(image_props, "jpg")
-        )
+        props.dom_colours = image_colour.dominant_colours(file_path(props, "jpg"))
     except Exception as e:
         logger.error(
-            f"Error calculating dominant image colours for show {image_props.show_id}: {e}"
+            f"Error calculating dominant image colours for show {props.show_id}: {e}"
         )
 
-    mySQL.insert_image(image_props)
+    mySQL.insert_image(props)
 
 
-def _save_image_variations(image_props: ImageProps):
+def _save_image_variations(props: ImageProps):
 
-    _open_image(image_props)
-    _determine_responsive_sizes(image_props)
-    _setup_save_folder(image_props)
-    _save_standard_images(image_props)
-    _save_responsive_sizes(image_props)
+    with Image.open(_download_image(props)) as image:
+        _setup_save_folder(props)
+        _save_standard_images(props, image)
+        props.responsive_dimensions = list(_responsive_dimensions(image))
+        _save_responsive_images(props, image)
 
 
-def _open_image(image_props: ImageProps) -> None:
-
-    response = requests.get(image_props.remote_url, stream=True)
+def _download_image(props: ImageProps) -> bytes:
+    """Downloads the image bytes from the url into memory."""
+    response = requests.get(props.url, stream=True)
     response.raw.decode_content = True
-    image_props.image = Image.open(response.raw)
+    return response.raw
 
 
-def _determine_responsive_sizes(image_props: ImageProps):
+def _setup_save_folder(props: ImageProps):
+    """
+    creates a folder for this show's images, and clears out any existing files.
+    """
+    image_folder_path = pathlib.Path(props.folder)
+    image_folder_path.mkdir(parents=True, exist_ok=True)
+
+    # Clear out any existing files in the folder
+    for file in image_folder_path.iterdir():
+        file.unlink()
+
+
+def _save_standard_images(props: ImageProps, image: Image.Image):
+    """
+    Saves a jpg and webp version of the image at the original size.
+    """
+
+    # Correct orientation of image based on exif data
+    image = ImageOps.exif_transpose(image)
+    image = image.convert("RGB")
+
+    image.save(file_path(props, "webp"), "webp", lossless=0, quality=50)
+
+    image.save(file_path(props, "jpg"), "jpeg", optimize=True)
+
+
+def _responsive_dimensions(image: Image.Image) -> Generator[ImageDimensions]:
+    """
+    Calculates the Width and Height of the image for various responsive breakpoints.
+    """
+
+    responsive_widths = set(_responsive_widths(image))
+
+    for new_w in sorted(responsive_widths, reverse=True):
+
+        current_w = image.size[0]
+        current_h = image.size[1]
+
+        decrease_percent = new_w / current_w
+        new_h = int(current_h * decrease_percent)
+
+        yield ImageDimensions(w=new_w, h=new_h)
+
+
+def _responsive_widths(image: Image.Image) -> Generator[int]:
     """
     Because images are often not the same aspect ratio as the responsive image container,
     the image dimensions we need depend on the aspect ratio of the image compared to
@@ -199,116 +223,58 @@ def _determine_responsive_sizes(image_props: ImageProps):
     values used across various screen sizes.
     """
 
-    if image_props.image is None:
-        raise ValueError("Image not already open.")
-
-    orig_w = image_props.image.width
-    orig_h = image_props.image.height
+    orig_w = image.width
+    orig_h = image.height
     aspect_ratio = orig_w / orig_h
 
-    # potential image margins and max width/height for each breakpoint used in css
+    # potential image margins, max width, max height for each breakpoint used in css
     image_breakpoint_constraints = [
-        {"w": None, "h": 180, "margin": 40},
-        {"w": 334, "h": 188, "margin": 24},
-        {"w": 386, "h": 218, "margin": 24},
-        {"w": 398, "h": 224, "margin": 24},
-        {"w": None, "h": 280, "margin": 0},
+        (None, 180, 40),
+        (334, 188, 24),
+        (386, 218, 24),
+        (398, 224, 24),
+        (None, 280, 0),
     ]
 
-    for constraints in image_breakpoint_constraints:
+    for max_w, max_h, margin in image_breakpoint_constraints:
 
         # margin is applied to image area only when
         # height is proportionally larger than a 16:9 aspect ratio
-        margin = (
-            constraints["margin"]
-            if aspect_ratio < 16 / 9 or constraints["margin"] == 40
-            else 0
-        )
+        margin = margin if aspect_ratio < 16 / 9 or margin == 40 else 0
 
         # The available width for the image is constrained by the max height and margin
-        available_w = math.ceil((constraints["h"] - margin) * aspect_ratio)
+        available_w = math.ceil((max_h - margin) * aspect_ratio)
 
-        new_w = (
-            available_w
-            if not constraints["w"] or available_w < constraints["w"]
-            else constraints["w"]
-        )
+        new_w = available_w if not max_w or available_w < max_w else max_w
 
         # add new_w, as well as retina sized variations, to responsive_widths.
         # Only add a width that's smaller than the original. we're not upscaling.
         for width in [new_w, new_w * 2, new_w * 3]:
             if width < orig_w:
-                image_props.responsive_widths.add(width)
+                yield width
 
 
-def _setup_save_folder(image_props: ImageProps):
-    """
-    creates a folder for this show's images, and clears out any existing files.
-    """
-    image_folder_path = pathlib.Path(image_props.folder)
-    image_folder_path.mkdir(parents=True, exist_ok=True)
+def _save_responsive_images(props: ImageProps, image: Image.Image) -> None:
 
-    # Clear out any existing files in the folder
-    for file in image_folder_path.iterdir():
-        file.unlink()
+    for size in props.responsive_dimensions:
 
+        resized_image = image.resize(size=(size.w, size.h))
 
-def _save_standard_images(image_props: ImageProps):
-    """
-    Saves a jpg and webp version of the image at the original size.
-    """
-    if image_props.image is None:
-        raise ValueError("Image not already open.")
-
-    # Correct orientation of image based on exif data
-    image_props.image = ImageOps.exif_transpose(image_props.image)
-    image_props.image = image_props.image.convert("RGB")
-
-    image_props.image.save(
-        file_path(image_props, "webp"), "webp", lossless=0, quality=50
-    )
-
-    image_props.image.save(file_path(image_props, "jpg"), "jpeg", optimize=True)
-
-
-def _save_responsive_sizes(image_props: ImageProps):
-    """
-    Creates multiple size versions of an image.
-    """
-    if image_props.image is None:
-        raise ValueError("Image has not been opened")
-
-    for new_w in sorted(image_props.responsive_widths, reverse=True):
-
-        current_w = image_props.image.size[0]
-        current_h = image_props.image.size[1]
-
-        decrease_percent = new_w / current_w
-        new_h = int(current_h * decrease_percent)
-
-        resized_image = image_props.image.resize(size=((new_w, new_h)))
+        resized_image.save(file_path(props, "jpg", str(size.w)), "jpeg", optimize=True)
 
         resized_image.save(
-            file_path(image_props, "jpg", str(new_w)), "jpeg", optimize=True
-        )
-
-        resized_image.save(
-            file_path(image_props, "webp", str(new_w)), "webp", lossless=0, quality=50
-        )
-
-        image_props.responsive_dimensions.append(
-            {"w": resized_image.size[0], "h": resized_image.size[1]}
+            file_path(props, "webp", str(size.w)), "webp", lossless=0, quality=50
         )
 
 
-def file_path(image_props: ImageProps, ext: str, suffix: str | None = None) -> str:
+def file_path(props: ImageProps, ext: str, suffix: str | None = None) -> str:
     """
     Returns a file path string for the image based on specified extension and suffix(optional).
     """
     if suffix is not None:
-        return f"{image_props.folder}/{image_props.base_name}_{suffix}.{ext}"
+        return f"{props.folder}/{props.base_name}_{suffix}.{ext}"
     else:
-        return f"{image_props.folder}/{image_props.base_name}.{ext}"
+        return f"{props.folder}/{props.base_name}.{ext}"
 
 
 if __name__ == "__main__":
