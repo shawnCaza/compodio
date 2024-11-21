@@ -5,7 +5,7 @@ import pathlib
 import math
 from datetime import datetime
 from dataclasses import dataclass, field
-from collections.abc import Generator
+from collections.abc import Iterator
 
 from PIL import Image, ImageOps
 from dotenv import load_dotenv
@@ -142,7 +142,11 @@ def _all_shows(mySQL: scraper_MySQL.MySQL) -> list[Show]:
 
 def _process_image(props: ImageProps, mySQL: scraper_MySQL.MySQL):
 
-    _save_image_variations(props)
+    with Image.open(_download_image(props)) as image:
+
+        image = ImageOps.exif_transpose(image)  # Correct orientation
+        image = image.convert("RGB")
+        _save_image_variations(props, image)
 
     try:
         props.dom_colours = image_colour.dominant_colours(file_path(props, "jpg"))
@@ -154,13 +158,12 @@ def _process_image(props: ImageProps, mySQL: scraper_MySQL.MySQL):
     mySQL.insert_image(props)
 
 
-def _save_image_variations(props: ImageProps):
+def _save_image_variations(props: ImageProps, image: Image.Image):
 
-    with Image.open(_download_image(props)) as image:
-        _setup_save_folder(props)
-        _save_standard_images(props, image)
-        props.responsive_dimensions = list(_responsive_dimensions(image))
-        _save_responsive_images(props, image)
+    _setup_save_folder(props)
+    _save_standard_images(props, image)
+    props.responsive_dimensions = list(_responsive_dimensions(image))
+    _save_responsive_images(props, image)
 
 
 def _download_image(props: ImageProps) -> bytes:
@@ -187,16 +190,12 @@ def _save_standard_images(props: ImageProps, image: Image.Image):
     Saves a jpg and webp version of the image at the original size.
     """
 
-    # Correct orientation of image based on exif data
-    image = ImageOps.exif_transpose(image)
-    image = image.convert("RGB")
-
     image.save(file_path(props, "webp"), "webp", lossless=0, quality=50)
 
     image.save(file_path(props, "jpg"), "jpeg", optimize=True)
 
 
-def _responsive_dimensions(image: Image.Image) -> Generator[ImageDimensions]:
+def _responsive_dimensions(image: Image.Image) -> Iterator[ImageDimensions]:
     """
     Calculates the Width and Height of the image for various responsive breakpoints.
     """
@@ -214,7 +213,7 @@ def _responsive_dimensions(image: Image.Image) -> Generator[ImageDimensions]:
         yield ImageDimensions(w=new_w, h=new_h)
 
 
-def _responsive_widths(image: Image.Image) -> Generator[int]:
+def _responsive_widths(image: Image.Image) -> Iterator[int]:
     """
     Because images are often not the same aspect ratio as the responsive image container,
     the image dimensions we need depend on the aspect ratio of the image compared to
