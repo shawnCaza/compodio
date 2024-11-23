@@ -32,9 +32,7 @@ class Show:
 
     @property
     def valid_data(self) -> bool:
-        """
-        Ensure the show has a valid image url and slug.
-        """
+
         return bool(self.image_url and len(self.image_url) and self.slug)
 
 
@@ -81,7 +79,7 @@ class ImageProps:
         local_modified = self.local_modified
         headers = self.req.headers
 
-        if local_modified and "remote_modified" in headers:
+        if local_modified and "last-modified" in headers:
             # We have both remote and local modified dates to compare
             needs_updt = True if local_modified < last_modified else False
 
@@ -134,7 +132,7 @@ def scrape_images():
 
 def _all_shows(mySQL: scraper_MySQL.MySQL) -> list[Show]:
     """
-    Selects data relavent to the image for all shows in the database.
+    Selects data relevant to the image for all shows in the database.
     """
     shows = [Show(**row) for row in mySQL.get_show_images()]
     return shows
