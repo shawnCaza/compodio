@@ -1,6 +1,7 @@
 import json
 import logging
 import time
+from dataclasses import asdict
 
 import mysql.connector as mysql
 import radio_scrape.radio_scrape.DBConfig as dbConf
@@ -332,8 +333,8 @@ class MySQL:  # ------------------------------------------------------
             query,
             (
                 props.show_id,
-                props.db_modified,
-                json.dumps(props.responsive_dimensions),
+                props.last_modified,
+                json.dumps(asdict(props)["sizes"]),
                 json.dumps(props.dom_colours),
                 False,
             ),

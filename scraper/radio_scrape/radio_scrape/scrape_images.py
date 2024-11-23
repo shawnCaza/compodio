@@ -54,7 +54,7 @@ class ImageProps:
     show_id: int
 
     dom_colours: list[str] | None = None
-    responsive_dimensions: list[ImageDimensions] = field(default_factory=list)
+    sizes: list[ImageDimensions] = field(default_factory=list)
 
     @classmethod
     def from_url(cls, show: Show, shows_image_folder: str) -> "ImageProps":
@@ -162,7 +162,7 @@ def _save_image_variations(props: ImageProps, image: Image.Image):
 
     _setup_save_folder(props)
     _save_standard_images(props, image)
-    props.responsive_dimensions = list(_responsive_dimensions(image))
+    props.sizes = list(_sizes(image))
     _save_responsive_images(props, image)
 
 
@@ -195,7 +195,7 @@ def _save_standard_images(props: ImageProps, image: Image.Image):
     image.save(file_path(props, "jpg"), "jpeg", optimize=True)
 
 
-def _responsive_dimensions(image: Image.Image) -> Iterator[ImageDimensions]:
+def _sizes(image: Image.Image) -> Iterator[ImageDimensions]:
     """
     Calculates the Width and Height of the image for various responsive breakpoints.
     """
@@ -255,7 +255,7 @@ def _responsive_widths(image: Image.Image) -> Iterator[int]:
 
 def _save_responsive_images(props: ImageProps, image: Image.Image) -> None:
 
-    for size in props.responsive_dimensions:
+    for size in props.sizes:
 
         resized_image = image.resize(size=(size.w, size.h))
 
