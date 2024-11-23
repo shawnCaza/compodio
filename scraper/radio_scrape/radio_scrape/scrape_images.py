@@ -96,8 +96,10 @@ class ImageProps:
 
     @property
     def last_modified(self) -> datetime:
-        # If server didn't return a last-modified header,
-        # we'll use current date as a reference point for future comparisons.
+        """
+        If server didn't return a last-modified header,
+        we'll use current date as a reference point for future comparisons.
+        """
         if "last-modified" not in self.req.headers:
             return datetime.now()
         else:
@@ -139,7 +141,11 @@ def _all_shows(mySQL: scraper_MySQL.MySQL) -> list[Show]:
 
 
 def _process_image(props: ImageProps, mySQL: scraper_MySQL.MySQL):
-
+    """
+    Saves image url to disk in a series of responsive sizes,
+    calculates the dominant colours of the image,
+    and saves the results to the database.
+    """
     with Image.open(_download_image(props)) as image:
 
         image = ImageOps.exif_transpose(image)  # Correct orientation
@@ -165,7 +171,6 @@ def _save_image_variations(props: ImageProps, image: Image.Image):
 
 
 def _download_image(props: ImageProps) -> bytes:
-    """Downloads the image bytes from the url into memory."""
     response = requests.get(props.url, stream=True)
     response.raw.decode_content = True
     return response.raw
