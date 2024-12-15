@@ -162,18 +162,18 @@ def _process_image(props: ImageProps, mySQL: scraper_MySQL.MySQL):
     mySQL.insert_image(props)
 
 
+def _download_image(props: ImageProps) -> bytes:
+    response = requests.get(props.url, stream=True)
+    response.raw.decode_content = True
+    return response.raw
+
+
 def _save_image_variations(props: ImageProps, image: Image.Image):
 
     _setup_save_folder(props)
     _save_standard_images(props, image)
     props.sizes = list(_sizes(image))
     _save_responsive_images(props, image)
-
-
-def _download_image(props: ImageProps) -> bytes:
-    response = requests.get(props.url, stream=True)
-    response.raw.decode_content = True
-    return response.raw
 
 
 def _setup_save_folder(props: ImageProps):
