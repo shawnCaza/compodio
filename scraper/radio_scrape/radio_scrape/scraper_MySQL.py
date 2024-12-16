@@ -314,6 +314,30 @@ class MySQL:  # ------------------------------------------------------
 
         return show_images
 
+    def show_images_to_sync(self):
+        show_images = self.get_query(
+            """
+                SELECT slug
+                FROM shows
+                LEFT JOIN show_images ON show_id = id
+                WHERE synched = 0
+            """
+        )
+        return show_images
+
+    def update_synced_show_images(self, show_slugs):
+        conn, cursor = self.connect()
+        self.use_compodio_DB(cursor)
+
+        cursor.execute(
+            f"""UPDATE show_images
+                SET synched = 1
+                WHERE show_id IN (SELECT id FROM shows WHERE slug IN ('{"', '".join(show_slugs)}'))
+            """
+        )
+
+        conn.commit()
+
     def insert_image(self, props):
 
         # connect to MySQL
