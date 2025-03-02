@@ -87,6 +87,7 @@
 }
 .showDetails .iconDetailsList .iconAndTextContainer .iconTxt {
   max-width: 13.75em;
+  text-wrap: balance;
 }
 .showDetails .iconDetailsList .iconAndTextContainer a.iconTxt {
   color: var(--primaryColor);
