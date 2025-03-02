@@ -1,3 +1,9 @@
+/*--------------------------------------------------------------
+# mixins 
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+# Variables
+--------------------------------------------------------------*/
 .header {
   display: -webkit-box;
   display: -ms-flexbox;
@@ -11,4 +17,20 @@
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
+}
+@media only screen and (min-width: 37.5rem) {
+  .header {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    width: 100%;
+  }
+  .header > :first-child {
+    justify-self: start;
+  }
+  .header > :last-child {
+    justify-self: end;
+  }
+  .header > :not(:first-child):not(:last-child) {
+    justify-self: center;
+  }
 }/*# sourceMappingURL=Container.module.css.map */

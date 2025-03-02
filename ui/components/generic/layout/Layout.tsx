@@ -14,8 +14,10 @@ function Layout({ children}:layoutProps) {
         <>
             <div id='everything'>
                 <Header>
-                    <Branding/>
-                    <SearchContainer/>
+                    <Branding />
+                    <div className="middleItems"> {/* Used to ensure all middle items are centered to page width in grid. */}       
+                        <SearchContainer />
+                    </div>
                     <MainMenu/>
                 </Header>
                 <div id='content'>
