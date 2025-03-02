@@ -22,6 +22,10 @@ def synch_image_files():
 
     mySQL = MySQL()
     shows = mySQL.show_images_to_sync()
+
+    if len(shows) == 0:
+        return
+
     folders_to_compress = [show["slug"] for show in shows]
 
     server_syncer = Sync_helper()
