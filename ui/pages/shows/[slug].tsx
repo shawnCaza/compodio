@@ -110,7 +110,7 @@ export default function ShowPage() {
           }
         </div>
         {show.tagIds &&
-          <TagsContainer currentTagIds={JSON.parse(show.tagIds)} maxTags={null} />
+            <TagsContainer currentTagIds={JSON.parse(show.tagIds)} maxTags={null} rounded_corners={true} />
         }
       </div>
 

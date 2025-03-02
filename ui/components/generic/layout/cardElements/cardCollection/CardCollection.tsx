@@ -24,11 +24,15 @@ function CardCollection({cardDataCollection, CardContent, singleRow=false}:cardC
                     slidesPerView={1.1}
                     breakpoints={{
                         0: {enabled: false},
-                        400: {slidesPerView: 'auto', enabled: false},
+                        400: { slidesPerView: 'auto', enabled: false },
+                        768: { slidesPerView: 'auto', spaceBetween: 15 },
+                        1024: {slidesPerView: 3,},
                         1069: {enabled: true,
                             slidesPerView: 'auto',
-                            slidesPerGroup: 3
-                        }
+                            slidesPerGroup: 3,
+                        },
+                        1200: { slidesPerView: 'auto', slidesPerGroup: 3, spaceBetween: 20 },
+                        1720: {slidesPerView: 'auto',slidesPerGroup: 4, spaceBetween: 20 }
                     }}
                     className={styles.swiper}
                 >

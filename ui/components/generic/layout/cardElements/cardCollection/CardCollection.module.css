@@ -140,12 +140,14 @@
 .swiperContainer :global .swiper-button-lock {
   display: none;
 }
-.swiperContainer :global .swiper-initialized .swiper-button-prev, .swiperContainer :global .swiper-initialized .swiper-button-next {
+.swiperContainer :global .swiper-initialized .swiper-button-prev,
+.swiperContainer :global .swiper-initialized .swiper-button-next {
   opacity: 1;
   -webkit-transition: opacity 0.35s ease-in-out;
   transition: opacity 0.35s ease-in-out;
 }
-.swiperContainer :global .swiper-initialized .swiper-button-prev.swiper-button-disabled, .swiperContainer :global .swiper-initialized .swiper-button-next.swiper-button-disabled {
+.swiperContainer :global .swiper-initialized .swiper-button-prev.swiper-button-disabled,
+.swiperContainer :global .swiper-initialized .swiper-button-next.swiper-button-disabled {
   opacity: 0;
 }
 .swiperContainer :global .swiper-button-prev:after,
