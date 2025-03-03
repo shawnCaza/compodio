@@ -1,7 +1,7 @@
 export function makeSnippet(txt:string, lengthApprox:number){
 
     //remove '<p>' and '</p>' from txt
-    txt = txt.replace(/<p>/g,"").replace(/<\/p>/g,""); 
+    txt = txt.replace(/<p>/g,"").replace(/<\/p>/g," "); 
 
     // lengthApprox is the approximate max-length of our snippet.
     // If txt is longer than max, will return string up to lengthApprox + remainder of any word that might be cut.

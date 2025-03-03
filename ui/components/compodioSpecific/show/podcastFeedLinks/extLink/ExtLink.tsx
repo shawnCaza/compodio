@@ -15,7 +15,7 @@ function ExtLink({extFeed}:extFeed) {
             <span className={styles.subscribeOptionButtonContainer}>
 
                 <span className="screen-reader-text">Subscribe on {extFeed.feedType}</span>
-                    <a className='button' href={extFeed.link} target='_blank' rel='noreferrer' title={'Subscript on ' + extFeed.feedType}>
+                    <a className='button' href={extFeed.link} target='_blank' rel='noreferrer' title={'Subscribe on ' + extFeed.feedType.charAt(0).toUpperCase() + extFeed.feedType.slice(1)}>
                         {extFeed.feedType === 'spotify' &&
                             <PiSpotifyLogoFill/>
                         }
