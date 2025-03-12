@@ -39,8 +39,7 @@ def dominant_colours(image_path: str, n_clusters: int = 3) -> list[str] | None:
     param n_clusters: int number - number of cluster colours to look for. Default is 3.
     Returns: list with of hex colours, or None if there was an error reading the image.
 
-    k-means clustering is used to cluster n similar colours together, and obtain the mean colour of each group.
-    n is specified by the quantity parameter.
+    k-means clustering is used to create n clusters of similar colours, and obtain the mean colour of each cluster.
 
     These central colours of each cluster are then processed to obtain results that are more suitable for use as a background gradient behing the image.
 
@@ -183,7 +182,7 @@ def _remove_similar_colours(
     Delta E values range from 0 to 100. 0 = identical and 100 = opposite colours.
     Colours are considered too similar if the delta E is less than min_delta.
 
-    returns list of filtered CentralClusterColour sorted in descending order by cluster size.
+    returns filtered list of _ClusterColour's sorted in descending order by cluster size.
     """
     filtered: list[_ClusterColour] = []
     colours.sort(reverse=True, key=lambda colour: colour.cluster_size)
