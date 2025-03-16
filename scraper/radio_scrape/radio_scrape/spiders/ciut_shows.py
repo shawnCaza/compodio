@@ -47,10 +47,11 @@ class CiutShowsSpider(scrapy.Spider):
         current_show["email"] = email.replace("mailto:", "") if email != None else None
         current_show["source"] = "ciut"
 
-        schedule = response.xpath(
-            "//p/strong[contains(text(),'0am') or contains(text(),'0pm') ]/text()"
-        ).get()
-        current_show["duration"] = self.calculate_duration(schedule)
+        try:
+            sched = self.schedule(response)
+            current_show["duration"] = self.calculate_duration(sched)
+        except:
+            current_show["duration"] = 0
 
         yield current_show
 
@@ -137,10 +138,19 @@ class CiutShowsSpider(scrapy.Spider):
                 # TODO: could make sure header desc does not match any other show's description.
                 description = header_description
 
-    def calculate_duration(self, schedule):
+    def schedule(self, response):
+        return response.xpath(
+            "//p/*[self::strong or self::b][contains(translate(text(), 'AM', 'am'),'am-') or contains(translate(text(), 'PM', 'pm'),'pm-')]/text()"
+        ).get()
+
+    def calculate_duration(self, sched):
 
         # create tuple of just the start and end hours for show (assumes all shows in schedule start on the hour.)
-        hours = tuple(int(hour) for hour in findall(r"([0-9]+):00", schedule))
+        hours = tuple(
+            int(time) for time in findall(r"(\d{1,2})(?::00)?(?:\s)?(?:am|pm)", sched)
+        )
+        if len(hours) != 2:
+            raise ValueError("Could not parse show schedule")
 
         # assumes no show is > 12 hours in length
         duration_hours = (
