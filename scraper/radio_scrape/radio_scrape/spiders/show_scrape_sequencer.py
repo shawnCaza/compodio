@@ -12,9 +12,11 @@ from ciut_eps import CiutEps
 from cfru_eps import CfruEps
 from ckut_eps import CkutEps
 from radio_scrape.radio_scrape.server_sync.sync_compodio_data_to_server import sync_db
+
 setting = get_project_settings()
 
 process = CrawlerProcess(setting)
+
 
 @defer.inlineCallbacks
 def crawl_seq():
@@ -23,9 +25,11 @@ def crawl_seq():
     yield process.crawl(CiutShowsSpider)
     yield process.crawl(CfruShowsSpider)
     yield process.crawl(CkutShowsSpider)
-    #reactor.stop()
+    # reactor.stop()
+
 
 crawl_seq()
+
 
 # after the show spider completes, run the episode spiders
 @defer.inlineCallbacks
@@ -37,9 +41,10 @@ def crawl_seq2():
     yield process.crawl(CfruEps)
     # reactor.stop()
 
+
 crawl_seq2()
 
-process.start() # the script will block here until the crawling is finished
+process.start()  # the script will block here until the crawling is finished
 
 sync_db()
 

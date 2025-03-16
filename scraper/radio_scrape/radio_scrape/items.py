@@ -6,14 +6,15 @@
 import scrapy
 
 
-class episode_item(scrapy.Item):
+class EpisodeItem(scrapy.Item):
     # define the fields for your item here like:
     mp3 = scrapy.Field()
     show_id = scrapy.Field()
     ep_date = scrapy.Field()
     file_size = scrapy.Field()
 
-class show_item(scrapy.Item):
+
+class ShowItem(scrapy.Item):
     # define the fields for your item here like:
     showName = scrapy.Field()
     source = scrapy.Field()
@@ -25,8 +26,9 @@ class show_item(scrapy.Item):
     email = scrapy.Field()
     duration = scrapy.Field()
     slug = scrapy.Field()
-    
-class ext_feed_item(scrapy.Item):
+
+
+class ExtFeedItem(scrapy.Item):
     # define the fields for your item here like:
     link = scrapy.Field()
     show_id = scrapy.Field()
