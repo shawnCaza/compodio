@@ -7,7 +7,7 @@ from urllib.parse import urlparse, parse_qs, unquote
 from radio_scrape.radio_scrape.items import EpisodeItem
 from radio_scrape.radio_scrape.pipeline_definitions import episode_pipelines
 from radio_scrape.radio_scrape.scraper_MySQL import MySQL
-from radio_scrape.radio_scrape.spiders.ciut_helpers import show_name
+from radio_scrape.radio_scrape.spiders.ciut_shows import show_name
 
 
 class CiutEps(scrapy.Spider):
