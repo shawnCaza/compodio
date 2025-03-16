@@ -7,6 +7,7 @@ from urllib.parse import urlparse, parse_qs, unquote
 from radio_scrape.radio_scrape.items import EpisodeItem
 from radio_scrape.radio_scrape.pipeline_definitions import episode_pipelines
 from radio_scrape.radio_scrape.scraper_MySQL import MySQL
+from radio_scrape.radio_scrape.spiders.ciut_shows import show_name
 
 
 class CiutEps(scrapy.Spider):
@@ -24,14 +25,14 @@ class CiutEps(scrapy.Spider):
         for ep in newest_eps
     }
 
-    start_urls = [show["internal_link"] for show in show_results if show["id"]]
+    start_urls = [show["internal_link"] for show in show_results]
     allowed_domains = ["ciut.fm", "podbean.com"]
 
     def parse(self, response):
 
-        show_name = response.xpath("//h1/text()").get()
+        name = show_name(response)
 
-        show_id = self.show_id_map[show_name]
+        show_id = self.show_id_map[name]
 
         # Need to get most recently stored ep for show to determine if anything is newer
         if show_id in self.newest_ep_map.keys():
@@ -163,3 +164,14 @@ class CiutEps(scrapy.Spider):
 
                 print("\n\nEnd of new episodes")
                 break
+
+
+if __name__ == "__main__":
+    from scrapy.crawler import CrawlerProcess
+
+    process = CrawlerProcess(
+        {"USER_AGENT": "Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 5.1)"}
+    )
+
+    process.crawl(CiutEps)
+    process.start()
