@@ -28,119 +28,114 @@ class CiutShowsSpider(scrapy.Spider):
 
         current_show = ShowItem()
 
+        current_show["showName"] = self.show_name(response)
+
+        if any(skip_show in current_show["showName"] for skip_show in shows_to_skip):
+            return
+
+        current_show["img"] = self.img_url(response)
+
+        current_show["desc"] = self.desc(response)
+
+        host = response.xpath("//p/strong[contains(text(),'Host')]/text()").get()
+        current_show["host"] = host.split(":")[1] if host != None else None
+        current_show["internal_link"] = response.url
+        current_show["ext_link"] = response.xpath(
+            "//h1/../p[contains(text(),'Web')]/a/@href"
+        ).get()
+        email = response.xpath("//h1/../p[contains(text(),'Contact')]/a/@href").get()
+        current_show["email"] = email.replace("mailto:", "") if email != None else None
+        current_show["source"] = "ciut"
+
+        schedule = response.xpath(
+            "//p/strong[contains(text(),'0am') or contains(text(),'0pm') ]/text()"
+        ).get()
+        current_show["duration"] = self.calculate_duration(schedule)
+
+        yield current_show
+
+    def show_name(self, response):
+
         # Usually the show title is in the H1 tag
         if response.xpath("//h1/text()").get():
-            current_show["showName"] = response.xpath("//h1/text()").get()
+            name = response.xpath("//h1/text()").get()
         else:
             # if no H1 tag, then let's try the title tag
-            current_show["showName"] = (
-                response.xpath("//title/text()").get().split(" - ")[0]
-            )
+            name = response.xpath("//title/text()").get().split(" - ")[0]
 
-        print(current_show["showName"])
-        if all(
-            skip_show not in current_show["showName"] for skip_show in shows_to_skip
-        ):
+        return name
 
-            # Different pages use different methods to include images. bg img or img tag
-            # check for bg image first, then img tag if bg image doesn't exist
-            img_bg = response.xpath(
-                "//div[contains(@style,'image') and contains(@style,'padding')]"
-            ).get()
-            img_wrapper = response.xpath(
-                "//div[contains(@class,'image_wrapper')]/img/@data-src"
-            ).get()
-            img_tag = response.xpath(
-                "//div[@id='Content']//img[not (contains(@alt, 'parallax'))]/@data-src"
-            ).get()
+    def img_url(self, response):
+        # Different pages use different methods to include images. bg img or img tag
+        # check for bg image first, then img tag if bg image doesn't exist
+        img_bg = response.xpath(
+            "//div[contains(@style,'image') and contains(@style,'padding')]"
+        ).get()
+        img_wrapper = response.xpath(
+            "//div[contains(@class,'image_wrapper')]/img/@data-src"
+        ).get()
+        img_tag = response.xpath(
+            "//div[@id='Content']//img[not (contains(@alt, 'parallax'))]/@data-src"
+        ).get()
 
-            if img_bg:
-                # extract image link out of style definition
-                current_show["img"] = img_bg.split("background-image:url(")[1].split(
-                    ")"
-                )[0]
-            elif img_wrapper:
-                current_show["img"] = img_wrapper
-            elif img_tag:
-                current_show["img"] = img_tag
-            else:
-                current_show["img"] = None
+        if img_bg:
+            # extract image link out of style definition
+            img = img_bg.split("background-image:url(")[1].split(")")[0]
+        elif img_wrapper:
+            img = img_wrapper
+        elif img_tag:
+            img = img_tag
+        else:
+            img = None
 
-            # Meta tag is easy to get but not always accurate
-            description = response.xpath("//meta[@name='description']/@content").get()
+        return img
 
-            if description and description != "":
-                # Need to check this text is actually on the page
+    def desc(self, response):
+        # Meta tag is easy to get but not always accurate
+        description = response.xpath("//meta[@name='description']/@content").get()
 
-                # problem in scrapy seems to use xpath v1 with no ability to escape quotes. so we can't do:
-                # escaped_description = description.replace("'","''")
-                escaped_description = self.xpath_string_escape(description)
+        if description and description != "":
+            # Need to check this text is actually on the page
 
-                description_verified = response.xpath(
-                    f"//p[text()={escaped_description}]"
-                )
-                print("verified", description_verified)
-                if description_verified:
-                    current_show["desc"] = response.xpath(
-                        "//meta[@name='description']/@content"
-                    ).get()
+            # problem in scrapy seems to use xpath v1 with no ability to escape quotes. so we can't do:
+            # escaped_description = description.replace("'","''")
+            escaped_description = self.xpath_string_escape(description)
 
-            if not description or not description_verified:
-                # can we assume the first p tag with lots of text, in the same block as the heading, is the description?
-                header_description = description  # either unverified on none
+            description_verified = response.xpath(f"//p[text()={escaped_description}]")
+            if description_verified:
+                return response.xpath("//meta[@name='description']/@content").get()
 
-                if response.xpath(
-                    "//h1/../p[string-length(text())>100][1]/text()"
-                ).get():
-                    # Usually the first p tag after the header with lots of text. Want to skip any p tags that are just a few characters
-                    description = response.xpath(
-                        "string(//h1/../p[string-length(text())>100][1])"
-                    ).extract()[0]
+        if not description:
+            # can we assume the first p tag with lots of text, in the same block as the heading, is the description?
+            header_description = description  # either unverified on none
 
-                elif response.xpath(
-                    "//h1/../div[string-length(text())>100][1]/text()"
-                ).get():
-                    # if no p tag, then the first div with lots of text using text() approach
-                    description = response.xpath(
-                        "string(//h1/../div[string-length(text())>100][1])"
-                    ).extract()[0]
+            if response.xpath("//h1/../p[string-length(text())>100][1]/text()").get():
+                # Usually the first p tag after the header with lots of text. Want to skip any p tags that are just a few characters
+                description = response.xpath(
+                    "string(//h1/../p[string-length(text())>100][1])"
+                ).extract()[0]
 
-                elif len(response.xpath("string(//h1/../p[1])").extract()[0]) > 100:
-                    # If above failed, a sub tag may make the text seem short. So we can use string() to get all text in the p tag.
-                    # This just checks the first p tag, so it can be tripped up by empty p tags.
-                    description = response.xpath("string(//h1/../p[1])").extract()[0]
+            elif response.xpath(
+                "//h1/../div[string-length(text())>100][1]/text()"
+            ).get():
+                # if no p tag, then the first div with lots of text using text() approach
+                description = response.xpath(
+                    "string(//h1/../div[string-length(text())>100][1])"
+                ).extract()[0]
 
-                elif len(response.xpath("string(//h1/../div[1])").extract()[0]) > 100:
-                    # if no p tag, then the first div with lots of text using string approach
-                    description = response.xpath("string(//h1/../div[1])").extract()[0]
+            elif len(response.xpath("string(//h1/../p[1])").extract()[0]) > 100:
+                # If above failed, a sub tag may make the text seem short. So we can use string() to get all text in the p tag.
+                # This just checks the first p tag, so it can be tripped up by empty p tags.
+                description = response.xpath("string(//h1/../p[1])").extract()[0]
 
-                if not description:
-                    # would be nice if the header descrition was reliable but sometimes it's copied from another show wihout being updated
-                    # TODO: could make sure header desc does not match any other show's description.
-                    description = header_description
+            elif len(response.xpath("string(//h1/../div[1])").extract()[0]) > 100:
+                # if no p tag, then the first div with lots of text using string approach
+                description = response.xpath("string(//h1/../div[1])").extract()[0]
 
-            current_show["desc"] = description
-
-            host = response.xpath("//p/strong[contains(text(),'Host')]/text()").get()
-            current_show["host"] = host.split(":")[1] if host != None else None
-            current_show["internal_link"] = response.url
-            current_show["ext_link"] = response.xpath(
-                "//h1/../p[contains(text(),'Web')]/a/@href"
-            ).get()
-            email = response.xpath(
-                "//h1/../p[contains(text(),'Contact')]/a/@href"
-            ).get()
-            current_show["email"] = (
-                email.replace("mailto:", "") if email != None else None
-            )
-            current_show["source"] = "ciut"
-
-            schedule = response.xpath(
-                "//p/strong[contains(text(),'0am') or contains(text(),'0pm') ]/text()"
-            ).get()
-            current_show["duration"] = self.calculate_duration(schedule)
-
-            yield current_show
+            if not description:
+                # would be nice if the header descrition was reliable but sometimes it's copied from another show wihout being updated
+                # TODO: could make sure header desc does not match any other show's description.
+                description = header_description
 
     def calculate_duration(self, schedule):
 
