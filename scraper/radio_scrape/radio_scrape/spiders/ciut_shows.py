@@ -55,7 +55,7 @@ class CiutShowsSpider(scrapy.Spider):
 
         yield current_show
 
-    def show_name(self, response):
+    def show_name(self, response) -> str:
 
         # Usually the show title is in the H1 tag
         if response.xpath("//h1/text()").get():
@@ -66,7 +66,7 @@ class CiutShowsSpider(scrapy.Spider):
 
         return name
 
-    def img_url(self, response):
+    def img_url(self, response) -> str:
         # Different pages use different methods to include images. bg img or img tag
         # check for bg image first, then img tag if bg image doesn't exist
         img_bg = response.xpath(
@@ -91,9 +91,10 @@ class CiutShowsSpider(scrapy.Spider):
 
         return img
 
-    def desc(self, response):
+    def desc(self, response) -> str:
         # Meta tag is easy to get but not always accurate
         description = response.xpath("//meta[@name='description']/@content").get()
+        description_verified = False
 
         if description and description != "":
             # Need to check this text is actually on the page
@@ -106,44 +107,48 @@ class CiutShowsSpider(scrapy.Spider):
             if description_verified:
                 return response.xpath("//meta[@name='description']/@content").get()
 
-        if not description:
-            # can we assume the first p tag with lots of text, in the same block as the heading, is the description?
-            header_description = description  # either unverified on none
+        # if we're here description wasn't verified. Lets try to get it from the page
+        if response.xpath("//h1/../p[string-length(text())>100][1]/text()").get():
+            # Usually the first p tag after the header with lots of text. Want to skip any p tags that are just a few characters
+            description = response.xpath(
+                "string(//h1/../p[string-length(text())>100][1])"
+            ).extract()[0]
 
-            if response.xpath("//h1/../p[string-length(text())>100][1]/text()").get():
-                # Usually the first p tag after the header with lots of text. Want to skip any p tags that are just a few characters
-                description = response.xpath(
-                    "string(//h1/../p[string-length(text())>100][1])"
-                ).extract()[0]
+        elif response.xpath("//h1/../div[string-length(text())>100][1]/text()").get():
+            # if no p tag, then the first div with lots of text using text() approach
+            description = response.xpath(
+                "string(//h1/../div[string-length(text())>100][1])"
+            ).extract()[0]
 
-            elif response.xpath(
-                "//h1/../div[string-length(text())>100][1]/text()"
-            ).get():
-                # if no p tag, then the first div with lots of text using text() approach
-                description = response.xpath(
-                    "string(//h1/../div[string-length(text())>100][1])"
-                ).extract()[0]
+        elif len(response.xpath("string(//h1/../p[1])").extract()[0]) > 100:
+            # If above failed, a sub tag may make the text seem short. So we can use string() to get all text in the p tag.
+            # This just checks the first p tag, so it can be tripped up by empty p tags.
+            description = response.xpath("string(//h1/../p[1])").extract()[0]
 
-            elif len(response.xpath("string(//h1/../p[1])").extract()[0]) > 100:
-                # If above failed, a sub tag may make the text seem short. So we can use string() to get all text in the p tag.
-                # This just checks the first p tag, so it can be tripped up by empty p tags.
-                description = response.xpath("string(//h1/../p[1])").extract()[0]
+        elif len(response.xpath("string(//h1/../div[1])").extract()[0]) > 100:
+            # if no p tag, then the first div with lots of text using string approach
+            description = response.xpath("string(//h1/../div[1])").extract()[0]
 
-            elif len(response.xpath("string(//h1/../div[1])").extract()[0]) > 100:
-                # if no p tag, then the first div with lots of text using string approach
-                description = response.xpath("string(//h1/../div[1])").extract()[0]
+        elif response.xpath("//p[string-length(text())>100][1]/text()").get():
+            # Getting desprate. Maybe there's no header tag. Let's just grab the first p tag on the page with lots of text.
+            description = response.xpath(
+                "//p[string-length(text())>100][1]/text()"
+            ).extract()[0]
 
-            if not description:
-                # would be nice if the header descrition was reliable but sometimes it's copied from another show wihout being updated
-                # TODO: could make sure header desc does not match any other show's description.
-                description = header_description
+        # If none of the above worked, then we will be returning unverified description from the meta tag
+        # would be nice if the header descrition was reliable but sometimes it's copied from another show wihout being updated
+        # TODO: could make sure header desc does not match any other show's description.
+        if description == "Just another WordPress site":
+            description = ""
 
-    def schedule(self, response):
+        return description
+
+    def schedule(self, response) -> str:
         return response.xpath(
             "//p/*[self::strong or self::b][contains(translate(text(), 'AM', 'am'),'am-') or contains(translate(text(), 'PM', 'pm'),'pm-')]/text()"
         ).get()
 
-    def calculate_duration(self, sched):
+    def calculate_duration(self, sched) -> int:
 
         # create tuple of just the start and end hours for show (assumes all shows in schedule start on the hour.)
         hours = tuple(
@@ -161,7 +166,7 @@ class CiutShowsSpider(scrapy.Spider):
 
         return duration_seconds
 
-    def xpath_string_escape(self, input_str):
+    def xpath_string_escape(self, input_str) -> str:
         """creates a concatenation of alternately-quoted strings that is always a valid XPath expression"""
         if "'" in input_str:
             parts = input_str.split("'")
