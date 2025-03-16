@@ -4,6 +4,7 @@ import scrapy
 
 from radio_scrape.radio_scrape.items import ShowItem
 from radio_scrape.radio_scrape.pipeline_definitions import show_pipelines
+from radio_scrape.radio_scrape.spiders.ciut_helpers import show_name
 
 
 class CiutShowsSpider(scrapy.Spider):
@@ -28,7 +29,7 @@ class CiutShowsSpider(scrapy.Spider):
 
         current_show = ShowItem()
 
-        current_show["showName"] = self.show_name(response)
+        current_show["showName"] = show_name(response)
 
         if any(skip_show in current_show["showName"] for skip_show in shows_to_skip):
             return
@@ -55,18 +56,7 @@ class CiutShowsSpider(scrapy.Spider):
 
         yield current_show
 
-    def show_name(self, response) -> str:
-
-        # Usually the show title is in the H1 tag
-        if response.xpath("//h1/text()").get():
-            name = response.xpath("//h1/text()").get()
-        else:
-            # if no H1 tag, then let's try the title tag
-            name = response.xpath("//title/text()").get().split(" - ")[0]
-
-        return name
-
-    def img_url(self, response) -> str:
+    def img_url(self, response) -> str | None:
         # Different pages use different methods to include images. bg img or img tag
         # check for bg image first, then img tag if bg image doesn't exist
         img_bg = response.xpath(
@@ -74,6 +64,9 @@ class CiutShowsSpider(scrapy.Spider):
         ).get()
         img_wrapper = response.xpath(
             "//div[contains(@class,'image_wrapper')]/img/@data-src"
+        ).get()
+        img_wrapper_alt = response.xpath(
+            "//div[contains(@class,'image_wrapper')]/img/@src"
         ).get()
         img_tag = response.xpath(
             "//div[@id='Content']//img[not (contains(@alt, 'parallax'))]/@data-src"
@@ -84,6 +77,8 @@ class CiutShowsSpider(scrapy.Spider):
             img = img_bg.split("background-image:url(")[1].split(")")[0]
         elif img_wrapper:
             img = img_wrapper
+        elif img_wrapper_alt:
+            img = img_wrapper_alt
         elif img_tag:
             img = img_tag
         else:
