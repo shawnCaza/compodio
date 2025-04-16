@@ -28,7 +28,7 @@ class MySQL:  # ------------------------------------------------------
     def use_compodio_DB(self, cursor):
         """Expects open connection."""
         # select DB
-        cursor.execute("USE community_radio")
+        cursor.execute("USE compodio")
 
     # ---------------------------------------------------------
     def insert_multiple(self, mySql_insert_query, data_for_db):

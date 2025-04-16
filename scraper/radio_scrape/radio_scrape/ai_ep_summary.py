@@ -6,9 +6,11 @@ import os
 import re
 import requests
 import string
+import platform as pf
+import sys
 
-# import whisper
 import whisper
+from lightning_whisper_mlx import LightningWhisperMLX
 import whisper_at
 
 from transformers import pipeline
@@ -20,14 +22,14 @@ from nltk.tokenize.texttiling import TextTilingTokenizer
 import scraper_MySQL
 
 
-os.environ["TOKENIZERS_PARALLELISM"] = "false"
+# os.environ["TOKENIZERS_PARALLELISM"] = "false" #may be required if multiple threads are unavailable
 audio_directory = f"{os.path.dirname(os.path.realpath(__file__))}/temp_audio/"
 
 
 def main():
     global audio_directory
 
-    download_file = f"{audio_directory}temp_audio_for_ai_summary.mp3"
+    download_file = f"{audio_directory}temp_audio_for_ai_summary.wav"
     speech_only_file = f"{audio_directory}temp_speech_only_file.wav"
     speech_only_file_trimmed = f"{audio_directory}temp_speech_only_file_trimmed.wav"
 
@@ -69,7 +71,7 @@ def main():
             save_portion_of_audio_file(ep["mp3"], download_file, length="00:59:00")
 
             if ep["lang"] == None:
-                # detect language by first saving an exceprt than running whisper transcribe
+                # detect language by first saving an excerpt than running whisper transcribe
                 lang = detect_lang(download_file)
                 mySQL.set_show_lang(ep["show_id"], lang)
             else:
@@ -188,7 +190,7 @@ def save_portion_of_audio_file(
     print(datetime.datetime.utcnow())
 
     command = shlex.split(
-        f'ffmpeg -y -i "{orig_audio_file}" -ss {start_time} -t {length} -c:v copy -c:a copy "{new_file}"'
+        f'ffmpeg -y -i "{orig_audio_file}" -ss {start_time} -t {length} -acodec pcm_s16le -ar 16000 -ac 1 "{new_file}"'
     )
     subprocess.call(command)
 
@@ -206,7 +208,7 @@ def detect_lang(download_file):
 
     print("**** Detecting language")
     print(datetime.datetime.utcnow())
-    model = whisper.load_model("tiny")
+    model = whisper_model("tiny")
     result = model.transcribe(
         lang_detect_excerpt_file, no_speech_threshold=0.75, fp16=False
     )
@@ -289,7 +291,7 @@ def reduce_audio_to_voice_only_using_silero(orig_file, voice_only_file):
     # Reduce to voice parts only
     print("**** Finding voice only timestamps (silero_vad)")
     print(datetime.datetime.utcnow())
-    torch.set_num_threads(1)
+    # torch.set_num_threads(1) #may be required if multiple threads are unavailable
     model, utils = torch.hub.load(
         repo_or_dir="snakers4/silero-vad",
         model="silero_vad",
@@ -301,9 +303,9 @@ def reduce_audio_to_voice_only_using_silero(orig_file, voice_only_file):
     (get_speech_timestamps, save_audio, read_audio, VADIterator, collect_chunks) = utils
     SAMPLING_RATE = 16000
 
-    mp3 = read_audio(orig_file, sampling_rate=SAMPLING_RATE)
+    audio = read_audio(orig_file, sampling_rate=SAMPLING_RATE)
     # get speech timestamps from full audio file
-    speech_timestamps = get_speech_timestamps(mp3, model, sampling_rate=SAMPLING_RATE)
+    speech_timestamps = get_speech_timestamps(audio, model, sampling_rate=SAMPLING_RATE)
 
     if len(speech_timestamps):
         # merge all speech chunks to one audio
@@ -311,7 +313,7 @@ def reduce_audio_to_voice_only_using_silero(orig_file, voice_only_file):
         print(datetime.datetime.utcnow())
         save_audio(
             voice_only_file,
-            collect_chunks(speech_timestamps, mp3),
+            collect_chunks(speech_timestamps, audio),
             sampling_rate=SAMPLING_RATE,
         )
     else:
@@ -360,10 +362,10 @@ def transcribe_audio(audio_file, ep, show_type_guess):
 
     if show_type_guess == "talk" and audio_file_length_in_minutes == 1:
         print("using large model for short talk show excerpt")
-        model = whisper.load_model("large-v3")
+        model = whisper_model("distil-large-v3")  # whisper.load_model()
     else:
         print("using small model")
-        model = whisper.load_model("small.en")
+        model = whisper_model("distil-small.en")
 
     prompts = define_prompts(ep)
     result = model.transcribe(
@@ -613,6 +615,19 @@ def collect_chunks(tss: list[dict], wav: torch.Tensor):
 
 def save_audio(path: str, tensor: torch.Tensor, sampling_rate: int = 16000):
     torchaudio.save(path, tensor.unsqueeze(0), sampling_rate, bits_per_sample=16)
+
+
+def whisper_model(model_name: str):
+    print("platform:", pf.system(), "processor:", pf.processor())
+    if sys.platform == "darwin" and pf.processor() == "arm":
+        print("Using LightningWhisperMLX for macOS ARM")
+        return LightningWhisperMLX(model=model_name, batch_size=12, quant=None)
+    else:
+        # Remove 'distil-' prefix as whisper.load_model() doesn't support it
+        return whisper.load_model(
+            model_name.replace("distil-", ""),
+            device="cuda" if torch.cuda.is_available() else "cpu",
+        )
 
 
 ###### end from silero_vad

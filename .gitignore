@@ -21,3 +21,4 @@ temp_voice_only_file_trimmed.wav
 scraper/test.py
 .cache
 **/logs/*
+scraper/radio_scrape/radio_scrape/temp_audio/*

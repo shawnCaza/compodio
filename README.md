@@ -45,6 +45,7 @@ Contains database dumps
 - [next.js 13.1.1](https://nextjs.org/docs/getting-started)
 - [mysql 8.0.23](https://dev.mysql.com/downloads/mysql/)
 - [php 8.2.3](https://www.php.net/downloads.php)
+- [ffmpeg / ffprobe](https://ffmpeg.org/download.html) (Needs to be on your path if using the audio transcription features in the scraper)
 
 ### Setup
 
