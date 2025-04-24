@@ -1,0 +1,37 @@
+button,
+input[type="button"],
+input[type="reset"],
+input[type="submit"], .button {
+    border: 0;
+    font-weight: 700;
+    background-color: var(--header-background-high-contrast-colour);
+    color: var(--header-foreground-colour);
+    fill: var(--header-foreground-colour);
+    border-radius: var(--border-radius);
+    display: block;
+    padding: 7px;
+
+    &:hover{
+        cursor: pointer;
+        background-color: var(--header-background-colour);
+        color: var(--brand-colour);
+        fill: var(--brand-colour);
+    }
+    svg{
+        fill: inherit;
+    }
+   
+    // &:active,
+    // &:focus {
+    //     border-color: $color__border-button-focus;
+    // }
+}
+
+.highlight-button{
+    background-color: var(--brand-colour);
+    color: var(--header-background-colour);
+    fill: var(--header-background-colour);
+}
+
+
+

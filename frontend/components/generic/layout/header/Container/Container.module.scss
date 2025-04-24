@@ -1,0 +1,39 @@
+@import "../../../../../styles/abstracts/abstracts";
+
+.header {
+  display: flex;
+  justify-content: space-between;
+
+  @include mq(
+    "sm"
+  ) {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    width: 100%;
+
+    > :first-child {
+      justify-self: start;
+    }
+
+    > :last-child {
+      justify-self: end;
+    }
+
+    > :not(
+        :first-child
+      ):not(
+        :last-child
+      ) {
+      justify-self: center;
+    }
+  }
+
+  background-color: var(
+    --header-background-high-contrast-colour
+  );
+  color: var(
+    --header-foreground-colour
+  );
+  padding: 7px;
+  align-items: center;
+}

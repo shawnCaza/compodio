@@ -1,0 +1,60 @@
+:root {
+
+    //colours
+    --brand-colour: #f09a28;
+    //--brand-colour: #ac660c;
+    --foreground-colour: #111;
+    --foreground-contrast-colour: #2e2e2e;
+   
+    --foreground-high-contrast-colour: #414141; //minimal accesible constrast when matched with brand colour - high contrast to foreground colour
+    --background-colour:#eee;
+    --background-contrast-colour:#cacaca;
+    --background-high-contrast-colour:#aaaaaa; 
+   
+    //main element / page body background
+    --main-background-colour:#eee;
+
+
+    // header colours
+    --header-background-colour: #111;
+    --header-background-contrast-colour: #2e2e2e;
+    --header-background-high-contrast-colour: #414141;
+    --header-foreground-colour: #eee;
+    --header-foreground-contrast-colour:#cacaca;
+
+    //layout
+    --border-radius: 4px;
+    --border-radius-pill: 10px;
+
+    //typography
+    --font-mono: ui-monospace, Menlo, Monaco, 'Cascadia Mono', 'Segoe UI Mono',
+      'Roboto Mono', 'Oxygen Mono', 'Ubuntu Monospace', 'Source Code Pro',
+      'Fira Mono', 'Droid Sans Mono', 'Courier New', monospace;
+ 
+    // card styles
+    --card-padding: .63em;
+    --card-size: #{$card-width};
+    --xl-card-size: #{$xl-card-width};
+    --xxl-card-size: #{$xxl-card-width};
+  
+    --card-size-rem: #{px2em($card-width, 'rem')};
+    --xl-card-size-rem: #{px2em($xl-card-width, 'rem')};
+    --xxl-card-size-rem: #{px2em($xxl-card-width, 'rem')};
+   
+    //button styles
+    --button-padding:5px;
+   
+  }
+  
+  @media (prefers-color-scheme: dark) {
+    :root {
+         //colours
+         --foreground-colour: #eee;
+         --foreground-contrast-colour:#cacaca;
+         --background-colour:#111;
+         --main-background-colour:#2e2e2e;
+         --background-contrast-colour: #2e2e2e;
+         --foreground-high-contrast-colour: #aaaaaa;
+         --background-high-contrast-colour:#414141;
+  }
+}

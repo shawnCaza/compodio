@@ -1,0 +1,37 @@
+/*--------------------------------------------------------------
+# mixins 
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+# Variables
+--------------------------------------------------------------*/
+.showImgContainer {
+  max-height: 11.25rem;
+  min-height: 11.25rem;
+  max-width: 19.99125rem;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  display: block;
+  margin: auto;
+  padding: 20px;
+}
+@media only screen and (min-width: 85.375rem) {
+  .showImgContainer {
+    max-height: 17.5625rem;
+    min-height: 17.5625rem;
+    max-width: 31.2085625rem;
+    padding: 0 !important;
+  }
+}
+.showImgContainer img {
+  -webkit-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75);
+          box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75);
+}
+
+.showImgPadded {
+  padding: 20px 0;
+}
+.showImgPadded img {
+  -webkit-box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75);
+          box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75);
+}/*# sourceMappingURL=ShowImgContainer.module.css.map */

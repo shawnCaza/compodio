@@ -1,0 +1,10 @@
+.heading {
+    padding: .75em;
+    text-align: center;
+    background-color: var(--header-background-colour);
+    color: var(--header-foreground-colour);
+}
+
+.heading a{
+    color: var(--header-foreground-colour);
+}

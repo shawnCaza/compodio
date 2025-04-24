@@ -1,0 +1,68 @@
+/*--------------------------------------------------------------
+# mixins 
+--------------------------------------------------------------*/
+/*--------------------------------------------------------------
+# Variables
+--------------------------------------------------------------*/
+.menuButton {
+  -webkit-box-flex: 0;
+      -ms-flex: 0 0 40px;
+          flex: 0 0 40px;
+  height: 40px;
+  padding: 0;
+}
+
+.menuIcon {
+  height: 100%;
+  width: 100%;
+  display: block;
+  padding: 7px;
+}
+.menuIcon svg {
+  height: 100%;
+  width: 100%;
+}
+
+.mainMenuModalOverlay {
+  position: fixed;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  inset: 50px 0 0;
+  padding: 80px;
+  color: var(--background-contrast-colour);
+  background: var(--header-background-high-contrast-colour);
+  font-size: 2em;
+  line-height: 2;
+  z-index: 2;
+  top: 0;
+}
+
+.mainMenuModalContent {
+  display: inline;
+  background-color: transparent;
+  height: -webkit-fit-content;
+  height: -moz-fit-content;
+  height: fit-content;
+  outline: none;
+}
+.mainMenuModalContent div {
+  display: inline;
+}
+.mainMenuModalContent ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+  margin: auto;
+}
+.mainMenuModalContent ul li {
+  width: -webkit-fit-content;
+  width: -moz-fit-content;
+  width: fit-content;
+}/*# sourceMappingURL=MainMenu.module.css.map */
