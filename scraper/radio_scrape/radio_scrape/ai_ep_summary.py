@@ -291,7 +291,7 @@ def reduce_audio_to_voice_only_using_silero(orig_file, voice_only_file):
     # Reduce to voice parts only
     print("**** Finding voice only timestamps (silero_vad)")
     print(datetime.datetime.utcnow())
-    # torch.set_num_threads(1) #may be required if multiple threads are unavailable
+    # torch.set_num_threads(1) #may be required if on some systems
     model, utils = torch.hub.load(
         repo_or_dir="snakers4/silero-vad",
         model="silero_vad",

@@ -46,13 +46,11 @@ function RssLink({showId, slug, showName}:showFeedUrl) {
                     <ol>
                         <li>The RSS link for <strong>&apos;{showName}&apos;</strong> has already been added to your clipboard.</li>
                         <li>Open your podcast app</li>
-                        <li>Find the option to add a podcast by URL</li>
+                        <li>
+                            <a href="https://medium.com/@joshmuccio/how-to-manually-add-a-rss-feed-to-your-podcast-app-on-desktop-ios-android-478d197a3770" target="_blank" rel="noopener noreferrer">Find the option to add a podcast by URL</a></li>
                         <li>Paste the link into your podcast app</li>
                     </ol>
-                    <p>
 
-                        Not sure where to paste the RSS link? <a href="https://medium.com/@joshmuccio/how-to-manually-add-a-rss-feed-to-your-podcast-app-on-desktop-ios-android-478d197a3770" target="_blank" rel="noopener noreferrer">This guide can help you out.</a>
-                    </p>
                     <button className="highlight-button" onClick={()=>setDisplayCopiedMessage(false)}>Okay, I got it!</button>
                     <p>For your reference, below is the RSS link that has already been copied to your clipboard.</p>
                     <FeedUrl showId={showId} slug={slug}></FeedUrl>
