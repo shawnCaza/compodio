@@ -9,5 +9,4 @@ RUN npm install
 # Copy application code
 COPY . .
 
-# Development mode
 CMD ["npm", "run", "dev"]

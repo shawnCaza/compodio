@@ -15,7 +15,7 @@ import {useState } from "react";
 
 function RssLink({showId, slug, showName}:showFeedUrl) {
     Modal.setAppElement('#everything');
-    const feedLink = `${process.env.NEXT_PUBLIC_feed_URI}${showId}/${slug}`
+    const feedLink = `${process.env.NEXT_PUBLIC_feed_URI}/${showId}/${slug}`
     const [displayCopiedMessage, setDisplayCopiedMessage] = useState(false);
  
 

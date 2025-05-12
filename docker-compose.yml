@@ -1,6 +1,26 @@
-version: '3.8'
-
 services:
+
+  # Image downloader service
+  image-init:
+    image: alpine:latest
+    volumes:
+      - ./sample-data/images:/images
+    command: >
+      sh -c "
+        mkdir -p /images &&
+        if [ ! -f /images/.initialized ]; then
+          echo 'Downloading sample images...' &&
+          wget -O /tmp/sample_images.tar.gz https://images.compodio.com/sample_show_images.tar.gz &&
+          mkdir /images/shows &&
+          tar -xzf /tmp/sample_images.tar.gz -C /images/shows &&
+          rm /tmp/sample_images.tar.gz &&
+          touch /images/.initialized &&
+          echo 'Images downloaded and extracted successfully.'
+        else
+          echo 'Images already initialized, skipping download.'
+        fi
+      "
+
   # Next.js Frontend
   frontend:
     build:
@@ -10,10 +30,14 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
+      - ./sample-data/images:/app/public/images
     depends_on:
       - api
+      - image-init
     environment:
-      - NEXT_PUBLIC_API_URL=http://localhost:8000
+      - NEXT_PUBLIC_API_URI=http://localhost:8000
+      - NEXT_PUBLIC_feed_URI=http://localhost:8000/feed
+      - NEXT_PUBLIC_image_server_URI=http://localhost:3000/images
 
   # PHP API
   api:
@@ -35,7 +59,7 @@ services:
   db:
     image: mysql:8.0
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - mysql_data:/var/lib/mysql
       - ./db:/docker-entrypoint-initdb.d
@@ -51,9 +75,12 @@ services:
       context: ./scraper
     volumes:
       - ./scraper:/app
+      - ./sample-data/images:/app/images
     depends_on:
       - db
     environment:
+      - IMAGE_PATH=/app/images
+      - DEV_MODE=true  # Controls scraper behavior
       - DB_HOST=db
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}
@@ -61,3 +88,4 @@ services:
 
 volumes:
   mysql_data:
+  # image_data:

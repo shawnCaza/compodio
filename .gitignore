@@ -22,3 +22,4 @@ scraper/test.py
 .cache
 **/logs/*
 scraper/radio_scrape/radio_scrape/temp_audio/*
+sample-data/images/*

@@ -12,7 +12,7 @@ import styles from './ShowFeed.module.scss'
 import {  useEffect, useState } from "react";
 
 function FeedUrl({showId, slug}:showFeedUrl) {
-    const feedLink = `${process.env.NEXT_PUBLIC_feed_URI}${showId}/${slug}`
+    const feedLink = `${process.env.NEXT_PUBLIC_feed_URI}/${showId}/${slug}`
     const [displayCopiedMessage, setDisplayCopiedMessage] = useState(false);
     const [helpActive, setHelpActive] = useState(false);
 

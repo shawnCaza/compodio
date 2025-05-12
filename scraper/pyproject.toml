@@ -95,5 +95,5 @@ dependencies = [
     "zope.interface==5.5.2",
     "openai-whisper @ git+https://github.com/openai/whisper.git@e58f28804528831904c3b6f2c0e473f346223433",
     "whisper-at @ git+https://github.com/shawnCaza/whisper-at.git@main#subdirectory=package/whisper-at",
-    "lightning-whisper-mlx @ git+https://github.com/shawnCaza/lightning-whisper-mlx.git@fix--pass-all-arguments-to-transcribe#subdirectory=lightning_whisper_mlx"
+    "lightning-whisper-mlx @ git+https://github.com/shawnCaza/lightning-whisper-mlx.git@fix--pass-all-arguments-to-transcribe ; platform_system == 'Darwin'"
 ]

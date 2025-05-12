@@ -16,9 +16,9 @@ export default function showImgParams(show: Show): ImgParams | undefined {
       return undefined;
     }
 
-    const baseUrl: string = `${process.env.NEXT_PUBLIC_image_server_URI}shows/${show.slug}/${show.slug}`;
+    const baseUrl: string = `${process.env.NEXT_PUBLIC_image_server_URI}/shows/${show.slug}/${show.slug}`;
 
-    const defaultImage: string = `${process.env.NEXT_PUBLIC_image_server_URI}shows/${show.slug}/${show.slug}.jpg`;
+    const defaultImage: string = `${process.env.NEXT_PUBLIC_image_server_URI}/shows/${show.slug}/${show.slug}.jpg`;
 
     const imageSizes: Array<{ w: number; h: number }> = JSON.parse(show.sizes ?? '[{"w":0,"h":0}]');
 
