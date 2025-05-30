@@ -2,7 +2,7 @@
 
 Work in progress, currently online at [https://www.compodio.com](https://www.compodio.com).
 
-Some community radio stations post audio recordings of their shows online, but do not provide a podcast feed. This project provides rrs feeds for radio shows along side a UI with search and categoization features.
+Some community radio stations post audio recordings of their shows online, but do not provide a podcast feed. This project provides RRS feeds for radio shows along side a UI with search and categorization features.
 
 ## Overview
 
@@ -23,7 +23,7 @@ OpenAI Whisper is used to transcribe audio files, identify language, and Open so
 Sci-kit learn is used to:
 
 - Generate tags for shows based on their descriptions in show_keywords.py
-- Perform k-means clustering on show image colours in [image_colour.py](scraper/radio_scrape/radio_scrape/image_colour.py) in order to generate the show specific CSS gradients used in the UI.
+- Perform k-means clustering on show image colours in [image_colour.py](scraper/radio_scrape/radio_scrape/image_colour.py) in order to generate the show-specific CSS gradients used in the UI.
 
 ### data folder
 
@@ -31,7 +31,7 @@ Contains a php api, and the podcast feed generator.
 
 The api fetches data from a mysql database and returns it as json for the UI to consume.
 
-`data/public/index.php` is the entry point for poddcast feeds. It includes `data/private/feed_retreiver.php` to fetch data from the database and generates rss feeds for each show.
+`data/public/index.php` is the entry point for podcast feeds. It includes `data/private/feed_retreiver.php` to fetch data from the database and generates rss feeds for each show.
 
 ### db folder
 
