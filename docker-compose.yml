@@ -64,10 +64,10 @@ services:
       - mysql_data:/var/lib/mysql
       - ./db:/docker-entrypoint-initdb.d
     environment:
-      - MYSQL_ROOT_PASSWORD=${DB_ROOT_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_DATABASE=${DB_NAME}
       - MYSQL_USER=${DB_USER}
       - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_DATABASE=${DB_NAME}
 
   # Python Scraper
   scraper:
@@ -76,11 +76,13 @@ services:
     volumes:
       - ./scraper:/app
       - ./sample-data/images:/app/images
+      - ./db:/app/db
     depends_on:
       - db
     environment:
       - IMAGE_PATH=/app/images
-      - DEV_MODE=true  # Controls scraper behavior
+      - DB_EXPORT_PATH=/app/db
+      - DEV_MODE=true
       - DB_HOST=db
       - DB_USER=${DB_USER}
       - DB_PASSWORD=${DB_PASSWORD}

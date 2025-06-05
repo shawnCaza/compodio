@@ -2,7 +2,7 @@ import paramiko
 from dotenv import load_dotenv
 
 import os
-import sys
+import subprocess
 import tarfile
 from shutil import make_archive
 
@@ -17,21 +17,47 @@ private_key_passphrase = os.getenv("private_key_passphrase")
 # for remote DB
 remote_db = os.getenv("remote_db")
 # for local DB
-local_username = os.getenv("local_username")
-local_password = os.getenv("local_password")
-local_database = os.getenv("local_database")
-local_host = os.getenv("local_host")
+local_username = os.getenv("DB_USER")
+local_password = os.getenv("DB_PASSWORD")
+local_database = os.getenv("DB_NAME")
+local_host = os.getenv("DB_HOST")
 
 
 class Sync_helper:
 
     def dump(self, local_tables, local_dumpfile):
 
-        print("dump")
+        print(f"Dumping to {local_dumpfile}")
 
-        dumpcmd = f"/usr/local/mysql/bin/mysqldump -h {local_host} -u {local_username} -p{local_password} {local_database} {local_tables} > {local_dumpfile}"
+        os.makedirs(os.path.dirname(local_dumpfile), exist_ok=True)
 
-        os.system(dumpcmd)
+        # Use subprocess instead of os.system for better error handling
+
+        dumpcmd = [
+            "mysqldump",
+            "-h",
+            local_host,
+            "-u",
+            local_username,
+            f"-p{local_password}",
+            local_database,
+        ]
+
+        # Add tables if specified
+        if local_tables:
+            dumpcmd.extend(local_tables.split())
+
+        # Run command and redirect output to file
+        with open(local_dumpfile, "w") as outfile:
+            result = subprocess.run(dumpcmd, stdout=outfile, stderr=subprocess.PIPE)
+
+        # Check if command was successful
+        if result.returncode != 0:
+            print(f"Error dumping database: {result.stderr.decode()}")
+            return False
+
+        print(f"Dump completed successfully to {local_dumpfile}")
+        return True
 
     def compress(self, path, file, compressed_file):
         print("compressing file")
@@ -67,11 +93,12 @@ class Sync_helper:
         )
         return client
 
-    def transfer(self, ssh, local_path, file, remote_path=""):
+    def transfer(self, ssh, local_path, file, remote_path=None):
         # send file to server root
         print("transfering", f"{local_path}/{file}")
         ftp_client = ssh.open_sftp()
-        ftp_client.put(f"{local_path}/{file}", f"{remote_path}/{file}")
+        remote_file_path = f"{remote_path}/{file}" if remote_path else file
+        ftp_client.put(f"{local_path}/{file}", remote_file_path)
         ftp_client.close()
         print("transfer complete")
 
@@ -109,8 +136,9 @@ class Sync_helper:
         if local_table is not specified, all tables are dumped and synched.
 
         Args:
-            local_dumpfile (str): path to dumpfile that will be created
-            compressed_dumpfile (str): path to compressed dumpfile that will be created
+            local_path (str): path to location where the dumpfile is stored.
+            dumpfile (str): name of the dumpfile to be created.
+            compressed_dumpfile (str): name of the compressed dumpfile to be created.
             local_table (str, optional): table to dump and synch. Defaults to ''.
         """
 

@@ -8,18 +8,19 @@ from radio_scrape.radio_scrape.scraper_MySQL import MySQL
 
 
 def sync_db():
-
     server_syncer = Sync_helper()
 
     # Use db folder as save folder
     server_syncer.synch_tables(
-        "/Users/scaza/Sites/community-podcast/db", "compodio.sql", "compodio.tar.gz"
+        os.getenv("DB_EXPORT_PATH"),
+        "complete_show_data.sql",
+        "complete_show_data.tar.gz",
     )
 
 
 def synch_image_files():
     load_dotenv("scraper/radio_scrape/radio_scrape/.env")
-    images_folder = f"{os.getenv('image_folder')}/shows"
+    images_folder = f"{os.getenv('IMAGE_PATH')}/shows"
 
     mySQL = MySQL()
     shows = mySQL.show_images_to_sync()

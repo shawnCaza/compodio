@@ -23,3 +23,6 @@ scraper/test.py
 **/logs/*
 scraper/radio_scrape/radio_scrape/temp_audio/*
 sample-data/images/*
+**/.env.local
+db/complete_show_data.sql
+db/complete_show_data.tar.gz

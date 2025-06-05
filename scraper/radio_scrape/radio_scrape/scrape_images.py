@@ -113,7 +113,7 @@ class ImageProps:
 def scrape_images():
 
     load_dotenv()
-    shows_image_folder = f"{os.getenv('image_folder')}/shows"
+    shows_image_folder = f"{os.getenv('IMAGE_PATH')}/shows"
     mySQL = scraper_MySQL.MySQL()
     shows: list[Show] = _all_shows(mySQL)
 

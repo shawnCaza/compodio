@@ -1,37 +1,46 @@
 <?php
 
-  require_once('db_credentials.php');
+require_once('db_credentials.php');
 
-  function db_connect() {
-    $connection = mysqli_connect(DB_SERVER, DB_USER, DB_PASS, DB_NAME);
-    confirm_db_connect();
-    return $connection;
+function db_connect()
+{
+  // Fallback to db_credentials.php values if env vars aren't set
+  $server = getenv('DB_HOST') ?: DB_SERVER;
+  $user = getenv('DB_USER') ?: DB_USER;
+  $pass = getenv('DB_PASSWORD') ?: DB_PASS;
+  $name = getenv('DB_NAME') ?: DB_NAME;
+
+  $connection = mysqli_connect($server, $user, $pass, $name);
+  confirm_db_connect();
+  return $connection;
+}
+
+function db_disconnect($connection)
+{
+  if (isset($connection)) {
+    mysqli_close($connection);
   }
+}
 
-  function db_disconnect($connection) {
-    if(isset($connection)) {
-      mysqli_close($connection);
-    }
+function db_escape($connection, $string)
+{
+  return mysqli_real_escape_string($connection, $string);
+}
+
+function confirm_db_connect()
+{
+  if (mysqli_connect_errno()) {
+    $msg = "Database connection failed: ";
+    $msg .= mysqli_connect_error();
+    $msg .= " (" . mysqli_connect_errno() . ")";
+    exit($msg);
   }
+}
 
-  function db_escape($connection, $string) {
-    return mysqli_real_escape_string($connection, $string);
+function confirm_result_set($result_set)
+{
+  if (!$result_set) {
+
+    exit("Database query failed.");
   }
-
-  function confirm_db_connect() {
-    if(mysqli_connect_errno()) {
-      $msg = "Database connection failed: ";
-      $msg .= mysqli_connect_error();
-      $msg .= " (" . mysqli_connect_errno() . ")";
-      exit($msg);
-    }
-  }
-
-  function confirm_result_set($result_set) {
-    if (!$result_set) {
-     
-    	exit("Database query failed." );
-    }
-  }
-
-?>
+}
