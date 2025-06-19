@@ -13,7 +13,7 @@ def sync_db():
     # Use db folder as save folder
     server_syncer.synch_tables(
         os.getenv("DB_EXPORT_PATH"),
-        "complete_show_data.sql",
+        "02-complete_show_data.sql",
         "complete_show_data.tar.gz",
     )
 

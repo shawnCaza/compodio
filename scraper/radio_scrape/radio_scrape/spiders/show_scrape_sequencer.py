@@ -11,7 +11,6 @@ from radio_scrape.radio_scrape.spiders.ckut_shows import CkutShowsSpider
 from radio_scrape.radio_scrape.spiders.ciut_eps import CiutEps
 from radio_scrape.radio_scrape.spiders.cfru_eps import CfruEps
 from radio_scrape.radio_scrape.spiders.ckut_eps import CkutEps
-from radio_scrape.radio_scrape.server_sync.sync_compodio_data_to_server import sync_db
 
 setting = get_project_settings()
 
@@ -45,7 +44,5 @@ def crawl_seq2():
 crawl_seq2()
 
 process.start()  # the script will block here until the crawling is finished
-
-sync_db()
 
 print("done")

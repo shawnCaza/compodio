@@ -9,8 +9,8 @@ function db_connect()
   $user = getenv('DB_USER') ?: DB_USER;
   $pass = getenv('DB_PASSWORD') ?: DB_PASS;
   $name = getenv('DB_NAME') ?: DB_NAME;
-
-  $connection = mysqli_connect($server, $user, $pass, $name);
+  $port = getenv('DB_PORT') ?: 3306;
+  $connection = mysqli_connect($server, $user, $pass, $name, $port);
   confirm_db_connect();
   return $connection;
 }

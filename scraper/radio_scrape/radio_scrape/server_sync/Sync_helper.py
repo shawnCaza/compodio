@@ -1,21 +1,21 @@
 import paramiko
-from dotenv import load_dotenv
 
 import os
 import subprocess
 import tarfile
 from shutil import make_archive
 
-load_dotenv()
+# load_dotenv("scraper/radio_scrape/radio_scrape/.env.local")
 
 # for ssh access
-remote_host = os.getenv("remote_host")
-remote_port = os.getenv("remote_port")
-remote_username = os.getenv("remote_username")
-private_key_path = os.getenv("private_key_path")
-private_key_passphrase = os.getenv("private_key_passphrase")
+remote_host = os.getenv("REMOTE_HOST")
+remote_port = os.getenv("REMOTE_PORT")
+docker_db_port = os.getenv("DB_DOCKER_PORT")
+remote_username = os.getenv("REMOTE_USERNAME")
+private_key_path = os.getenv("PRIVATE_KEY_PATH")
+private_key_passphrase = os.getenv("PRIVATE_KEY_PASSPHRASE")
 # for remote DB
-remote_db = os.getenv("remote_db")
+remote_db = os.getenv("REMOTE_DB")
 # for local DB
 local_username = os.getenv("DB_USER")
 local_password = os.getenv("DB_PASSWORD")
@@ -40,9 +40,10 @@ class Sync_helper:
             "-u",
             local_username,
             f"-p{local_password}",
+            "--protocol=TCP",
+            f"-P {docker_db_port}",
             local_database,
         ]
-
         # Add tables if specified
         if local_tables:
             dumpcmd.extend(local_tables.split())

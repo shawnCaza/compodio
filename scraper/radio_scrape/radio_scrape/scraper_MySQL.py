@@ -18,7 +18,7 @@ class MySQL:  # ------------------------------------------------------
             user=os.getenv("DB_USER"),
             password=os.getenv("DB_PASSWORD"),
             database=os.getenv("DB_NAME"),
-            port=3306,
+            port=os.getenv("DB_PORT"),
             auth_plugin="mysql_native_password",
             use_pure=True,
         )
