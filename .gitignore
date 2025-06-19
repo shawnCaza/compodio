@@ -26,3 +26,5 @@ sample-data/images/*
 **/.env.local
 db/complete_show_data.tar.gz
 db/02-complete_show_data.sql
+mlx_models/tiny/config.json
+mlx_models/tiny/weights.npz

@@ -19,8 +19,8 @@ def sync_db():
 
 
 def synch_image_files():
-    load_dotenv("scraper/radio_scrape/radio_scrape/.env")
-    images_folder = f"{os.getenv('IMAGE_PATH')}/shows"
+    load_dotenv()
+    images_folder = f"{os.getenv('LOCAL_IMAGE_PATH')}/shows"
 
     mySQL = MySQL()
     shows = mySQL.show_images_to_sync()

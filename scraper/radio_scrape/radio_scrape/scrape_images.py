@@ -11,8 +11,8 @@ from PIL import Image, ImageOps
 from dotenv import load_dotenv
 from loguru import logger
 
-import image_colour
-import scraper_MySQL
+from radio_scrape.radio_scrape.image_colour import dominant_colours
+from radio_scrape.radio_scrape.scraper_MySQL import MySQL
 
 """
     Iterates through all show image urls in the database.
@@ -114,7 +114,7 @@ def scrape_images():
 
     load_dotenv()
     shows_image_folder = f"{os.getenv('IMAGE_PATH')}/shows"
-    mySQL = scraper_MySQL.MySQL()
+    mySQL = MySQL()
     shows: list[Show] = _all_shows(mySQL)
 
     for show in shows:
@@ -132,7 +132,7 @@ def scrape_images():
         time.sleep(90)  # To avoid overloading the server with requests
 
 
-def _all_shows(mySQL: scraper_MySQL.MySQL) -> list[Show]:
+def _all_shows(mySQL: MySQL) -> list[Show]:
     """
     Selects data relevant to the image for all shows in the database.
     """
@@ -140,7 +140,7 @@ def _all_shows(mySQL: scraper_MySQL.MySQL) -> list[Show]:
     return shows
 
 
-def _process_image(props: ImageProps, mySQL: scraper_MySQL.MySQL):
+def _process_image(props: ImageProps, mySQL: MySQL):
     """
     Saves image url to disk in a series of responsive sizes,
     calculates the dominant colours of the image,
@@ -153,7 +153,7 @@ def _process_image(props: ImageProps, mySQL: scraper_MySQL.MySQL):
         _save_image_variations(props, image)
 
     try:
-        props.dom_colours = image_colour.dominant_colours(file_path(props, "jpg"))
+        props.dom_colours = dominant_colours(file_path(props, "jpg"))
     except Exception as e:
         logger.error(
             f"Error calculating dominant image colours for show {props.show_id}: {e}"
