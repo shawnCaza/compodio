@@ -9,8 +9,15 @@ import string
 import platform as pf
 import sys
 
+try:
+    # Only for macOS ARM...for accelerated whisper transcription
+    from lightning_whisper_mlx import LightningWhisperMLX
+
+    has_whisper_mlx = True
+except ImportError:
+    has_whisper_mlx = False
+
 import whisper
-from lightning_whisper_mlx import LightningWhisperMLX
 import whisper_at
 
 from transformers import pipeline
