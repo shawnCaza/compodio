@@ -1,11 +1,13 @@
 import paramiko
 
 import os
+import time
 import subprocess
 import tarfile
 from shutil import make_archive
+from dotenv import load_dotenv
 
-# load_dotenv("scraper/radio_scrape/radio_scrape/.env.local")
+load_dotenv()
 
 # for ssh access
 remote_host = os.getenv("REMOTE_HOST")

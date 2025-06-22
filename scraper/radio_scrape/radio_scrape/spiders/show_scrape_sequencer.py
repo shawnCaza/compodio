@@ -11,6 +11,9 @@ from radio_scrape.radio_scrape.spiders.ckut_shows import CkutShowsSpider
 from radio_scrape.radio_scrape.spiders.ciut_eps import CiutEps
 from radio_scrape.radio_scrape.spiders.cfru_eps import CfruEps
 from radio_scrape.radio_scrape.spiders.ckut_eps import CkutEps
+from dotenv import load_dotenv
+
+load_dotenv()
 
 setting = get_project_settings()
 
