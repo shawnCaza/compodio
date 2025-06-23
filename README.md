@@ -4,6 +4,39 @@ Work in progress, currently online at [https://www.compodio.com](https://www.com
 
 Some community radio stations post audio recordings of their shows online, but do not provide a podcast feed. This project provides RRS feeds for radio shows along side a UI with search and categorization features.
 
+## Overview
+
+### UI folder
+
+Contains a next.js project using react-query for server state, CSS modules for styling, and fuse.js for search.
+
+### scraper folder
+
+Contains a Python Scrapy project with [spiders](scraper/radio_scrape/radio_scrape/spiders) that scrapes show data from radio station websites.
+
+In addition:
+
+[scrape_images.py](scraper/radio_scrape/radio_scrape/image_colour.py) downloads show images and uses Pillow to generate a set of responsive images for the UI.
+
+OpenAI Whisper is used to transcribe audio files, identify language, and Open source summarization models are used to create episode summaries in ai_ep_summary.py
+
+Sci-kit learn is used to:
+
+- Generate tags for shows based on their descriptions in show_keywords.py
+- Perform k-means clustering on show image colours in [image_colour.py](scraper/radio_scrape/radio_scrape/image_colour.py) in order to generate the show-specific CSS gradients used in the UI.
+
+### data folder
+
+Contains a php api, and the podcast feed generator.
+
+The api fetches data from a mysql database and returns it as json for the UI to consume.
+
+`data/public/index.php` is the entry point for podcast feeds. It includes `data/private/feed_retreiver.php` to fetch data from the database and generates rss feeds for each show.
+
+### db folder
+
+Contains database schema and sample data
+
 ## Development
 
 ### Prerequisites
@@ -13,7 +46,7 @@ Using docker is recommended to simplify development setup.
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 - [docker-compose](https://docs.docker.com/compose/install/) (if not included with Docker Desktop)
 
-### Quick Start
+<### Quick Start
 
 1. Set up your .env file
 
