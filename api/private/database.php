@@ -1,15 +1,13 @@
 <?php
 
-require_once('db_credentials.php');
-
 function db_connect()
 {
   // Fallback to db_credentials.php values if env vars aren't set
-  $server = getenv('DB_HOST') ?: DB_SERVER;
-  $user = getenv('DB_USER') ?: DB_USER;
-  $pass = getenv('DB_PASSWORD') ?: DB_PASS;
-  $name = getenv('DB_NAME') ?: DB_NAME;
-  $port = getenv('DB_PORT') ?: 3306;
+  $server = getenv('DB_HOST');
+  $user = getenv('DB_USER');
+  $pass = getenv('DB_PASSWORD');
+  $name = getenv('DB_NAME');
+  $port = getenv('DB_PORT');
   $connection = mysqli_connect($server, $user, $pass, $name, $port);
   confirm_db_connect();
   return $connection;
