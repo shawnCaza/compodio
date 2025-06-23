@@ -6,7 +6,7 @@ Some community radio stations post audio recordings of their shows online, but d
 
 ## Overview
 
-### UI folder
+### frontend folder
 
 Contains a next.js project using react-query for server state, CSS modules for styling, and fuse.js for search.
 
@@ -25,7 +25,7 @@ Sci-kit learn is used to:
 - Generate tags for shows based on their descriptions in show_keywords.py
 - Perform k-means clustering on show image colours in [image_colour.py](scraper/radio_scrape/radio_scrape/image_colour.py) in order to generate the show-specific CSS gradients used in the UI.
 
-### data folder
+### api folder
 
 Contains a php api, and the podcast feed generator.
 
