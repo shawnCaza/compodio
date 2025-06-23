@@ -9,8 +9,15 @@ import string
 import platform as pf
 import sys
 
+try:
+    # Only for macOS ARM...for accelerated whisper transcription
+    from lightning_whisper_mlx import LightningWhisperMLX
+
+    has_whisper_mlx = True
+except ImportError:
+    has_whisper_mlx = False
+
 import whisper
-from lightning_whisper_mlx import LightningWhisperMLX
 import whisper_at
 
 from transformers import pipeline
@@ -634,8 +641,3 @@ def whisper_model(model_name: str):
 
 if __name__ == "__main__":
     main()
-    # ep = {'id': 66843, 'show_id': 30061, 'mp3': 'https://archive.cfru.ca/archive/2023/10/10/Power Up! with Electrified Voltage - October 10, 2023 at 14:00 - CFRU 93.3.mp3', 'showName': 'IF 2023', 'source': 'cfru', 'host': 'various', 'lang': 'en'}
-
-    # reduce_audio_to_speech_only_using_whisper("/Users/scaza/Sites/community-podcast/scraper/radio_scrape/radio_scrape/temp_audio/temp_voice_only_file.wav", "/Users/scaza/Sites/community-podcast/scraper/radio_scrape/radio_scrape/temp_audio/temp_speech_only_file.wav", ep)
-
-    # transcribe_audio("/Users/scaza/Sites/community-podcast/scraper/radio_scrape/radio_scrape/temp_audio/temp_speech_only_file_trimmed.wav", ep, "talk")

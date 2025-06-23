@@ -1,16 +1,27 @@
 import json
 import logging
+import os
 import time
 from dataclasses import asdict
 
 import mysql.connector as mysql
-import radio_scrape.radio_scrape.DBConfig as dbConf
+from dotenv import load_dotenv
 
 
 class MySQL:  # ------------------------------------------------------
     def connect(self):
         logging.getLogger("mysql.connector").setLevel(logging.WARNING)
-        conn = mysql.connect(**dbConf.dbConfig)
+        load_dotenv(".env.local", override=True)
+
+        conn = mysql.connect(
+            host=os.getenv("DB_HOST"),
+            user=os.getenv("DB_USER"),
+            password=os.getenv("DB_PASSWORD"),
+            database=os.getenv("DB_NAME"),
+            port=os.getenv("DB_PORT"),
+            auth_plugin="mysql_native_password",
+            use_pure=True,
+        )
         # create cursor
         cursor = conn.cursor(dictionary=True)
         # cursor = conn.cursor(MySQLdb.cursors.DictCursor)

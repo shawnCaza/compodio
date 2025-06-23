@@ -1,0 +1,60 @@
+@import "../../../../..//styles/abstracts/abstracts";
+
+@function FindImgBoxHeight($width) {
+	// this is based on the 16:9 image ratio
+	@return $width/1.777;
+}
+
+.cardImgContainer {
+    // These values needs to match up to the calculation for `displaySizes` in the component.
+    $width: $card-width;
+    --max-height: #{px2em(FindImgBoxHeight($width),'rem')}; 
+    $xl-width: $xl-card-width;
+    --xl-height: #{px2em(FindImgBoxHeight($xl-width),'rem')};
+    $xxl-width: $xxl-card-width;
+    --xxl-height: #{px2em(FindImgBoxHeight($xxl-width),'rem')};
+    
+    max-height: var(--max-height); 
+    height: auto; 
+    
+    max-width: px2em($width,'rem'); // this is based on the 16:9 image ratio used to determin when an image fills the width of the card vs needs padding.
+    
+    @include mq('xl'){
+        max-height: var(--xl-height); 
+        max-width: px2em($xl-width,'rem'); 
+    }
+    @include mq('xxl'){
+        max-height: var(--xxl-height); 
+        max-width: px2em($xxl-width,'rem'); 
+    }
+    
+    width:fit-content;
+    display:block;
+    margin:auto;
+    
+}
+
+.minPaddedHeight{
+    // Since we don't know how much space the image will take yet, we need to set a min-height to minimize CLS
+    min-height: var(--max-height); 
+    
+    @include mq('xl'){
+        min-height: var(--xl-height); 
+    }
+    @include mq('xxl'){
+        min-height: var(--xxl-height); 
+    }  
+}
+
+.cardImgPadded{
+    // margin:12px auto; // This value needs to match up to the calculation for `displaySizes` in the component.
+    padding:12px 0; // This value needs to match up to the calculation for `displaySizes` in the component.
+    img{
+        box-shadow: 5px 5px 20px rgba(0, 0, 0, 0.75); 
+    }       
+    composes: minPaddedHeight;
+}
+
+.cardImgFullWidth{
+    width: 100%;
+}

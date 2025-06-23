@@ -1,0 +1,10 @@
+.flexRow {
+  display: flex;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+
+  span:not(:first-child) {
+    margin-left: 10px;
+  }
+}

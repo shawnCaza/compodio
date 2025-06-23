@@ -22,3 +22,8 @@ scraper/test.py
 .cache
 **/logs/*
 scraper/radio_scrape/radio_scrape/temp_audio/*
+sample-data/images/*
+**/.env.local
+db/complete_show_data.tar.gz
+db/02-complete_show_data.sql
+mlx_models/

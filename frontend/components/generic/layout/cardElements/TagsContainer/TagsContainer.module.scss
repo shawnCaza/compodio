@@ -1,0 +1,22 @@
+.tagContainer {
+  padding: 12px
+    var(
+      --card-padding
+    );
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1em;
+  justify-content: left;
+  font-size: 0.8em;
+  line-height: 1.15;
+  background-color: var(
+    --header-background-high-contrast-colour
+  );
+  // justify-content: space-evenly;
+}
+
+.rounded {
+  border-radius: var(
+    --border-radius
+  );
+}

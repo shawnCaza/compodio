@@ -1,0 +1,19 @@
+.tagContainer {
+  padding: 12px var(--card-padding);
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  gap: 1em;
+  -webkit-box-pack: left;
+      -ms-flex-pack: left;
+          justify-content: left;
+  font-size: 0.8em;
+  line-height: 1.15;
+  background-color: var(--header-background-high-contrast-colour);
+}
+
+.rounded {
+  border-radius: var(--border-radius);
+}/*# sourceMappingURL=TagsContainer.module.css.map */
