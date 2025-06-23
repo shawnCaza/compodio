@@ -79,7 +79,6 @@ services:
       - ./scraper:/app
       - ./sample-data/images:/app/images
       - ./db:/app/db
-      - ${SSH_AUTH_SOCK}:${SSH_AUTH_SOCK}:ro,z
     depends_on:
       - db
     environment:
