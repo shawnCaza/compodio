@@ -8,6 +8,7 @@ import { getTags, tagsStaleTime } from "../hooks/queries/tags";
 import { HydrationProvider} from "react-hydration-provider";
 import { useScrollRestoration } from "../hooks/next-restore-scroll-position";
 import { useRouter } from "next/router";
+import GoogleAnalytics from "../components/generic/GoogleAnalytics";
 
 
 
@@ -25,9 +26,10 @@ function App({ Component, pageProps,  }: AppProps) {
     <QueryClientProvider client={queryClient}>
       <Hydrate state={pageProps.dehydratedState}>
         <HydrationProvider>
-          <Layout>
-            <Component {...pageProps} />
-          </Layout>
+          <GoogleAnalytics />
+            <Layout>
+              <Component {...pageProps} />
+            </Layout>
         </HydrationProvider>
       </Hydrate>
     </QueryClientProvider>
